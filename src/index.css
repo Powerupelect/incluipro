@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/*
+  IncluiPro Soluções — sistema de design
+  Paleta:
+    - indigo (Índigo Profundo): cor de marca primária, superfícies escuras
+    - signal (Verde-Sinal): cor de ação primária, sucesso, progresso
+    - volt (Violeta Elétrico): destaque secundário, gradientes, IA
+    - amber (Âmbar): destaque terciário, atenção pontual
+    - mist (Névoa): fundo neutro claro
+    - graphite (Grafite): texto principal
+  Tipografia:
+    - Display: "Space Grotesk" (títulos, números, marca)
+    - Corpo: "IBM Plex Sans" (texto corrido, formulários, UI)
+*/
+
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-indigo-50: #eef1f8;
+  --color-indigo-100: #dbe1f0;
+  --color-indigo-200: #b3c0dd;
+  --color-indigo-300: #8195c4;
+  --color-indigo-400: #4f65a3;
+  --color-indigo-500: #2f4380;
+  --color-indigo-600: #22335f;
+  --color-indigo-700: #1e2a4a;
+  --color-indigo-800: #161f38;
+  --color-indigo-900: #0f1526;
+  --color-indigo-950: #090c19;
+
+  --color-signal-50: #e9faf6;
+  --color-signal-100: #cdf3e9;
+  --color-signal-200: #9de6d3;
+  --color-signal-300: #63d3ba;
+  --color-signal-400: #30bc9e;
+  --color-signal-500: #12a594;
+  --color-signal-600: #0d8579;
+  --color-signal-700: #0c6a63;
+  --color-signal-800: #0b544f;
+  --color-signal-900: #0a4642;
+
+  --color-volt-50: #f2effe;
+  --color-volt-100: #e4defd;
+  --color-volt-200: #c9bdfb;
+  --color-volt-300: #a68df6;
+  --color-volt-400: #8a67ef;
+  --color-volt-500: #6c4ce6;
+  --color-volt-600: #5936c7;
+  --color-volt-700: #472aa0;
+  --color-volt-800: #392480;
+  --color-volt-900: #2f2068;
+
+  --color-amber-50: #fdf6e9;
+  --color-amber-100: #fbe9c3;
+  --color-amber-200: #f6d38e;
+  --color-amber-300: #f2b459;
+  --color-amber-400: #f2a93b;
+  --color-amber-500: #e0911f;
+  --color-amber-600: #bd7417;
+  --color-amber-700: #935818;
+
+  --color-mist-50: #ffffff;
+  --color-mist-100: #f8f9fb;
+  --color-mist-200: #f3f5f8;
+  --color-mist-300: #e7eaf1;
+  --color-mist-400: #dbe0e9;
+
+  --color-graphite-50: #f3f4f6;
+  --color-graphite-300: #9096a4;
+  --color-graphite-500: #565d6d;
+  --color-graphite-700: #2d3242;
+  --color-graphite-900: #14171f;
+
+  --shadow-card: 0 1px 2px rgba(15, 21, 38, 0.04), 0 8px 24px -12px rgba(15, 21, 38, 0.18);
+  --shadow-pop: 0 12px 40px -16px rgba(30, 42, 74, 0.35);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    color: var(--color-graphite-900);
+    background-color: var(--color-mist-100);
+  }
+
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .step-pattern {
+    background-image: repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-signal-500) 12%, transparent) 0,
+      color-mix(in srgb, var(--color-signal-500) 12%, transparent) 2px,
+      transparent 2px,
+      transparent 34px
+    );
+  }
+
+  .prose-report {
+    line-height: 1.65;
+  }
+  .prose-report h1, .prose-report h2, .prose-report h3 {
+    font-family: var(--font-display);
+    color: var(--color-indigo-700);
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+  }
+  .prose-report h1 { font-size: 1.4rem; }
+  .prose-report h2 { font-size: 1.2rem; }
+  .prose-report h3 { font-size: 1.05rem; }
+  .prose-report p { margin: 0.6em 0; color: var(--color-graphite-700); }
+  .prose-report ul { margin: 0.6em 0; padding-left: 1.25em; list-style: disc; }
+  .prose-report li { margin: 0.25em 0; color: var(--color-graphite-700); }
+  .prose-report strong { color: var(--color-graphite-900); }
+}
