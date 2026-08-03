@@ -10,6 +10,8 @@ apoiada por IA.
 - **Tailwind CSS v4** (via `@tailwindcss/vite`), com sistema de design próprio em `src/index.css`
 - **react-router-dom** para navegação
 - **react-markdown** para renderizar os relatórios gerados por IA
+- **jsPDF** para exportar o relatório do IncluiPro Avalia em PDF, seguindo o modelo visual
+  validado (`src/lib/pdf.js`)
 
 ## Estrutura
 
@@ -49,12 +51,26 @@ reais. Por isso:
 - **Banco de dados**: leads do diagnóstico (`src/lib/leads.js`) e histórico de relatórios do
   IncluiPro Avalia (`src/lib/reports.js`) ficam apenas no `localStorage` do navegador.
   `// TODO: integrar com backend/CRM` e `// TODO: persistir em banco de dados real`.
-- **Pagamentos**: o botão "Gerenciar assinatura" em Minha Conta é um placeholder.
-  `// TODO: integrar com Stripe Billing ou Hotmart/Kiwify`.
-- **Armazenamento de arquivos**: os downloads dos kits do IncluiPro Lidera são arquivos de texto
-  placeholder. `// TODO: conectar com armazenamento real dos arquivos (ex: S3, Supabase Storage)`.
-- **Exportação de relatórios**: o IncluiPro Avalia exporta o relatório em Markdown/texto; PDF e
-  Word ficam como próximo passo (`// TODO` em `src/pages/app/Avalia.jsx`).
+- **Pagamentos**: não há nenhum botão de assinatura ou cobrança ativo nesta versão — Minha Conta
+  e a página de Produtos exibem "Acesso para testes" no lugar de qualquer CTA de pagamento.
+  `// TODO: integrar com Stripe Billing ou Hotmart/Kiwify quando o plano pago for ativado`.
+- **Armazenamento de arquivos**: os kits do IncluiPro Lidera são os PDFs reais, servidos como
+  arquivos estáticos em `public/kits/`. Isso funciona para este protótipo, mas para produção
+  `// TODO: conectar com armazenamento real dos arquivos (ex: S3, Supabase Storage)` — hoje eles
+  ficam no bundle publicado do site, sem controle de acesso.
+
+## IncluiPro Avalia — relatório em PDF
+
+O relatório gerado pela IA pode ser **editado livremente** antes de ser finalizado (botões
+"✏️ Editar Relatório" / "💾 Salvar Alterações") e exportado como **PDF** (📄) seguindo o modelo
+visual validado da IncluiPro: cabeçalho com logo, título e frase de abertura fixos, barras de
+seção alternando entre as cores da marca, tabelas de identificação/deficiência e rodapé fixo com
+os avisos legais. A lógica de geração fica em `src/lib/pdf.js` — ela lê o texto atual do
+relatório (original ou editado) e monta o PDF programaticamente com jsPDF, sem depender de
+serviço externo.
+
+O histórico de relatórios ("📂 Meus Relatórios", dentro do IncluiPro Avalia) tem busca por
+candidato/empresa e ações de abrir, editar, baixar PDF e excluir por item.
 
 ## Considerações importantes
 

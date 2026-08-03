@@ -26,3 +26,14 @@ export function deleteReport(id) {
   const reports = getReports().filter((r) => r.id !== id)
   localStorage.setItem(REPORTS_KEY, JSON.stringify(reports))
 }
+
+/** Atualiza um relatório existente (ex: após edição manual do conteúdo). */
+export function updateReport(id, patch) {
+  const reports = getReports()
+  const index = reports.findIndex((r) => r.id === id)
+  if (index === -1) return null
+  const updated = { ...reports[index], ...patch, editado: true, updatedAt: new Date().toISOString() }
+  reports[index] = updated
+  localStorage.setItem(REPORTS_KEY, JSON.stringify(reports))
+  return updated
+}

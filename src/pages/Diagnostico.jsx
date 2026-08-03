@@ -19,6 +19,7 @@ export function Diagnostico() {
   })
   const [step, setStep] = useState('form') // form | email | result
   const [email, setEmail] = useState('')
+  const [consentimento, setConsentimento] = useState(false)
   const [resultado, setResultado] = useState(null)
 
   function update(field, value) {
@@ -152,7 +153,21 @@ export function Diagnostico() {
             className="w-full rounded-xl border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             placeholder="voce@empresa.com.br"
           />
-          <Button as="button" type="submit" className="w-full justify-center">
+          <label className="flex items-start gap-3 rounded-xl border border-mist-300 p-4 hover:border-signal-300">
+            <input
+              required
+              type="checkbox"
+              checked={consentimento}
+              onChange={(e) => setConsentimento(e.target.checked)}
+              className="mt-0.5 h-4 w-4 accent-signal-600"
+            />
+            <span className="text-sm text-graphite-700">
+              Concordo em fornecer meus dados de contato e receber comunicações da IncluiPro
+              Soluções sobre este diagnóstico e seus produtos, conforme a{' '}
+              <span className="font-semibold">Lei Geral de Proteção de Dados (LGPD)</span>.
+            </span>
+          </label>
+          <Button as="button" type="submit" disabled={!consentimento} className="w-full justify-center">
             Ver resultado completo
           </Button>
         </form>

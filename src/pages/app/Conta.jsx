@@ -15,11 +15,6 @@ export function Conta() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  function handleManageSubscription() {
-    // TODO: integrar com Stripe Billing ou Hotmart/Kiwify.
-    alert('Gerenciamento de assinatura ainda não conectado a um provedor de pagamentos.')
-  }
-
   return (
     <div className="space-y-8">
       <div>
@@ -55,10 +50,19 @@ export function Conta() {
             <h2 className="font-display text-lg font-semibold text-indigo-800">Plano atual</h2>
             <p className="mt-1 text-sm text-graphite-500">{user?.plan}</p>
           </div>
-          <Button as="button" variant="ghost" onClick={handleManageSubscription}>
-            Gerenciar assinatura
-          </Button>
+          <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-700">
+            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
+              <path d="M10 2a1 1 0 011 1v6.586l3.707 3.707a1 1 0 01-1.414 1.414L9 10.414V3a1 1 0 011-1z" />
+              <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 110-12 6 6 0 010 12z" fillRule="evenodd" clipRule="evenodd" />
+            </svg>
+            Acesso para testes — nenhuma cobrança ativa
+          </span>
         </div>
+        <p className="mt-4 text-xs text-graphite-300">
+          {/* TODO: integrar com Stripe Billing ou Hotmart/Kiwify quando o plano pago for ativado. */}
+          Esta conta está em período de testes da plataforma. Nenhum meio de pagamento é
+          coletado e nenhuma cobrança será feita nesta etapa.
+        </p>
       </div>
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">

@@ -10,17 +10,19 @@ const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-5'
 
 function montarPrompt(dados) {
-  return `Você é um especialista em avaliação social e inclusão de pessoas com deficiência (PCD) no mercado de trabalho. Com base nas anotações de entrevista abaixo, produza um RELATÓRIO FINAL estruturado, profissional e em português do Brasil, no formato Markdown.
+  return `Você é um especialista em avaliação social e inclusão de pessoas com deficiência (PCD) no mercado de trabalho. Com base nas anotações de entrevista abaixo, produza um RELATÓRIO FINAL estruturado, profissional e em português do Brasil, no formato Markdown, seguindo o modelo oficial da IncluiPro.
 
 O relatório deve ter exatamente estas seções, nesta ordem, usando "## " como marcador de cada seção:
-## Resumo Executivo
 ## Rotina e Autonomia
-## Histórico Profissional
-## Necessidades e Recomendações de Adaptação
-## Expectativas do Candidato
-## Parecer Final
+## Observações Ergonômicas e Ambientais
+## Parecer e Recomendações
 
-Seja objetivo, use linguagem profissional e respeitosa, evite jargões desnecessários e não invente informações que não estejam nas anotações — se um campo estiver vazio ou incompleto, indique isso brevemente na seção correspondente em vez de presumir.
+Instruções de conteúdo por seção:
+- "Rotina e Autonomia": uma síntese coesa que combine rotina e nível de autonomia, histórico profissional relevante, necessidades específicas no trabalho e expectativas do candidato em relação à vaga — não repita os dados como uma lista de tópicos separados, escreva como uma narrativa única e fluida.
+- "Observações Ergonômicas e Ambientais": recomendações de acessibilidade física, mobiliário, iluminação, ruído e demais fatores ambientais relevantes.
+- "Parecer e Recomendações": síntese final com os principais pontos de atenção e recomendações objetivas de adaptação, considerando também o tipo de deficiência e as observações sobre a condição informadas abaixo.
+
+Não inclua uma seção de identificação nem repita nome/cargo/empresa/tipo de deficiência no corpo do texto — esses dados já aparecem em tabela própria no relatório final. Seja objetivo, use linguagem profissional e respeitosa, evite jargões desnecessários e não invente informações que não estejam nas anotações — se um campo estiver vazio ou incompleto, indique isso brevemente na seção correspondente em vez de presumir.
 
 --- ANOTAÇÕES DA ENTREVISTA ---
 
@@ -28,6 +30,10 @@ Identificação:
 - Nome do candidato: ${dados.nome || '(não informado)'}
 - Cargo pretendido: ${dados.cargo || '(não informado)'}
 - Empresa: ${dados.empresa || '(não informado)'}
+
+Deficiência:
+- Tipo de deficiência: ${dados.tipoDeficiencia || '(não informado)'}
+- Observações sobre a condição: ${dados.observacoesCondicao || '(não informado)'}
 
 Rotina e autonomia:
 ${dados.rotina || '(não informado)'}

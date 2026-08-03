@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Button } from '../../components/ui/Button.jsx'
 import { gerarRelatorio } from '../../lib/anthropic.js'
 import { getApiKey } from '../../lib/apiKey.js'
-import { getReports, saveReport, deleteReport } from '../../lib/reports.js'
+import { getReports, saveReport, deleteReport, updateReport } from '../../lib/reports.js'
+import { baixarRelatorioPDF } from '../../lib/pdf.js'
 
 const blocos = [
   {
@@ -12,6 +13,13 @@ const blocos = [
       { key: 'nome', label: 'Nome do candidato', type: 'text' },
       { key: 'cargo', label: 'Cargo pretendido', type: 'text' },
       { key: 'empresa', label: 'Empresa', type: 'text' },
+    ],
+  },
+  {
+    titulo: 'Deficiência',
+    campos: [
+      { key: 'tipoDeficiencia', label: 'Tipo de deficiência', type: 'text' },
+      { key: 'observacoesCondicao', label: 'Observações sobre a condição', type: 'textarea' },
     ],
   },
   {
@@ -66,6 +74,8 @@ const initialForm = {
   nome: '',
   cargo: '',
   empresa: '',
+  tipoDeficiencia: '',
+  observacoesCondicao: '',
   rotina: '',
   historico: '',
   necessidades: '',
@@ -74,13 +84,29 @@ const initialForm = {
   notasLivres: '',
 }
 
+function reportToPdfPayload(fields) {
+  return {
+    nome: fields.candidato || fields.nome || '',
+    cargo: fields.cargo || '',
+    empresa: fields.empresa || '',
+    tipoDeficiencia: fields.tipoDeficiencia || '',
+    observacoesCondicao: fields.observacoesCondicao || '',
+    relatorioMarkdown: fields.conteudo || fields.relatorio || '',
+  }
+}
+
 export function Avalia() {
   const [form, setForm] = useState(initialForm)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [relatorio, setRelatorio] = useState('')
+  const [currentReportId, setCurrentReportId] = useState(null)
+  const [editMode, setEditMode] = useState(false)
+  const [editDraft, setEditDraft] = useState('')
   const [copiado, setCopiado] = useState(false)
+  const [salvo, setSalvo] = useState(false)
   const [historico, setHistorico] = useState(() => getReports())
+  const [busca, setBusca] = useState('')
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -93,12 +119,16 @@ export function Avalia() {
       const apiKey = getApiKey()
       const texto = await gerarRelatorio(form, apiKey)
       setRelatorio(texto)
+      setEditMode(false)
       const saved = saveReport({
         candidato: form.nome || 'Candidato sem nome',
         cargo: form.cargo,
         empresa: form.empresa,
+        tipoDeficiencia: form.tipoDeficiencia,
+        observacoesCondicao: form.observacoesCondicao,
         conteudo: texto,
       })
+      setCurrentReportId(saved.id)
       setHistorico((h) => [saved, ...h])
     } catch (err) {
       setError(err.message)
@@ -113,26 +143,87 @@ export function Avalia() {
     setTimeout(() => setCopiado(false), 2000)
   }
 
-  function handleExportar() {
-    // TODO: exportação para PDF/Word — por enquanto, exporta como arquivo Markdown/texto.
-    const blob = new Blob([relatorio], { type: 'text/markdown;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `relatorio-${(form.nome || 'candidato').toLowerCase().replace(/\s+/g, '-')}.md`
-    a.click()
-    URL.revokeObjectURL(url)
+  function handleEditar() {
+    setEditDraft(relatorio)
+    setEditMode(true)
   }
 
-  function handleAbrirHistorico(item) {
+  function handleSalvarEdicao() {
+    setRelatorio(editDraft)
+    setEditMode(false)
+    if (currentReportId) {
+      const updated = updateReport(currentReportId, {
+        conteudo: editDraft,
+        candidato: form.nome || 'Candidato sem nome',
+        cargo: form.cargo,
+        empresa: form.empresa,
+        tipoDeficiencia: form.tipoDeficiencia,
+        observacoesCondicao: form.observacoesCondicao,
+      })
+      if (updated) {
+        setHistorico((h) => h.map((r) => (r.id === updated.id ? updated : r)))
+      }
+    }
+    setSalvo(true)
+    setTimeout(() => setSalvo(false), 2000)
+  }
+
+  function handleBaixarPdf() {
+    baixarRelatorioPDF(
+      reportToPdfPayload({
+        candidato: form.nome,
+        cargo: form.cargo,
+        empresa: form.empresa,
+        tipoDeficiencia: form.tipoDeficiencia,
+        observacoesCondicao: form.observacoesCondicao,
+        conteudo: relatorio,
+      }),
+    )
+  }
+
+  function handleAbrirHistorico(item, entrarEmEdicao = false) {
+    setForm((f) => ({
+      ...f,
+      nome: item.candidato,
+      cargo: item.cargo || '',
+      empresa: item.empresa || '',
+      tipoDeficiencia: item.tipoDeficiencia || '',
+      observacoesCondicao: item.observacoesCondicao || '',
+    }))
     setRelatorio(item.conteudo)
-    setForm((f) => ({ ...f, nome: item.candidato, cargo: item.cargo, empresa: item.empresa }))
+    setCurrentReportId(item.id)
+    if (entrarEmEdicao) {
+      setEditDraft(item.conteudo)
+      setEditMode(true)
+    } else {
+      setEditMode(false)
+    }
+  }
+
+  function handleBaixarHistoricoPdf(item) {
+    baixarRelatorioPDF(reportToPdfPayload(item))
   }
 
   function handleExcluirHistorico(id) {
+    if (!confirm('Excluir este relatório do histórico? Esta ação não pode ser desfeita.')) return
     deleteReport(id)
     setHistorico((h) => h.filter((r) => r.id !== id))
+    if (currentReportId === id) {
+      setRelatorio('')
+      setCurrentReportId(null)
+      setEditMode(false)
+    }
   }
+
+  const historicoFiltrado = useMemo(() => {
+    const q = busca.trim().toLowerCase()
+    if (!q) return historico
+    return historico.filter(
+      (r) =>
+        (r.candidato || '').toLowerCase().includes(q) ||
+        (r.empresa || '').toLowerCase().includes(q),
+    )
+  }, [historico, busca])
 
   return (
     <div>
@@ -145,7 +236,7 @@ export function Avalia() {
         </h1>
         <p className="mt-2 max-w-2xl text-graphite-500">
           Preencha as anotações da entrevista por blocos. Ao final, gere o relatório estruturado
-          com IA.
+          com IA — você pode editar o texto livremente antes de baixar o PDF.
         </p>
       </div>
 
@@ -191,12 +282,12 @@ export function Avalia() {
 
         <div className="space-y-6">
           <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
                 Relatório gerado
               </h2>
-              {relatorio && (
-                <div className="flex gap-2">
+              {relatorio && !editMode && (
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleCopiar}
                     className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
@@ -204,16 +295,38 @@ export function Avalia() {
                     {copiado ? 'Copiado!' : 'Copiar'}
                   </button>
                   <button
-                    onClick={handleExportar}
+                    onClick={handleEditar}
                     className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
                   >
-                    Exportar (.md)
+                    ✏️ Editar Relatório
+                  </button>
+                  <button
+                    onClick={handleBaixarPdf}
+                    className="rounded-full bg-signal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-signal-700"
+                  >
+                    📄 Baixar Relatório em PDF
+                  </button>
+                </div>
+              )}
+              {editMode && (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setEditMode(false)}
+                    className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-mist-500"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSalvarEdicao}
+                    className="rounded-full bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-800"
+                  >
+                    {salvo ? 'Salvo!' : '💾 Salvar Alterações'}
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="mt-4 max-h-[600px] overflow-y-auto">
+            <div className="mt-4">
               {!relatorio && !loading && (
                 <p className="rounded-xl bg-mist-200 p-5 text-sm text-graphite-500">
                   Preencha o formulário e clique em "Gerar relatório com IA" para ver o resultado
@@ -225,49 +338,79 @@ export function Avalia() {
                   Analisando as anotações e estruturando o relatório…
                 </p>
               )}
-              {relatorio && (
-                <div className="prose-report">
+              {relatorio && !editMode && (
+                <div className="prose-report max-h-[600px] overflow-y-auto">
                   <ReactMarkdown>{relatorio}</ReactMarkdown>
+                </div>
+              )}
+              {editMode && (
+                <div>
+                  <textarea
+                    value={editDraft}
+                    onChange={(e) => setEditDraft(e.target.value)}
+                    rows={20}
+                    className="w-full rounded-xl border border-signal-400 bg-mist-50 p-4 font-mono text-xs leading-relaxed outline-none focus:ring-2 focus:ring-signal-100"
+                  />
+                  <p className="mt-2 text-xs text-graphite-300">
+                    Edição livre em Markdown (## define o título de cada seção). Clique em
+                    "Salvar Alterações" para aplicar.
+                  </p>
                 </div>
               )}
             </div>
           </div>
 
           <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-            <h2 className="font-display text-lg font-semibold text-indigo-800">
-              Histórico de relatórios
-            </h2>
-            {historico.length === 0 ? (
-              <p className="mt-3 text-sm text-graphite-500">
-                Nenhum relatório gerado ainda nesta conta.
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-lg font-semibold text-indigo-800">
+                📂 Meus Relatórios
+              </h2>
+            </div>
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por candidato ou empresa…"
+              className="mt-3 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+            />
+
+            {historicoFiltrado.length === 0 ? (
+              <p className="mt-4 text-sm text-graphite-500">
+                {historico.length === 0
+                  ? 'Nenhum relatório gerado ainda nesta conta.'
+                  : 'Nenhum relatório encontrado para essa busca.'}
               </p>
             ) : (
               <ul className="mt-4 divide-y divide-mist-300">
-                {historico.map((item) => (
-                  <li key={item.id} className="flex items-center justify-between gap-3 py-3">
-                    <button
-                      onClick={() => handleAbrirHistorico(item)}
-                      className="min-w-0 flex-1 text-left"
-                    >
+                {historicoFiltrado.map((item) => (
+                  <li key={item.id} className="py-3">
+                    <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-graphite-900">
-                        {item.candidato}
+                        {item.candidato} {item.editado && <span className="text-graphite-300">· editado</span>}
                       </p>
                       <p className="truncate text-xs text-graphite-300">
-                        {item.cargo || 'Cargo não informado'} ·{' '}
-                        {new Date(item.createdAt).toLocaleString('pt-BR')}
+                        {item.empresa || 'Empresa não informada'} ·{' '}
+                        {new Date(item.updatedAt || item.createdAt).toLocaleString('pt-BR')}
                       </p>
-                    </button>
-                    <button
-                      onClick={() => handleExcluirHistorico(item.id)}
-                      className="shrink-0 text-xs font-semibold text-red-500 hover:text-red-700"
-                    >
-                      Excluir
-                    </button>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-3 text-xs font-semibold">
+                      <button onClick={() => handleAbrirHistorico(item, false)} className="text-indigo-700 hover:text-indigo-900">
+                        📂 Abrir
+                      </button>
+                      <button onClick={() => handleAbrirHistorico(item, true)} className="text-indigo-700 hover:text-indigo-900">
+                        ✏️ Editar
+                      </button>
+                      <button onClick={() => handleBaixarHistoricoPdf(item)} className="text-signal-700 hover:text-signal-800">
+                        📥 Baixar PDF
+                      </button>
+                      <button onClick={() => handleExcluirHistorico(item.id)} className="text-red-500 hover:text-red-700">
+                        🗑️ Excluir
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
             )}
-            <p className="mt-3 text-xs text-graphite-300">
+            <p className="mt-4 text-xs text-graphite-300">
               Histórico salvo neste navegador. {/* TODO: persistir em banco de dados real. */}
             </p>
           </div>

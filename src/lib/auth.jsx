@@ -50,7 +50,7 @@ export function AuthProvider({ children }) {
       email,
       password, // TODO: nunca armazenar senha em texto puro em produção — usar backend com hashing
       employees: employees || '',
-      plan: 'Mensal · IncluiPro Avalia + IncluiPro Lidera',
+      plan: 'Acesso para testes · IncluiPro Avalia + IncluiPro Lidera',
       createdAt: new Date().toISOString(),
     }
     writeAccounts([...accounts, account])
