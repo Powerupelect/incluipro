@@ -72,7 +72,12 @@ export function Cadastro() {
           Criar conta e assinar
         </Button>
         <p className="text-center text-xs text-graphite-300">
-          Autenticação simulada nesta versão — nenhum dado é enviado a servidores externos.
+          Cadastro simulado nesta versão. Seu acesso à plataforma depende de um pagamento
+          confirmado para este e-mail — veja os planos em{' '}
+          <Link to="/assinatura" className="font-semibold text-graphite-500 hover:text-signal-700">
+            Assinatura
+          </Link>
+          .
         </p>
       </form>
 

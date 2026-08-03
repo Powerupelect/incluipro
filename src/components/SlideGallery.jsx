@@ -99,20 +99,20 @@ export function SlideGallery() {
               alt={`Slide ampliado — ${SLIDES[ativo].categoria}: ${SLIDES[ativo].titulo}`}
               className="w-full"
             />
-            <div className="flex items-center justify-between gap-3 border-t border-mist-300 bg-white px-5 py-3">
+            <button
+              onClick={() => setAtivo(null)}
+              aria-label="Fechar"
+              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-graphite-700 shadow-card hover:bg-white hover:text-signal-600"
+            >
+              ✕
+            </button>
+            <div className="flex items-center gap-3 border-t border-mist-300 bg-white px-5 py-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-signal-600">
                   {SLIDES[ativo].categoria} · {SLIDES[ativo].kit}
                 </p>
                 <p className="text-sm font-medium text-graphite-900">{SLIDES[ativo].titulo}</p>
               </div>
-              <button
-                onClick={() => setAtivo(null)}
-                aria-label="Fechar"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-mist-400 text-graphite-500 hover:border-signal-400 hover:text-signal-600"
-              >
-                ✕
-              </button>
             </div>
             <button
               onClick={(e) => {

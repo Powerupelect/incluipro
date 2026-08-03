@@ -111,6 +111,7 @@ export function Avalia() {
   const [recursosSugeridos, setRecursosSugeridos] = useState([])
   const [categoriaAtiva, setCategoriaAtiva] = useState(null)
   const [painelAberto, setPainelAberto] = useState(false)
+  const [sucesso, setSucesso] = useState(false)
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -149,6 +150,21 @@ export function Avalia() {
     })
     setCurrentReportId(saved.id)
     setHistorico((h) => [saved, ...h])
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setSucesso(true)
+    setTimeout(() => setSucesso(false), 4000)
+  }
+
+  function handleNovoRelatorio() {
+    setForm(initialForm)
+    setRelatorio('')
+    setCurrentReportId(null)
+    setEditMode(false)
+    setEditDraft('')
+    setRecursosSugeridos([])
+    setCategoriaAtiva(null)
+    setError('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function handleCopiar() {
@@ -244,6 +260,11 @@ export function Avalia() {
 
   return (
     <div>
+      {sucesso && (
+        <div className="mb-6 flex items-center gap-3 rounded-2xl border border-signal-200 bg-signal-50 px-5 py-4 text-sm font-semibold text-signal-800">
+          ✅ Relatório gerado com sucesso! Veja o resultado ao lado, edite se precisar e baixe o PDF.
+        </div>
+      )}
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
@@ -343,6 +364,12 @@ export function Avalia() {
                     className="rounded-full bg-signal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-signal-700"
                   >
                     📄 Baixar Relatório em PDF
+                  </button>
+                  <button
+                    onClick={handleNovoRelatorio}
+                    className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-signal-400"
+                  >
+                    🆕 Gerar Novo Relatório
                   </button>
                 </div>
               )}

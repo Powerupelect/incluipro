@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button.jsx'
 
 const produtos = [
@@ -99,42 +100,53 @@ export function Produtos() {
         <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-signal-300">Acesso</p>
           <h2 className="mt-2 font-display text-3xl font-semibold text-white">
-            Ambiente de testes aberto — sem cobrança
+            Escolha seu plano e comece agora
           </h2>
           <p className="mt-3 text-indigo-200">
-            Esta versão da plataforma está em fase de testes. Crie sua conta e explore o
-            IncluiPro Avalia e o IncluiPro Lidera por completo, sem informar dados de pagamento.
+            Pagamento processado com segurança pela Hotmart. O acesso é liberado automaticamente
+            assim que o pagamento for confirmado.
           </p>
+        </div>
 
-          <div className="mx-auto mt-10 max-w-md rounded-3xl border border-white/10 bg-white/[0.06] p-9 text-left backdrop-blur">
-            <p className="font-display text-lg font-semibold text-white">Acesso para testes</p>
+        <div className="mx-auto mt-10 grid max-w-3xl gap-6 px-5 sm:px-8 md:grid-cols-2">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-8 text-left backdrop-blur">
+            <p className="font-display text-lg font-semibold text-white">Assinatura Mensal</p>
             <p className="mt-2 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-semibold text-white">Gratuito</span>
+              <span className="font-display text-4xl font-semibold text-white">R$ 69,90</span>
+              <span className="text-sm text-indigo-300">/mês</span>
             </p>
-            <p className="mt-1 text-sm text-indigo-300">durante o período de testes</p>
+            <p className="mt-1 text-sm text-indigo-300">cancele quando quiser</p>
+            <Button href="https://pay.hotmart.com/W106997348I" className="mt-6 w-full justify-center" size="lg">
+              Assinar agora
+            </Button>
+          </div>
 
-            <ul className="mt-6 space-y-3 border-t border-white/10 pt-6">
-              {[
-                'Acesso completo ao IncluiPro Avalia',
-                'Acesso completo à biblioteca do IncluiPro Lidera',
-                'Relatórios estruturados ilimitados',
-                'Histórico de relatórios com busca e edição',
-                'Nenhum dado de pagamento é coletado',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-indigo-100">
-                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-300" fill="currentColor">
-                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
-                  </svg>
-                  {item}
-                </li>
-              ))}
-            </ul>
-
-            <Button to="/cadastro" className="mt-8 w-full justify-center" size="lg">
-              Criar conta para testar
+          <div className="rounded-3xl border border-volt-300/40 bg-white/[0.08] p-8 text-left ring-2 ring-volt-300/30 backdrop-blur">
+            <span className="inline-block rounded-full bg-volt-500/20 px-3 py-1 text-xs font-semibold text-volt-200">
+              Melhor custo-benefício
+            </span>
+            <p className="mt-3 font-display text-lg font-semibold text-white">Acesso Vitalício</p>
+            <p className="mt-2 flex items-baseline gap-1">
+              <span className="font-display text-4xl font-semibold text-white">R$ 247</span>
+            </p>
+            <p className="mt-1 text-sm text-indigo-300">pagamento único</p>
+            <Button
+              href="https://pay.hotmart.com/B106997595Q?bid=1785730636924"
+              className="mt-6 w-full justify-center"
+              size="lg"
+            >
+              Assinar agora
             </Button>
           </div>
         </div>
+
+        <p className="mt-8 text-center text-sm text-indigo-300">
+          Já pagou?{' '}
+          <Link to="/assinatura" className="font-semibold text-white hover:text-signal-300">
+            Verifique seu acesso aqui
+          </Link>
+          .
+        </p>
       </section>
     </div>
   )

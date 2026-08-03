@@ -80,7 +80,7 @@ const passos = [
   {
     numero: '02',
     titulo: 'Assinatura',
-    texto: 'Um único plano mensal libera os dois produtos: IncluiPro Avalia e IncluiPro Lidera.',
+    texto: 'Mensal ou vitalício — qualquer um dos dois planos libera IncluiPro Avalia e IncluiPro Lidera.',
   },
   {
     numero: '03',
@@ -116,7 +116,7 @@ export function Home() {
               profissional de pessoas com deficiência.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button to="/cadastro" size="lg">Criar conta e assinar</Button>
+              <Button to="/assinatura" size="lg">Ver planos e assinar</Button>
               <Button to="/diagnostico" variant="outlineLight" size="lg">
                 Fazer diagnóstico gratuito
               </Button>
@@ -376,7 +376,7 @@ export function Home() {
             plataforma completa.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button to="/cadastro" size="lg">Criar conta e assinar</Button>
+            <Button to="/assinatura" size="lg">Ver planos e assinar</Button>
             <Button to="/diagnostico" variant="outlineLight" size="lg">
               Fazer diagnóstico gratuito
             </Button>
