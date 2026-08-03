@@ -85,69 +85,6 @@ const passos = [
   },
 ]
 
-function ReportMockup() {
-  const bars = ['bg-indigo-700', 'bg-volt-500', 'bg-signal-600', 'bg-indigo-700']
-  return (
-    <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
-      <div className="flex items-center gap-1.5">
-        <span className="h-2.5 w-2.5 rounded-sm bg-indigo-700" />
-        <span className="h-2.5 w-2.5 rounded-sm bg-signal-500" />
-        <span className="h-2.5 w-2.5 rounded-sm bg-volt-500" />
-        <span className="ml-1.5 font-display text-[10px] font-bold tracking-wide text-indigo-700">
-          INCLUIPRO
-        </span>
-      </div>
-      <div className="mt-3 h-3 w-3/5 rounded bg-graphite-700/80" />
-      <div className="mt-1.5 h-2 w-2/5 rounded bg-volt-400/60" />
-      <div className="mt-4 space-y-3">
-        {bars.map((bar, i) => (
-          <div key={i}>
-            <div className={`h-4 w-full rounded ${bar}`} />
-            <div className="mt-1.5 space-y-1">
-              <div className="h-1.5 w-full rounded bg-mist-300" />
-              <div className="h-1.5 w-5/6 rounded bg-mist-300" />
-              {i === bars.length - 1 && <div className="h-1.5 w-2/3 rounded bg-mist-300" />}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function SlidesMockup() {
-  const kits = [
-    { t: 'Fundamentos', c: 'bg-signal-500' },
-    { t: 'Comunicação', c: 'bg-volt-500' },
-    { t: 'Dia a Dia', c: 'bg-amber-400' },
-    { t: 'Casos Práticos', c: 'bg-signal-500' },
-  ]
-  return (
-    <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
-      <div className="flex items-center justify-between">
-        <span className="font-display text-xs font-semibold text-indigo-700">
-          IncluiPro Lidera
-        </span>
-        <span className="text-[10px] font-semibold text-graphite-300">4 kits</span>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-2.5">
-        {kits.map((kit) => (
-          <div key={kit.t} className="rounded-lg border border-mist-300 p-2.5">
-            <div className={`h-1.5 w-8 rounded-full ${kit.c}`} />
-            <p className="mt-2 text-[10px] font-semibold leading-tight text-graphite-900">
-              {kit.t}
-            </p>
-            <div className="mt-2 space-y-1">
-              <div className="h-1 w-full rounded bg-mist-300" />
-              <div className="h-1 w-2/3 rounded bg-mist-300" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export function Home() {
   return (
     <div>
@@ -320,7 +257,13 @@ export function Home() {
 
         <div className="mt-12 grid gap-8 md:grid-cols-2">
           <div>
-            <ReportMockup />
+            <div className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card">
+              <img
+                src="/previews/avalia-relatorio.png"
+                alt="Exemplo real de relatório gerado pelo IncluiPro Avalia, com dados da avaliação, deficiência, rotina e autonomia, e parecer final"
+                className="h-80 w-full object-cover object-top"
+              />
+            </div>
             <p className="mt-4 text-sm text-graphite-500">
               <strong className="text-graphite-900">Relatório do IncluiPro Avalia</strong> —
               estrutura fixa com identificação, seções coloridas por tema e parecer final, pronto
@@ -328,7 +271,13 @@ export function Home() {
             </p>
           </div>
           <div>
-            <SlidesMockup />
+            <div className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card">
+              <img
+                src="/previews/lidera-slide.png"
+                alt="Exemplo real de slide do kit Casos Práticos do IncluiPro Lidera, com situação e orientação de como agir"
+                className="h-80 w-full object-cover object-top"
+              />
+            </div>
             <p className="mt-4 text-sm text-graphite-500">
               <strong className="text-graphite-900">Kits do IncluiPro Lidera</strong> — slides
               prontos, organizados por tema, para usar direto em reuniões e treinamentos.

@@ -1,22 +1,29 @@
 import { useState } from 'react'
 import { Button } from '../components/ui/Button.jsx'
-import { calcularMaturidade, NIVEIS } from '../lib/diagnostico.js'
+import { calcularMaturidade, NIVEIS, CRITERIOS } from '../lib/diagnostico.js'
 import { saveLead } from '../lib/leads.js'
 
 const nivelStyle = {
-  [NIVEIS.INICIAL.id]: { bar: 'w-1/3', color: 'bg-amber-400', text: 'text-amber-600' },
-  [NIVEIS.EM_DESENVOLVIMENTO.id]: { bar: 'w-2/3', color: 'bg-volt-400', text: 'text-volt-600' },
-  [NIVEIS.AVANCADO.id]: { bar: 'w-full', color: 'bg-signal-500', text: 'text-signal-700' },
+  [NIVEIS.INICIAL.id]: { color: 'bg-amber-400', text: 'text-amber-600' },
+  [NIVEIS.EM_DESENVOLVIMENTO.id]: { color: 'bg-volt-400', text: 'text-volt-600' },
+  [NIVEIS.AVANCADO.id]: { color: 'bg-signal-500', text: 'text-signal-700' },
+}
+
+const initialForm = {
+  companyName: '',
+  employees: '',
+  pcdCount: '',
+  hasAssessmentProcess: false,
+  trainsLeaders: false,
+  hasAccessiblePhysicalSpace: false,
+  hasInclusionGoals: false,
+  tracksRetention: false,
+  hasAccessibleCommunication: false,
+  hasInclusionContact: false,
 }
 
 export function Diagnostico() {
-  const [form, setForm] = useState({
-    companyName: '',
-    employees: '',
-    pcdCount: '',
-    hasAssessmentProcess: false,
-    trainsLeaders: false,
-  })
+  const [form, setForm] = useState(initialForm)
   const [step, setStep] = useState('form') // form | email | result
   const [email, setEmail] = useState('')
   const [consentimento, setConsentimento] = useState(false)
@@ -42,6 +49,7 @@ export function Diagnostico() {
 
   const nivel = resultado?.nivel
   const style = nivel ? nivelStyle[nivel.id] : null
+  const percentual = resultado ? Math.round((resultado.score / resultado.max) * 100) : 0
 
   return (
     <section className="mx-auto max-w-2xl px-5 py-16 sm:px-8">
@@ -52,7 +60,8 @@ export function Diagnostico() {
         Qual o nível de maturidade em inclusão da sua empresa?
       </h1>
       <p className="mt-3 text-graphite-500">
-        Responda 4 perguntas rápidas e receba um panorama inicial gratuito.
+        Responda algumas perguntas rápidas sobre processos, ambiente e cultura, e receba um
+        panorama detalhado gratuito, com recomendações práticas.
       </p>
 
       {step === 'form' && (
@@ -103,28 +112,23 @@ export function Diagnostico() {
           </div>
 
           <fieldset className="space-y-3 border-t border-mist-300 pt-6">
-            <label className="flex items-start gap-3 rounded-xl border border-mist-300 p-4 hover:border-signal-300">
-              <input
-                type="checkbox"
-                checked={form.hasAssessmentProcess}
-                onChange={(e) => update('hasAssessmentProcess', e.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-signal-600"
-              />
-              <span className="text-sm text-graphite-700">
-                Já temos um processo estruturado de avaliação social para candidatos PCD.
-              </span>
-            </label>
-            <label className="flex items-start gap-3 rounded-xl border border-mist-300 p-4 hover:border-signal-300">
-              <input
-                type="checkbox"
-                checked={form.trainsLeaders}
-                onChange={(e) => update('trainsLeaders', e.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-signal-600"
-              />
-              <span className="text-sm text-graphite-700">
-                Já treinamos líderes sobre gestão de equipes inclusivas.
-              </span>
-            </label>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wide text-graphite-300">
+              Processos, ambiente e cultura
+            </legend>
+            {CRITERIOS.map((criterio) => (
+              <label
+                key={criterio.key}
+                className="flex items-start gap-3 rounded-xl border border-mist-300 p-4 hover:border-signal-300"
+              >
+                <input
+                  type="checkbox"
+                  checked={form[criterio.key]}
+                  onChange={(e) => update(criterio.key, e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-signal-600"
+                />
+                <span className="text-sm text-graphite-700">{criterio.label}</span>
+              </label>
+            ))}
           </fieldset>
 
           <Button as="button" type="submit" className="w-full justify-center">
@@ -185,15 +189,60 @@ export function Diagnostico() {
           </div>
 
           <div className="h-3 w-full overflow-hidden rounded-full bg-mist-300">
-            <div className={`h-full rounded-full ${style.color} ${style.bar} transition-all`} />
+            <div
+              className={`h-full rounded-full ${style.color} transition-all`}
+              style={{ width: `${percentual}%` }}
+            />
           </div>
 
           <p className="leading-relaxed text-graphite-700">{nivel.descricao}</p>
 
           <div className="rounded-xl bg-mist-200 p-5 text-sm text-graphite-700">
-            Pontuação: <strong>{resultado.score}</strong> de {resultado.max} pontos possíveis,
-            calculada a partir da proporção de PCD no quadro de funcionários e da existência de
-            processos estruturados de avaliação e treinamento de líderes.
+            Pontuação: <strong>{resultado.score}</strong> de {resultado.max} pontos possíveis
+            ({percentual}%), calculada a partir da proporção de PCD no quadro de funcionários e
+            de {CRITERIOS.length} dimensões de processo, ambiente, governança e cultura.
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-graphite-900">
+              Detalhamento por dimensão
+            </p>
+            <ul className="mt-3 space-y-2">
+              {resultado.atendidos.map((c) => (
+                <li key={c.key} className="flex items-start gap-2.5 text-sm text-graphite-700">
+                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                  </svg>
+                  <span>
+                    {c.label}
+                    <span className="ml-1.5 text-xs text-graphite-300">· {c.categoria}</span>
+                  </span>
+                </li>
+              ))}
+              {resultado.naoAtendidos.map((c) => (
+                <li key={c.key} className="flex items-start gap-2.5 text-sm text-graphite-400">
+                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-graphite-300" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.7 7.3a1 1 0 00-1.4 1.4L8.6 10l-1.3 1.3a1 1 0 101.4 1.4L10 11.4l1.3 1.3a1 1 0 001.4-1.4L11.4 10l1.3-1.3a1 1 0 00-1.4-1.4L10 8.6 8.7 7.3z" clipRule="evenodd" />
+                  </svg>
+                  <span>
+                    {c.label}
+                    <span className="ml-1.5 text-xs text-graphite-300">· {c.categoria}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-xl border border-signal-200 bg-signal-50 p-5">
+            <p className="text-sm font-semibold text-signal-800">Próximos passos recomendados</p>
+            <ul className="mt-3 space-y-2">
+              {nivel.recomendacoes.map((r) => (
+                <li key={r} className="flex items-start gap-2.5 text-sm text-signal-900">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-signal-600" />
+                  {r}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
