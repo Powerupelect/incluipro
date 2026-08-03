@@ -10,8 +10,14 @@ export function PublicFooter() {
             <Logo dark className="[&_span]:text-white [&_span_span]:text-signal-300" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-indigo-200">
               Consultoria especializada em inclusão de pessoas com deficiência no mercado de
-              trabalho, com metodologia própria apoiada por IA.
+              trabalho, com metodologia própria.
             </p>
+            <a
+              href="mailto:contato@incluipro.com.br"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-signal-300 hover:text-signal-200"
+            >
+              contato@incluipro.com.br
+            </a>
           </div>
           <div>
             <p className="font-display text-sm font-semibold text-white">Produto</p>

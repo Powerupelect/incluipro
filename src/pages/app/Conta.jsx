@@ -1,19 +1,7 @@
-import { useState } from 'react'
 import { useAuth } from '../../lib/auth.jsx'
-import { getApiKey, setApiKey } from '../../lib/apiKey.js'
-import { Button } from '../../components/ui/Button.jsx'
 
 export function Conta() {
   const { user } = useAuth()
-  const [apiKey, setApiKeyState] = useState(() => getApiKey())
-  const [saved, setSaved] = useState(false)
-
-  function handleSaveKey(e) {
-    e.preventDefault()
-    setApiKey(apiKey.trim())
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
 
   return (
     <div className="space-y-8">
@@ -66,28 +54,13 @@ export function Conta() {
       </div>
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
-        <h2 className="font-display text-lg font-semibold text-indigo-800">
-          Chave de API da Anthropic
-        </h2>
+        <h2 className="font-display text-lg font-semibold text-indigo-800">Suporte</h2>
         <p className="mt-1 text-sm text-graphite-500">
-          Usada pelo IncluiPro Avalia para gerar relatórios. Armazenada apenas no seu navegador
-          (localStorage) — nunca é enviada a servidores da IncluiPro.
-        </p>
-        <form onSubmit={handleSaveKey} className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <input
-            type="password"
-            value={apiKey}
-            onChange={(e) => setApiKeyState(e.target.value)}
-            placeholder="sk-ant-..."
-            className="flex-1 rounded-xl border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-          />
-          <Button as="button" type="submit">
-            {saved ? 'Salvo!' : 'Salvar chave'}
-          </Button>
-        </form>
-        <p className="mt-3 text-xs text-amber-700">
-          Atenção: esta chamada é feita diretamente do navegador para fins de prototipagem. Em
-          produção, mova a chamada à API para um backend/proxy seguro.
+          Dúvidas sobre sua conta, relatórios ou kits de treinamento? Fale com a gente em{' '}
+          <a href="mailto:contato@incluipro.com.br" className="font-semibold text-signal-700 hover:text-signal-800">
+            contato@incluipro.com.br
+          </a>
+          .
         </p>
       </div>
     </div>

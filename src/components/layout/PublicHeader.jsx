@@ -14,6 +14,16 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-mist-300 bg-white/90 backdrop-blur">
+      <div className="hidden border-b border-mist-200 bg-indigo-900 md:block">
+        <div className="mx-auto flex max-w-6xl items-center justify-end px-5 py-1.5 sm:px-8">
+          <a
+            href="mailto:contato@incluipro.com.br"
+            className="text-xs font-medium text-indigo-200 hover:text-white"
+          >
+            contato@incluipro.com.br
+          </a>
+        </div>
+      </div>
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
         <NavLink to="/" className="shrink-0">
           <Logo />

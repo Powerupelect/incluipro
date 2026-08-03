@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Button } from '../../components/ui/Button.jsx'
-import { gerarRelatorio } from '../../lib/anthropic.js'
-import { getApiKey } from '../../lib/apiKey.js'
+import { montarRelatorio } from '../../lib/montarRelatorio.js'
+import { identificarCategoria } from '../../lib/accessibilityResources.js'
+import { ConsultaRapida } from '../../components/ConsultaRapida.jsx'
 import { getReports, saveReport, deleteReport, updateReport } from '../../lib/reports.js'
 import { baixarRelatorioPDF } from '../../lib/pdf.js'
 
@@ -97,7 +98,6 @@ function reportToPdfPayload(fields) {
 
 export function Avalia() {
   const [form, setForm] = useState(initialForm)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [relatorio, setRelatorio] = useState('')
   const [currentReportId, setCurrentReportId] = useState(null)
@@ -108,33 +108,47 @@ export function Avalia() {
   const [historico, setHistorico] = useState(() => getReports())
   const [busca, setBusca] = useState('')
 
+  const [recursosSugeridos, setRecursosSugeridos] = useState([])
+  const [categoriaAtiva, setCategoriaAtiva] = useState(null)
+  const [painelAberto, setPainelAberto] = useState(false)
+
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
+    if (key === 'tipoDeficiencia') {
+      const categoria = identificarCategoria(value)
+      if (categoria && categoria !== categoriaAtiva) {
+        setCategoriaAtiva(categoria)
+        setPainelAberto(true)
+      }
+    }
   }
 
-  async function handleGerar() {
-    setError('')
-    setLoading(true)
-    try {
-      const apiKey = getApiKey()
-      const texto = await gerarRelatorio(form, apiKey)
-      setRelatorio(texto)
-      setEditMode(false)
-      const saved = saveReport({
-        candidato: form.nome || 'Candidato sem nome',
-        cargo: form.cargo,
-        empresa: form.empresa,
-        tipoDeficiencia: form.tipoDeficiencia,
-        observacoesCondicao: form.observacoesCondicao,
-        conteudo: texto,
-      })
-      setCurrentReportId(saved.id)
-      setHistorico((h) => [saved, ...h])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
+  function handleToggleRecurso(recurso) {
+    setRecursosSugeridos((atual) =>
+      atual.includes(recurso) ? atual.filter((r) => r !== recurso) : [...atual, recurso],
+    )
+  }
+
+  function handleGerar() {
+    if (!form.nome.trim()) {
+      setError('Informe ao menos o nome do candidato para gerar o relatório.')
+      return
     }
+    setError('')
+    const texto = montarRelatorio({ ...form, recursosSugeridos })
+    setRelatorio(texto)
+    setEditMode(false)
+    const saved = saveReport({
+      candidato: form.nome || 'Candidato sem nome',
+      cargo: form.cargo,
+      empresa: form.empresa,
+      tipoDeficiencia: form.tipoDeficiencia,
+      observacoesCondicao: form.observacoesCondicao,
+      recursosSugeridos,
+      conteudo: texto,
+    })
+    setCurrentReportId(saved.id)
+    setHistorico((h) => [saved, ...h])
   }
 
   function handleCopiar() {
@@ -159,6 +173,7 @@ export function Avalia() {
         empresa: form.empresa,
         tipoDeficiencia: form.tipoDeficiencia,
         observacoesCondicao: form.observacoesCondicao,
+        recursosSugeridos,
       })
       if (updated) {
         setHistorico((h) => h.map((r) => (r.id === updated.id ? updated : r)))
@@ -190,6 +205,8 @@ export function Avalia() {
       tipoDeficiencia: item.tipoDeficiencia || '',
       observacoesCondicao: item.observacoesCondicao || '',
     }))
+    setRecursosSugeridos(item.recursosSugeridos || [])
+    setCategoriaAtiva(identificarCategoria(item.tipoDeficiencia || ''))
     setRelatorio(item.conteudo)
     setCurrentReportId(item.id)
     if (entrarEmEdicao) {
@@ -227,17 +244,26 @@ export function Avalia() {
 
   return (
     <div>
-      <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-          IncluiPro Avalia
-        </p>
-        <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
-          Nova avaliação social
-        </h1>
-        <p className="mt-2 max-w-2xl text-graphite-500">
-          Preencha as anotações da entrevista por blocos. Ao final, gere o relatório estruturado
-          com IA — você pode editar o texto livremente antes de baixar o PDF.
-        </p>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+            IncluiPro Avalia
+          </p>
+          <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
+            Nova avaliação social
+          </h1>
+          <p className="mt-2 max-w-2xl text-graphite-500">
+            Preencha as anotações da entrevista por blocos e monte o relatório estruturado com a
+            metodologia IncluiPro — consulte recursos e ajustes sugeridos por tipo de deficiência e
+            edite o texto livremente antes de baixar o PDF.
+          </p>
+        </div>
+        <button
+          onClick={() => setPainelAberto(true)}
+          className="shrink-0 rounded-full border border-volt-400 bg-volt-50 px-4 py-2.5 text-sm font-semibold text-volt-700 hover:border-volt-500 hover:bg-volt-100"
+        >
+          🔎 Consulta Rápida de Recursos
+        </button>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
@@ -268,6 +294,18 @@ export function Avalia() {
                   </div>
                 ))}
               </div>
+              {bloco.titulo === 'Deficiência' && recursosSugeridos.length > 0 && (
+                <div className="mt-4 rounded-xl border border-signal-200 bg-signal-50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-signal-700">
+                    Recursos selecionados na Consulta Rápida
+                  </p>
+                  <ul className="mt-2 space-y-1 text-sm text-graphite-700">
+                    {recursosSugeridos.map((r) => (
+                      <li key={r}>• {r}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           ))}
 
@@ -275,8 +313,8 @@ export function Avalia() {
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
 
-          <Button as="button" onClick={handleGerar} disabled={loading} className="w-full justify-center" size="lg">
-            {loading ? 'Gerando relatório…' : 'Gerar relatório com IA'}
+          <Button as="button" onClick={handleGerar} className="w-full justify-center" size="lg">
+            Gerar Relatório
           </Button>
         </div>
 
@@ -327,15 +365,9 @@ export function Avalia() {
             </div>
 
             <div className="mt-4">
-              {!relatorio && !loading && (
+              {!relatorio && (
                 <p className="rounded-xl bg-mist-200 p-5 text-sm text-graphite-500">
-                  Preencha o formulário e clique em "Gerar relatório com IA" para ver o resultado
-                  aqui.
-                </p>
-              )}
-              {loading && (
-                <p className="rounded-xl bg-mist-200 p-5 text-sm text-graphite-500">
-                  Analisando as anotações e estruturando o relatório…
+                  Preencha o formulário e clique em "Gerar Relatório" para ver o resultado aqui.
                 </p>
               )}
               {relatorio && !editMode && (
@@ -416,6 +448,15 @@ export function Avalia() {
           </div>
         </div>
       </div>
+
+      <ConsultaRapida
+        open={painelAberto}
+        onClose={() => setPainelAberto(false)}
+        categoriaAtiva={categoriaAtiva}
+        onSelectCategoria={setCategoriaAtiva}
+        recursosSelecionados={recursosSugeridos}
+        onToggleRecurso={handleToggleRecurso}
+      />
     </div>
   )
 }

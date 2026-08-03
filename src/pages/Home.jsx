@@ -1,17 +1,21 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button.jsx'
 import { Mark } from '../components/ui/Logo.jsx'
+import { Reveal } from '../components/Reveal.jsx'
+import { SlideGallery } from '../components/SlideGallery.jsx'
+import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
 
 const produtos = [
   {
     nome: 'IncluiPro Avalia',
-    tag: 'Avaliação social com IA',
+    tag: 'Avaliação social estruturada',
     descricao:
       'Transforma anotações de entrevista de avaliação social em um relatório final estruturado e profissional — em minutos, não em horas.',
     itens: [
       'Formulário estruturado por blocos',
-      'Relatório gerado por IA em Markdown, editável antes de exportar',
-      'Histórico de relatórios por candidato, com busca',
+      'Consulta Rápida com recursos sugeridos por tipo de deficiência',
+      'Relatório editável, com exportação em PDF e histórico com busca',
     ],
     accent: 'signal',
     preco: null,
@@ -86,6 +90,8 @@ const passos = [
 ]
 
 export function Home() {
+  const [amostraAberta, setAmostraAberta] = useState(false)
+
   return (
     <div>
       {/* Hero */}
@@ -95,7 +101,7 @@ export function Home() {
         <div className="relative mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-2 md:items-center md:py-28">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-signal-300">
-              Inclusão estruturada, apoiada por IA
+              Inclusão estruturada, com metodologia validada
             </span>
             <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] text-white sm:text-5xl">
               Inclusão de PCD, transformada em processo — não em boa vontade.
@@ -103,13 +109,25 @@ export function Home() {
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-indigo-200">
               A IncluiPro Soluções é uma consultoria especializada em inclusão de pessoas com
               deficiência no mercado de trabalho, com metodologia própria: avaliações sociais
-              consistentes, lideranças preparadas e tecnologia que sustenta os dois.
+              consistentes, lideranças preparadas e uma plataforma que sustenta os dois.
+            </p>
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-indigo-300">
+              Desenvolvido com base em anos de experiência em avaliação social e inclusão
+              profissional de pessoas com deficiência.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Button to="/cadastro" size="lg">Criar conta e assinar</Button>
               <Button to="/diagnostico" variant="outlineLight" size="lg">
                 Fazer diagnóstico gratuito
               </Button>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-indigo-200">
+              <span className="inline-flex items-center gap-1.5">
+                ✅ Alinhado à LBI e à Lei de Cotas
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                ✅ Usado por empresas de todo o Brasil
+              </span>
             </div>
           </div>
 
@@ -146,6 +164,23 @@ export function Home() {
         </div>
       </section>
 
+      {/* Prova social */}
+      <section className="border-b border-mist-300 bg-white py-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 text-center sm:px-8 md:flex-row md:justify-between md:text-left">
+          <p className="max-w-md text-sm leading-relaxed text-graphite-500">
+            Desenvolvido com base em anos de experiência em avaliação social e inclusão
+            profissional — a mesma metodologia usada por empresas de todo o Brasil para
+            estruturar processos de inclusão de PCD.
+          </p>
+          <div className="flex items-center gap-4 rounded-2xl border border-signal-200 bg-signal-50 px-6 py-4">
+            <span className="font-display text-3xl font-semibold text-signal-700">80%</span>
+            <span className="max-w-[10rem] text-left text-xs font-semibold uppercase leading-snug tracking-wide text-signal-800">
+              de economia no tempo com processos estruturados
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* Diagnóstico de Maturidade */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
         <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:items-center">
@@ -167,8 +202,12 @@ export function Home() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {diagnosticoItens.map((item) => (
-              <div key={item.titulo} className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+            {diagnosticoItens.map((item, i) => (
+              <Reveal
+                key={item.titulo}
+                delay={i * 80}
+                className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-signal-300 hover:shadow-pop"
+              >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-50 text-signal-700">
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
                     {item.icon}
@@ -178,7 +217,7 @@ export function Home() {
                   {item.titulo}
                 </p>
                 <p className="mt-1 text-sm leading-relaxed text-graphite-500">{item.texto}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -197,10 +236,11 @@ export function Home() {
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {produtos.map((p) => (
-              <div
+            {produtos.map((p, i) => (
+              <Reveal
                 key={p.nome}
-                className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card"
+                delay={i * 100}
+                className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-signal-300 hover:shadow-pop"
               >
                 <span
                   className={`inline-block w-fit rounded-full px-3 py-1 text-xs font-semibold ${
@@ -232,7 +272,7 @@ export function Home() {
                     {p.preco}
                   </p>
                 )}
-              </div>
+              </Reveal>
             ))}
           </div>
 
@@ -244,47 +284,55 @@ export function Home() {
         </div>
       </section>
 
-      {/* Prévias visuais */}
+      {/* Galeria de slides */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-wide text-volt-600">
             Antes de criar sua conta
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
             Veja como fica o resultado na prática
           </h2>
-        </div>
+          <p className="mt-3 leading-relaxed text-graphite-500">
+            Slides reais dos kits do IncluiPro Lidera — clique em qualquer miniatura para ampliar.
+          </p>
+        </Reveal>
 
-        <div className="mt-12 grid gap-8 md:grid-cols-2">
+        <Reveal delay={100} className="mt-10">
+          <SlideGallery />
+        </Reveal>
+
+        <Reveal delay={150} className="mt-14 grid gap-8 md:grid-cols-2 md:items-center">
           <div>
-            <div className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card">
-              <img
-                src="/previews/avalia-relatorio.png"
-                alt="Exemplo real de relatório gerado pelo IncluiPro Avalia, com dados da avaliação, deficiência, rotina e autonomia, e parecer final"
-                className="h-80 w-full object-cover object-top"
-              />
-            </div>
-            <p className="mt-4 text-sm text-graphite-500">
-              <strong className="text-graphite-900">Relatório do IncluiPro Avalia</strong> —
-              estrutura fixa com identificação, seções coloridas por tema e parecer final, pronto
-              para exportar em PDF.
+            <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+              Relatório do IncluiPro Avalia
             </p>
-          </div>
-          <div>
-            <div className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card">
-              <img
-                src="/previews/lidera-slide.png"
-                alt="Exemplo real de slide do kit Casos Práticos do IncluiPro Lidera, com situação e orientação de como agir"
-                className="h-80 w-full object-cover object-top"
-              />
-            </div>
-            <p className="mt-4 text-sm text-graphite-500">
-              <strong className="text-graphite-900">Kits do IncluiPro Lidera</strong> — slides
-              prontos, organizados por tema, para usar direto em reuniões e treinamentos.
+            <h3 className="mt-2 font-display text-2xl font-semibold text-indigo-800">
+              Um relatório completo, com estrutura fixa e recursos sugeridos por deficiência
+            </h3>
+            <p className="mt-3 leading-relaxed text-graphite-500">
+              Veja uma amostra completa e ilustrativa, com dados fictícios, sem precisar criar
+              conta: cabeçalho, identificação, seções coloridas por tema, recursos sugeridos,
+              plano de ação e o aviso legal fixo — exatamente como no PDF exportado.
             </p>
+            <button
+              onClick={() => setAmostraAberta(true)}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-indigo-700 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-800 hover:shadow-pop"
+            >
+              📄 Ver amostra completa do relatório
+            </button>
           </div>
-        </div>
+          <div className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-transform duration-300 hover:-translate-y-1 hover:shadow-pop">
+            <img
+              src="/previews/avalia-relatorio.png"
+              alt="Exemplo real de relatório gerado pelo IncluiPro Avalia, com dados da avaliação, deficiência, rotina e autonomia, e parecer final"
+              className="h-72 w-full object-cover object-top"
+            />
+          </div>
+        </Reveal>
       </section>
+
+      <ReportSampleModal open={amostraAberta} onClose={() => setAmostraAberta(false)} />
 
       {/* Como funciona */}
       <section className="bg-mist-200 py-20">
@@ -300,7 +348,7 @@ export function Home() {
 
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {passos.map((p, i) => (
-              <div key={p.numero} className="relative">
+              <Reveal key={p.numero} delay={i * 100} direction="left" className="relative">
                 <span className="font-display text-5xl font-semibold text-mist-400">
                   {p.numero}
                 </span>
@@ -311,7 +359,7 @@ export function Home() {
                 {i < passos.length - 1 && (
                   <div className="absolute right-[-1.5rem] top-6 hidden h-px w-8 bg-mist-400 md:block" />
                 )}
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -319,7 +367,7 @@ export function Home() {
 
       {/* CTA final */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
-        <div className="step-pattern relative overflow-hidden rounded-3xl bg-indigo-800 px-8 py-14 text-center sm:px-16">
+        <Reveal className="step-pattern relative overflow-hidden rounded-3xl bg-indigo-800 px-8 py-14 text-center sm:px-16">
           <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">
             Pronto para estruturar a inclusão na sua empresa?
           </h2>
@@ -333,7 +381,7 @@ export function Home() {
               Fazer diagnóstico gratuito
             </Button>
           </div>
-        </div>
+        </Reveal>
       </section>
     </div>
   )

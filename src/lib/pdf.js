@@ -30,7 +30,7 @@ const AVISO_1 =
   '• ESTE RELATÓRIO TEM CARÁTER TÉCNICO E SOCIAL, ELABORADO COM BASE NAS INFORMAÇÕES OBTIDAS DURANTE A ENTREVISTA DE AVALIAÇÃO E NAS NECESSIDADES APRESENTADAS PELA PESSOA AVALIADA.'
 const AVISO_2 =
   '• NÃO SUBSTITUI LAUDOS MÉDICOS, PSICOLÓGICOS OU DEMAIS DOCUMENTOS LEGAIS RELACIONADOS AO ENQUADRAMENTO DA DEFICIÊNCIA, SERVINDO EXCLUSIVAMENTE COMO INSTRUMENTO DE APOIO À PROMOÇÃO DA ACESSIBILIDADE E INCLUSÃO NO AMBIENTE DE TRABALHO.'
-const ASSINATURA = 'IncluiPro Soluções · Inclusão estruturada, apoiada por IA'
+const ASSINATURA = 'IncluiPro Soluções · Inclusão estruturada, com metodologia validada'
 
 function drawFooter(doc) {
   doc.setFont('helvetica', 'normal')
@@ -221,7 +221,7 @@ export function baixarRelatorioPDF({
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(9.5)
   doc.setTextColor(...COLORS.violet)
-  doc.text('Inclusão estruturada, apoiada por IA', MARGIN, y)
+  doc.text('Inclusão estruturada, com metodologia validada', MARGIN, y)
   y += 18
 
   // Parágrafo fixo de abertura
@@ -253,7 +253,7 @@ export function baixarRelatorioPDF({
   }
   y = drawInfoTable(doc, y, infoRows)
 
-  // Seções geradas pela IA (a partir do markdown do relatório)
+  // Seções do relatório (a partir do markdown montado)
   const sections = parseSections(relatorioMarkdown)
   for (const section of sections) {
     if (section.title) {

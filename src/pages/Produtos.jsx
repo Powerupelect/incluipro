@@ -3,14 +3,15 @@ import { Button } from '../components/ui/Button.jsx'
 const produtos = [
   {
     nome: 'IncluiPro Avalia',
-    tag: 'Avaliação social com IA',
+    tag: 'Avaliação social estruturada',
     accent: 'signal',
     descricao:
-      'Ferramenta com IA que transforma as anotações de uma entrevista de avaliação social em um relatório final estruturado e profissional, pronto para compor o processo de contratação.',
+      'Metodologia estruturada que transforma as anotações de uma entrevista de avaliação social em um relatório final profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
     recursos: [
       'Formulário guiado por blocos: identificação, deficiência, rotina e autonomia, histórico profissional, necessidades específicas, expectativas e observações ergonômicas.',
-      'Geração do relatório final em segundos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
-      'Edição livre do texto gerado antes de finalizar — nada fica travado depois que a IA gera o relatório.',
+      'Montagem do relatório final em segundos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
+      'Consulta Rápida com recursos e ajustes sugeridos por tipo de deficiência (visual, física, auditiva, intelectual, cognitiva/neurodivergente, múltipla).',
+      'Edição livre do texto antes de finalizar — nada fica travado depois que o relatório é montado.',
       'Histórico de relatórios com busca por candidato ou empresa, e exportação em PDF pronto para uso.',
     ],
   },
@@ -116,7 +117,7 @@ export function Produtos() {
               {[
                 'Acesso completo ao IncluiPro Avalia',
                 'Acesso completo à biblioteca do IncluiPro Lidera',
-                'Relatórios ilimitados gerados por IA',
+                'Relatórios estruturados ilimitados',
                 'Histórico de relatórios com busca e edição',
                 'Nenhum dado de pagamento é coletado',
               ].map((item) => (

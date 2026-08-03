@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './lib/auth.jsx'
 import { ProtectedRoute } from './components/ProtectedRoute.jsx'
+import { ScrollToTop } from './components/ScrollToTop.jsx'
 import { PublicLayout } from './components/layout/PublicLayout.jsx'
 import { AppLayout } from './components/layout/AppLayout.jsx'
 
@@ -17,6 +18,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />

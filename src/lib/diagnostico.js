@@ -31,9 +31,9 @@ export const NIVEIS = {
     id: 'avancado',
     label: 'Avançado',
     descricao:
-      'Sua empresa já trata inclusão como processo estruturado e monitorado, com times capacitados e acompanhamento de indicadores. O próximo passo deixa de ser "criar processo" e passa a ser ganhar eficiência, profundidade e consistência — é exatamente aí que tecnologia e IA aplicadas à avaliação e ao treinamento fazem diferença mensurável.',
+      'Sua empresa já trata inclusão como processo estruturado e monitorado, com times capacitados e acompanhamento de indicadores. O próximo passo deixa de ser "criar processo" e passa a ser ganhar eficiência, profundidade e consistência — é exatamente aí que uma metodologia estruturada, com recursos padronizados de avaliação e treinamento, faz diferença mensurável.',
     recomendacoes: [
-      'Use IA para padronizar e agilizar a produção de relatórios de avaliação social, mantendo qualidade em escala.',
+      'Padronize e agilize a produção de relatórios de avaliação social com um processo estruturado, mantendo qualidade em escala.',
       'Revise periodicamente os kits de treinamento de líderes para refletir casos reais vividos pela empresa.',
       'Formalize metas e indicadores de inclusão em relatórios de gestão, não apenas em iniciativas de RH.',
       'Avalie a criação de um Kit Personalizado para temas específicos do seu setor ou da sua cultura interna.',
