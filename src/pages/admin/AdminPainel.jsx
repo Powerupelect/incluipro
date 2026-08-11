@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { adminList, adminUpsert, adminRemove } from '../../lib/api.js'
 import { getAdminToken, setAdminToken } from '../../lib/adminAuth.js'
-
-const PLANO_LABEL = { mensal: 'Mensal', vitalicio: 'Vitalício' }
+import { PLANO_LABEL } from '../../lib/plano.js'
 
 export function AdminPainel() {
   const navigate = useNavigate()
@@ -11,7 +10,7 @@ export function AdminPainel() {
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const [busca, setBusca] = useState('')
-  const [form, setForm] = useState({ email: '', nome: '', plano: 'mensal' })
+  const [form, setForm] = useState({ email: '', nome: '', plano: 'vitalicio' })
   const [salvando, setSalvando] = useState(false)
 
   function handleUnauthorized() {
@@ -44,7 +43,7 @@ export function AdminPainel() {
     setErro('')
     try {
       await adminUpsert(getAdminToken(), { ...form, status: 'ativo' })
-      setForm({ email: '', nome: '', plano: 'mensal' })
+      setForm({ email: '', nome: '', plano: 'vitalicio' })
       await carregar()
     } catch (err) {
       setErro(err.message)
@@ -137,8 +136,8 @@ export function AdminPainel() {
             onChange={(e) => setForm((f) => ({ ...f, plano: e.target.value }))}
             className="mt-1 rounded-xl border border-mist-400 px-3 py-2.5 text-sm outline-none focus:border-signal-500"
           >
-            <option value="mensal">Mensal</option>
-            <option value="vitalicio">Vitalício</option>
+            <option value="vitalicio">Empresarial</option>
+            <option value="mensal">Mensal (legado)</option>
           </select>
         </div>
         <button

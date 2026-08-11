@@ -2,35 +2,18 @@ import { useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button.jsx'
 import { checkAccess } from '../lib/api.js'
+import { PLANO_LABEL } from '../lib/plano.js'
 
-const PLANOS = [
-  {
-    id: 'mensal',
-    nome: 'Assinatura Mensal',
-    preco: 'R$ 69,90',
-    periodo: '/mês',
-    link: 'https://pay.hotmart.com/W106997348I',
-    itens: [
-      'Acesso completo ao IncluiPro Avalia',
-      'Acesso completo à biblioteca do IncluiPro Lidera',
-      'Cancele quando quiser',
-    ],
-    accent: 'signal',
-  },
-  {
-    id: 'vitalicio',
-    nome: 'Acesso Vitalício',
-    preco: 'R$ 247',
-    periodo: 'pagamento único',
-    link: 'https://pay.hotmart.com/B106997595Q?bid=1785730636924',
-    itens: [
-      'Acesso completo ao IncluiPro Avalia',
-      'Acesso completo à biblioteca do IncluiPro Lidera',
-      'Pague uma vez, use para sempre',
-    ],
-    accent: 'volt',
-    destaque: true,
-  },
+const LINK_PLANO_EMPRESARIAL = 'https://pay.hotmart.com/B106997595Q?bid=1785730636924'
+
+const ITENS_INCLUSOS = [
+  'IncluiPro Avalia — avaliações sociais estruturadas, ilimitadas',
+  'IncluiPro Lidera — biblioteca completa de treinamentos',
+  'Atualizações constantes da plataforma',
+  'Novos treinamentos adicionados continuamente',
+  'Atualizações legais, sempre que a legislação mudar',
+  'Melhorias e novas funcionalidades sem custo adicional',
+  'Suporte dedicado para sua equipe de RH',
 ]
 
 export function Assinatura() {
@@ -61,7 +44,7 @@ export function Assinatura() {
       <section className="mx-auto max-w-4xl px-5 py-16 text-center sm:px-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">Assinatura</p>
         <h1 className="mt-2 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-          Escolha seu plano e comece agora
+          Um plano único, com tudo incluso
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-graphite-500">
           Pagamento processado com segurança pela Hotmart. O acesso é liberado automaticamente
@@ -69,47 +52,45 @@ export function Assinatura() {
         </p>
         {semAcesso && (
           <p className="mx-auto mt-6 max-w-xl rounded-xl bg-amber-50 px-5 py-3 text-sm font-medium text-amber-700">
-            Não encontramos um pagamento confirmado para o e-mail da sua conta. Assine um plano
-            abaixo ou verifique se já pagou com outro e-mail.
+            Não encontramos um pagamento confirmado para o e-mail da sua conta. Assine abaixo ou
+            verifique se já pagou com outro e-mail.
           </p>
         )}
       </section>
 
-      <section className="mx-auto grid max-w-4xl gap-6 px-5 pb-16 sm:px-8 md:grid-cols-2">
-        {PLANOS.map((plano) => (
-          <div
-            key={plano.id}
-            className={`flex flex-col rounded-2xl border bg-white p-8 shadow-card ${
-              plano.destaque ? 'border-volt-300 ring-2 ring-volt-100' : 'border-mist-300'
-            }`}
-          >
-            {plano.destaque && (
-              <span className="mb-3 inline-block w-fit rounded-full bg-volt-50 px-3 py-1 text-xs font-semibold text-volt-700">
-                Melhor custo-benefício
-              </span>
-            )}
-            <h2 className="font-display text-xl font-semibold text-indigo-800">{plano.nome}</h2>
-            <p className="mt-3 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-semibold text-indigo-900">
-                {plano.preco}
-              </span>
-              <span className="text-sm text-graphite-500">{plano.periodo}</span>
-            </p>
-            <ul className="mt-6 flex-1 space-y-2.5">
-              {plano.itens.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
-                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
-                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
-                  </svg>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Button href={plano.link} className="mt-8 w-full justify-center" size="lg">
-              Assinar agora
-            </Button>
-          </div>
-        ))}
+      <section className="mx-auto max-w-xl px-5 pb-16 sm:px-8">
+        <div className="relative flex flex-col overflow-hidden rounded-3xl border border-volt-300 bg-white p-8 shadow-pop ring-2 ring-volt-100 sm:p-10">
+          <div className="step-pattern absolute inset-x-0 top-0 h-24 opacity-[0.06]" />
+          <span className="relative mb-4 inline-block w-fit rounded-full bg-volt-50 px-3 py-1 text-xs font-semibold text-volt-700">
+            Plano Principal
+          </span>
+          <h2 className="relative font-display text-2xl font-semibold text-indigo-800">
+            Plano Empresarial
+          </h2>
+          <p className="relative mt-3 flex items-baseline gap-1">
+            <span className="font-display text-5xl font-semibold text-indigo-900">R$ 497</span>
+            <span className="text-sm text-graphite-500">/mês</span>
+          </p>
+          <p className="relative mt-1 text-sm text-graphite-500">tudo incluso, sem taxas extras</p>
+
+          <ul className="relative mt-7 space-y-3 border-t border-mist-300 pt-7">
+            {ITENS_INCLUSOS.map((item) => (
+              <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
+                <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+                  <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <Button href={LINK_PLANO_EMPRESARIAL} className="relative mt-8 w-full justify-center" size="lg">
+            Assinar Plano Empresarial
+          </Button>
+          <p className="relative mt-3 text-center text-xs text-graphite-300">
+            Cancele quando quiser. Pagamento processado pela Hotmart.
+          </p>
+        </div>
       </section>
 
       <section className="border-t border-mist-300 bg-mist-100 py-16">
@@ -137,7 +118,7 @@ export function Assinatura() {
           {resultado && resultado.liberado && (
             <div className="mt-5 rounded-xl border border-signal-200 bg-signal-50 p-5">
               <p className="text-sm font-semibold text-signal-800">
-                ✅ Acesso liberado{resultado.plano ? ` — plano ${resultado.plano === 'vitalicio' ? 'Vitalício' : 'Mensal'}` : ''}!
+                ✅ Acesso liberado{resultado.plano ? ` — ${PLANO_LABEL[resultado.plano] || resultado.plano}` : ''}!
               </p>
               <p className="mt-2 text-sm text-graphite-700">
                 Entre com este e-mail para acessar a plataforma.

@@ -1,39 +1,4 @@
-const kits = [
-  {
-    tema: 'Fundamentos de Inclusão',
-    descricao: 'O básico que toda liderança precisa saber sobre inclusão de PCD no trabalho.',
-    slides: 19,
-    accent: 'signal',
-    arquivo: '/kits/fundamentos-de-inclusao.pdf',
-  },
-  {
-    tema: 'Comunicação e Postura',
-    descricao: 'Como se comunicar de forma respeitosa e eficaz com colaboradores PCD.',
-    slides: 14,
-    accent: 'volt',
-    arquivo: '/kits/comunicacao-e-postura.pdf',
-  },
-  {
-    tema: 'Gestão do Dia a Dia',
-    descricao: 'Rotinas, adaptações e acompanhamento de desempenho de equipes inclusivas.',
-    slides: 22,
-    accent: 'amber',
-    arquivo: '/kits/gestao-do-dia-a-dia.pdf',
-  },
-  {
-    tema: 'Casos Práticos',
-    descricao: 'Situações reais e como líderes devem agir diante de cada uma delas.',
-    slides: 16,
-    accent: 'signal',
-    arquivo: '/kits/casos-praticos.pdf',
-  },
-]
-
-const accentStyles = {
-  signal: 'bg-signal-50 text-signal-700',
-  volt: 'bg-volt-50 text-volt-700',
-  amber: 'bg-amber-50 text-amber-700',
-}
+import { kits, accentStyles } from '../../lib/kits.js'
 
 export function Lidera() {
   return (
@@ -53,7 +18,12 @@ export function Lidera() {
 
       <div className="grid gap-6 sm:grid-cols-2">
         {kits.map((kit) => (
-          <div key={kit.tema} className="flex flex-col rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+          <div key={kit.tema} className="relative flex flex-col rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+            {kit.novo && (
+              <span className="absolute right-4 top-4 rounded-full bg-signal-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                Novo
+              </span>
+            )}
             <span className={`inline-block w-fit rounded-full px-3 py-1 text-xs font-semibold ${accentStyles[kit.accent]}`}>
               {kit.slides} slides
             </span>

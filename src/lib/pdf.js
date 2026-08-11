@@ -1,7 +1,8 @@
-// Geração do PDF do relatório do IncluiPro Avalia, seguindo o modelo visual validado:
-// cabeçalho com logo (3 barras + "INCLUIPRO"), título e frase de abertura fixos, barras de
-// seção coloridas alternando entre as cores da marca, tabelas de identificação/deficiência
-// com largura fixa, e rodapé fixo com os dois avisos legais + assinatura da marca.
+// Geração do PDF do Relatório Técnico de Inclusão do IncluiPro Avalia, seguindo o modelo
+// visual validado: cabeçalho com logo (3 barras + "INCLUIPRO"), título e frase de abertura
+// fixos, barras de seção coloridas alternando entre as cores da marca, tabelas de
+// identificação/deficiência com largura fixa, e rodapé fixo com os dois avisos legais +
+// assinatura da marca.
 
 import { jsPDF } from 'jspdf'
 
@@ -30,7 +31,7 @@ const AVISO_1 =
   '• ESTE RELATÓRIO TEM CARÁTER TÉCNICO E SOCIAL, ELABORADO COM BASE NAS INFORMAÇÕES OBTIDAS DURANTE A ENTREVISTA DE AVALIAÇÃO E NAS NECESSIDADES APRESENTADAS PELA PESSOA AVALIADA.'
 const AVISO_2 =
   '• NÃO SUBSTITUI LAUDOS MÉDICOS, PSICOLÓGICOS OU DEMAIS DOCUMENTOS LEGAIS RELACIONADOS AO ENQUADRAMENTO DA DEFICIÊNCIA, SERVINDO EXCLUSIVAMENTE COMO INSTRUMENTO DE APOIO À PROMOÇÃO DA ACESSIBILIDADE E INCLUSÃO NO AMBIENTE DE TRABALHO.'
-const ASSINATURA = 'IncluiPro Soluções · Inclusão estruturada, com metodologia validada'
+const ASSINATURA = 'IncluiPro Soluções · Inclusão estruturada.'
 
 function drawFooter(doc) {
   doc.setFont('helvetica', 'normal')
@@ -174,7 +175,7 @@ function parseSections(markdown) {
 }
 
 /**
- * Gera e baixa o PDF do relatório de avaliação social.
+ * Gera e baixa o PDF do Relatório Técnico de Inclusão.
  * @param {object} params
  * @param {string} params.nome
  * @param {string} params.cargo
@@ -214,14 +215,14 @@ export function baixarRelatorioPDF({
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(17)
   doc.setTextColor(...COLORS.darkGreen)
-  doc.text('Relatório de Avaliação Social', MARGIN, y)
+  doc.text('Relatório Técnico de Inclusão', MARGIN, y)
   y += 22
 
   // Subtítulo
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(9.5)
   doc.setTextColor(...COLORS.violet)
-  doc.text('Inclusão estruturada, com metodologia validada', MARGIN, y)
+  doc.text('Inclusão estruturada.', MARGIN, y)
   y += 18
 
   // Parágrafo fixo de abertura
@@ -229,7 +230,7 @@ export function baixarRelatorioPDF({
   doc.setFontSize(9.5)
   doc.setTextColor(...COLORS.bodyText)
   const intro = doc.splitTextToSize(
-    'O ambiente de trabalho, os processos de integração, treinamentos e atividades devem considerar as recomendações descritas neste relatório, buscando garantir acessibilidade, autonomia e participação plena da pessoa colaboradora.',
+    'Este relatório apresenta recomendações técnicas destinadas a apoiar a inclusão, a acessibilidade e o desenvolvimento profissional da pessoa colaboradora. As orientações aqui descritas devem subsidiar a adaptação do ambiente de trabalho, dos processos de integração, das atividades e das ações de desenvolvimento, promovendo condições que favoreçam autonomia, participação e desempenho em igualdade de oportunidades.',
     CONTENT_W,
   )
   doc.text(intro, MARGIN, y)
@@ -262,6 +263,6 @@ export function baixarRelatorioPDF({
     y = drawProseBody(doc, y, section.body)
   }
 
-  const nomeArquivo = `relatorio-${(nome || 'candidato').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
+  const nomeArquivo = `relatorio-tecnico-inclusao-${(nome || 'candidato').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
   doc.save(nomeArquivo)
 }

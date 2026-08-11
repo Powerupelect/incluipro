@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../../lib/auth.jsx'
 import { checkAccess } from '../../lib/api.js'
 import { Button } from '../../components/ui/Button.jsx'
-
-const PLANO_LABEL = { mensal: 'Assinatura Mensal', vitalicio: 'Acesso Vitalício' }
+import { PLANO_LABEL } from '../../lib/plano.js'
 
 export function Conta() {
   const { user } = useAuth()
@@ -73,7 +72,7 @@ export function Conta() {
           Pagamento processado com segurança pela Hotmart. Precisa trocar de plano ou renovar?
         </p>
         <Button to="/assinatura" variant="ghost" size="sm" className="mt-3">
-          Ver planos
+          Ver plano
         </Button>
       </div>
 

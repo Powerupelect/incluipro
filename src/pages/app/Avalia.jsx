@@ -10,6 +10,13 @@ import { baixarRelatorioPDF } from '../../lib/pdf.js'
 const blocos = [
   {
     titulo: 'Identificação',
+    icone: (
+      <>
+        <path d="M4 5h16v14H4z" />
+        <circle cx="9" cy="10" r="2" />
+        <path d="M6 16.5c.6-1.6 1.8-2.5 3-2.5s2.4.9 3 2.5M14 9h4M14 13h4" />
+      </>
+    ),
     campos: [
       { key: 'nome', label: 'Nome do candidato', type: 'text' },
       { key: 'cargo', label: 'Cargo pretendido', type: 'text' },
@@ -18,6 +25,9 @@ const blocos = [
   },
   {
     titulo: 'Deficiência',
+    icone: (
+      <path d="M12 21s-7-4.5-9.5-9C1 8.5 2.5 5 6 5c2 0 3.5 1.3 4 2 .5-.7 2-2 4-2 3.5 0 5 3.5 3.5 7-2.5 4.5-9.5 9-9.5 9z" />
+    ),
     campos: [
       { key: 'tipoDeficiencia', label: 'Tipo de deficiência', type: 'text' },
       { key: 'observacoesCondicao', label: 'Observações sobre a condição', type: 'textarea' },
@@ -25,6 +35,12 @@ const blocos = [
   },
   {
     titulo: 'Rotina e autonomia',
+    icone: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 3" />
+      </>
+    ),
     campos: [
       {
         key: 'rotina',
@@ -35,12 +51,26 @@ const blocos = [
   },
   {
     titulo: 'Histórico profissional',
+    icone: (
+      <>
+        <path d="M4 8h16v11H4z" />
+        <path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2" />
+      </>
+    ),
     campos: [
       { key: 'historico', label: 'Experiências anteriores relevantes', type: 'textarea' },
     ],
   },
   {
     titulo: 'Necessidades específicas no trabalho',
+    icone: (
+      <>
+        <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h14" strokeLinecap="round" />
+        <circle cx="16" cy="6" r="2" />
+        <circle cx="8" cy="12" r="2" />
+        <circle cx="18" cy="18" r="2" />
+      </>
+    ),
     campos: [
       {
         key: 'necessidades',
@@ -51,12 +81,25 @@ const blocos = [
   },
   {
     titulo: 'Expectativas do candidato',
+    icone: (
+      <>
+        <circle cx="12" cy="12" r="8" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="12" cy="12" r="0.6" fill="currentColor" />
+      </>
+    ),
     campos: [
       { key: 'expectativas', label: 'O que o candidato espera da vaga e da empresa', type: 'textarea' },
     ],
   },
   {
     titulo: 'Observações ergonômicas/ambientais',
+    icone: (
+      <>
+        <path d="M4 21V9l8-5 8 5v12" />
+        <path d="M9 21v-6h6v6" />
+      </>
+    ),
     campos: [
       {
         key: 'observacoesErgonomicas',
@@ -67,9 +110,17 @@ const blocos = [
   },
   {
     titulo: 'Notas livres',
+    icone: (
+      <>
+        <path d="M4 20h4l10-10-4-4L4 16v4z" />
+        <path d="M13.5 6.5l4 4" />
+      </>
+    ),
     campos: [{ key: 'notasLivres', label: 'Outras observações do avaliador', type: 'textarea' }],
   },
 ]
+
+const TOTAL_CAMPOS = blocos.reduce((soma, b) => soma + b.campos.length, 0)
 
 const initialForm = {
   nome: '',
@@ -248,6 +299,12 @@ export function Avalia() {
     }
   }
 
+  const camposPreenchidos = useMemo(
+    () => blocos.reduce((soma, b) => soma + b.campos.filter((c) => form[c.key]?.trim()).length, 0),
+    [form],
+  )
+  const progresso = Math.round((camposPreenchidos / TOTAL_CAMPOS) * 100)
+
   const historicoFiltrado = useMemo(() => {
     const q = busca.trim().toLowerCase()
     if (!q) return historico
@@ -271,7 +328,7 @@ export function Avalia() {
             IncluiPro Avalia
           </p>
           <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
-            Nova avaliação social
+            Novo Relatório Técnico de Inclusão
           </h1>
           <p className="mt-2 max-w-2xl text-graphite-500">
             Preencha as anotações da entrevista por blocos e monte o relatório estruturado com a
@@ -287,13 +344,48 @@ export function Avalia() {
         </button>
       </div>
 
+      <div className="mb-8 rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <p className="font-semibold text-graphite-900">Progresso do preenchimento</p>
+          <p className="text-graphite-500">
+            {camposPreenchidos} de {TOTAL_CAMPOS} campos · {progresso}%
+          </p>
+        </div>
+        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-mist-200">
+          <div
+            className="h-full rounded-full bg-signal-500 transition-all duration-500 ease-out"
+            style={{ width: `${progresso}%` }}
+          />
+        </div>
+      </div>
+
       <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
         <div className="space-y-6">
-          {blocos.map((bloco) => (
+          {blocos.map((bloco, i) => {
+            const completo = bloco.campos.every((c) => form[c.key]?.trim())
+            return (
             <div key={bloco.titulo} className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-              <h2 className="font-display text-lg font-semibold text-indigo-800">
-                {bloco.titulo}
-              </h2>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                    completo ? 'bg-signal-600 text-white' : 'bg-signal-50 text-signal-700'
+                  }`}
+                >
+                  {completo ? (
+                    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
+                      <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      {bloco.icone}
+                    </svg>
+                  )}
+                </span>
+                <h2 className="font-display text-lg font-semibold text-indigo-800">
+                  <span className="mr-1.5 text-graphite-300">{i + 1}.</span>
+                  {bloco.titulo}
+                </h2>
+              </div>
               <div className="mt-4 space-y-4">
                 {bloco.campos.map((campo) => (
                   <div key={campo.key}>
@@ -328,7 +420,8 @@ export function Avalia() {
                 </div>
               )}
             </div>
-          ))}
+            )
+          })}
 
           {error && (
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>

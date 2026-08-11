@@ -77,15 +77,18 @@ export function ReportSampleModal({ open, onClose }) {
               </span>
             </div>
             <h2 className="mt-6 font-display text-2xl font-semibold text-[#1F3B33]">
-              Relatório de Avaliação Social
+              Relatório Técnico de Inclusão
             </h2>
             <p className="mt-1 text-xs font-semibold text-[#7C5CFC]">
-              Inclusão estruturada, com metodologia validada
+              Inclusão estruturada.
             </p>
             <p className="mt-4 text-xs leading-relaxed text-graphite-700">
-              O ambiente de trabalho, os processos de integração, treinamentos e atividades devem
-              considerar as recomendações descritas neste relatório, buscando garantir
-              acessibilidade, autonomia e participação plena da pessoa colaboradora.
+              Este relatório apresenta recomendações técnicas destinadas a apoiar a inclusão, a
+              acessibilidade e o desenvolvimento profissional da pessoa colaboradora. As
+              orientações aqui descritas devem subsidiar a adaptação do ambiente de trabalho, dos
+              processos de integração, das atividades e das ações de desenvolvimento, promovendo
+              condições que favoreçam autonomia, participação e desempenho em igualdade de
+              oportunidades.
             </p>
 
             <div className="mt-6 overflow-hidden rounded-lg border border-mist-300">

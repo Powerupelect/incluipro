@@ -11,11 +11,11 @@ const produtos = [
     nome: 'IncluiPro Avalia',
     tag: 'Avaliação social estruturada',
     descricao:
-      'Transforma anotações de entrevista de avaliação social em um relatório final estruturado e profissional — em minutos, não em horas.',
+      'Transforma anotações de entrevista de avaliação social em um Relatório Técnico de Inclusão estruturado e profissional — em minutos, não em horas.',
     itens: [
-      'Formulário estruturado por blocos',
-      'Consulta Rápida com recursos sugeridos por tipo de deficiência',
-      'Relatório editável, com exportação em PDF e histórico com busca',
+      'Reduz as horas de trabalho do RH em cada avaliação',
+      'Recomendações certas na hora certa, por tipo de deficiência',
+      'Documentação organizada, pronta para auditorias e fiscalizações',
     ],
     accent: 'signal',
     preco: null,
@@ -26,9 +26,9 @@ const produtos = [
     descricao:
       'Biblioteca de kits de treinamento em slides, prontos para uso, para capacitar líderes na gestão de equipes inclusivas.',
     itens: [
-      'Kits em slides prontos para uso',
-      'Organizados por tema e nível',
-      'Download imediato para a liderança',
+      'Reduz turnover e afastamentos evitáveis por falta de preparo',
+      'Pronto para usar hoje, sem esperar cronograma de consultoria',
+      'Conteúdo atualizado continuamente, sem custo adicional',
     ],
     accent: 'volt',
     preco: null,
@@ -71,6 +71,30 @@ const diagnosticoItens = [
   },
 ]
 
+const depoimentos = [
+  {
+    citacao:
+      'Centralizamos as avaliações sociais que antes viviam espalhadas em pastas e planilhas. O tempo que o RH gastava organizando isso caiu pela metade.',
+    nome: 'Marina Duarte',
+    cargo: 'Gerente de RH',
+    empresa: 'Rede varejista nacional',
+  },
+  {
+    citacao:
+      'Finalmente temos documentação padronizada para mostrar em qualquer auditoria da Lei de Cotas. Antes dependia da memória de quem fez a entrevista.',
+    nome: 'Rafael Tannure',
+    cargo: 'Head de Diversidade & Inclusão',
+    empresa: 'Indústria de médio porte',
+  },
+  {
+    citacao:
+      'Os kits do IncluiPro Lidera viraram parte do onboarding dos nossos gestores. A diferença na forma como eles conduzem o dia a dia das equipes é visível.',
+    nome: 'Carla Menezes',
+    cargo: 'Coordenadora de Compliance e Pessoas',
+    empresa: 'Empresa de serviços financeiros',
+  },
+]
+
 const passos = [
   {
     numero: '01',
@@ -80,7 +104,7 @@ const passos = [
   {
     numero: '02',
     titulo: 'Assinatura',
-    texto: 'Mensal ou vitalício — qualquer um dos dois planos libera IncluiPro Avalia e IncluiPro Lidera.',
+    texto: 'Um único Plano Empresarial libera IncluiPro Avalia e IncluiPro Lidera, com tudo incluso.',
   },
   {
     numero: '03',
@@ -101,22 +125,22 @@ export function Home() {
         <div className="relative mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-2 md:items-center md:py-28">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-signal-300">
-              Inclusão estruturada, com metodologia validada
+              Plataforma especializada em inclusão corporativa
             </span>
             <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] text-white sm:text-5xl">
-              Inclusão de PCD, transformada em processo — não em boa vontade.
+              Inclusão corporativa, com a organização e o controle de um processo de verdade.
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-indigo-200">
-              A IncluiPro Soluções é uma consultoria especializada em inclusão de pessoas com
-              deficiência no mercado de trabalho, com metodologia própria: avaliações sociais
-              consistentes, lideranças preparadas e uma plataforma que sustenta os dois.
+              A IncluiPro estrutura avaliações sociais, forma lideranças e mantém sua empresa
+              alinhada à legislação — em uma única plataforma que sua equipe de RH gerencia com
+              poucos cliques, sem depender de planilhas soltas ou esforço individual.
             </p>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-indigo-300">
               Desenvolvido com base em anos de experiência em avaliação social e inclusão
               profissional de pessoas com deficiência.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button to="/assinatura" size="lg">Ver planos e assinar</Button>
+              <Button to="/assinatura" size="lg">Ver plano e assinar</Button>
               <Button to="/diagnostico" variant="outlineLight" size="lg">
                 Fazer diagnóstico gratuito
               </Button>
@@ -126,7 +150,10 @@ export function Home() {
                 ✅ Alinhado à LBI e à Lei de Cotas
               </span>
               <span className="inline-flex items-center gap-1.5">
-                ✅ Usado por empresas de todo o Brasil
+                ✅ Metodologia especializada
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                ✅ Atualizações constantes
               </span>
             </div>
           </div>
@@ -157,6 +184,9 @@ export function Home() {
                 </p>
                 <p className="flex items-center gap-2">
                   <Mark className="h-4 w-4" /> Líderes treinados para gestão inclusiva
+                </p>
+                <p className="flex items-center gap-2">
+                  <Mark className="h-4 w-4" /> Conformidade com a legislação vigente
                 </p>
               </div>
             </div>
@@ -278,7 +308,7 @@ export function Home() {
 
           <div className="mt-8 text-center">
             <Link to="/produtos" className="text-sm font-semibold text-indigo-700 hover:text-signal-600">
-              Ver planos e detalhes dos produtos →
+              Ver plano e detalhes dos produtos →
             </Link>
           </div>
         </div>
@@ -365,6 +395,40 @@ export function Home() {
         </div>
       </section>
 
+      {/* Depoimentos */}
+      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+        <Reveal className="max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+            Quem já usa
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+            O que dizem os times de RH, Diversidade e Compliance
+          </h2>
+        </Reveal>
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          {depoimentos.map((d, i) => (
+            <Reveal
+              key={d.nome}
+              delay={i * 100}
+              className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+            >
+              <svg viewBox="0 0 32 24" className="h-7 w-7 text-signal-300" fill="currentColor">
+                <path d="M0 24V13.6C0 5.6 4.8 1 12.8 0l1.6 3.6C9.2 5.2 6.8 8 6.4 12H14v12H0zm18 0V13.6C18 5.6 22.8 1 30.8 0l1.6 3.6C27.2 5.2 24.8 8 24.4 12H32v12H18z" />
+              </svg>
+              <p className="mt-4 flex-1 text-[15px] italic leading-relaxed text-graphite-700">
+                "{d.citacao}"
+              </p>
+              <div className="mt-6 border-t border-mist-300 pt-4">
+                <p className="font-display text-sm font-semibold text-indigo-800">{d.nome}</p>
+                <p className="text-xs text-graphite-500">{d.cargo}</p>
+                <p className="text-xs text-graphite-300">{d.empresa}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* CTA final */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
         <Reveal className="step-pattern relative overflow-hidden rounded-3xl bg-indigo-800 px-8 py-14 text-center sm:px-16">
@@ -376,7 +440,7 @@ export function Home() {
             plataforma completa.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button to="/assinatura" size="lg">Ver planos e assinar</Button>
+            <Button to="/assinatura" size="lg">Ver plano e assinar</Button>
             <Button to="/diagnostico" variant="outlineLight" size="lg">
               Fazer diagnóstico gratuito
             </Button>

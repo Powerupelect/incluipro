@@ -7,13 +7,13 @@ const produtos = [
     tag: 'Avaliação social estruturada',
     accent: 'signal',
     descricao:
-      'Metodologia estruturada que transforma as anotações de uma entrevista de avaliação social em um relatório final profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
+      'Metodologia estruturada que transforma as anotações de uma entrevista de avaliação social em um Relatório Técnico de Inclusão profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
     recursos: [
-      'Formulário guiado por blocos: identificação, deficiência, rotina e autonomia, histórico profissional, necessidades específicas, expectativas e observações ergonômicas.',
-      'Montagem do relatório final em segundos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
-      'Consulta Rápida com recursos e ajustes sugeridos por tipo de deficiência (visual, física, auditiva, intelectual, cognitiva/neurodivergente, múltipla).',
-      'Edição livre do texto antes de finalizar — nada fica travado depois que o relatório é montado.',
-      'Histórico de relatórios com busca por candidato ou empresa, e exportação em PDF pronto para uso.',
+      'Reduz o tempo do RH em cada avaliação — formulário guiado por blocos substitui anotações soltas e retrabalho.',
+      'Relatório técnico pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
+      'Recomendações certas na hora certa: Consulta Rápida sugere ajustes por tipo de deficiência (visual, física, auditiva, intelectual, cognitiva/neurodivergente, múltipla).',
+      'Edição livre do texto antes de finalizar — sua equipe mantém o controle editorial completo.',
+      'Histórico organizado e pronto para consulta — documentação rastreável para auditorias e fiscalizações da Lei de Cotas.',
     ],
   },
   {
@@ -23,10 +23,10 @@ const produtos = [
     descricao:
       'Biblioteca de kits de treinamento em slides, prontos para uso, para capacitar líderes na gestão de equipes inclusivas — sem depender de consultoria externa a cada novo tema.',
     recursos: [
-      'Kits organizados por tema: fundamentos, comunicação e postura, gestão do dia a dia e casos práticos.',
-      'Download imediato em PDF para uso em reuniões e treinamentos internos.',
-      'Conteúdo atualizado conforme a metodologia evolui.',
-      'Pensado para líderes de primeira e segunda linha, sem exigir conhecimento prévio.',
+      'Reduz turnover e afastamentos evitáveis — líderes preparados para gerir equipes inclusivas desde o primeiro dia.',
+      'Pronto para usar hoje: kits organizados por tema (fundamentos, comunicação e postura, gestão do dia a dia, casos práticos), sem esperar cronograma de consultoria.',
+      'Conteúdo atualizado continuamente, sem custo adicional — sua assinatura sempre acompanha a metodologia mais recente.',
+      'Funciona para qualquer nível de liderança, sem exigir conhecimento prévio em diversidade e inclusão.',
     ],
   },
   {
@@ -100,7 +100,7 @@ export function Produtos() {
         <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-signal-300">Acesso</p>
           <h2 className="mt-2 font-display text-3xl font-semibold text-white">
-            Escolha seu plano e comece agora
+            Um plano único, com tudo incluso
           </h2>
           <p className="mt-3 text-indigo-200">
             Pagamento processado com segurança pela Hotmart. O acesso é liberado automaticamente
@@ -108,34 +108,40 @@ export function Produtos() {
           </p>
         </div>
 
-        <div className="mx-auto mt-10 grid max-w-3xl gap-6 px-5 sm:px-8 md:grid-cols-2">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-8 text-left backdrop-blur">
-            <p className="font-display text-lg font-semibold text-white">Assinatura Mensal</p>
-            <p className="mt-2 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-semibold text-white">R$ 69,90</span>
-              <span className="text-sm text-indigo-300">/mês</span>
-            </p>
-            <p className="mt-1 text-sm text-indigo-300">cancele quando quiser</p>
-            <Button href="https://pay.hotmart.com/W106997348I" className="mt-6 w-full justify-center" size="lg">
-              Assinar agora
-            </Button>
-          </div>
-
+        <div className="mx-auto mt-10 max-w-md px-5 sm:px-8">
           <div className="rounded-3xl border border-volt-300/40 bg-white/[0.08] p-8 text-left ring-2 ring-volt-300/30 backdrop-blur">
             <span className="inline-block rounded-full bg-volt-500/20 px-3 py-1 text-xs font-semibold text-volt-200">
-              Melhor custo-benefício
+              Plano Principal
             </span>
-            <p className="mt-3 font-display text-lg font-semibold text-white">Acesso Vitalício</p>
+            <p className="mt-3 font-display text-lg font-semibold text-white">Plano Empresarial</p>
             <p className="mt-2 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-semibold text-white">R$ 247</span>
+              <span className="font-display text-4xl font-semibold text-white">R$ 497</span>
+              <span className="text-sm text-indigo-300">/mês</span>
             </p>
-            <p className="mt-1 text-sm text-indigo-300">pagamento único</p>
+            <p className="mt-1 text-sm text-indigo-300">tudo incluso, sem taxas extras</p>
+
+            <ul className="mt-6 space-y-2.5 border-t border-white/10 pt-6">
+              {[
+                'IncluiPro Avalia e IncluiPro Lidera completos',
+                'Atualizações constantes e novos treinamentos',
+                'Atualizações legais e melhorias contínuas',
+                'Suporte dedicado para sua equipe de RH',
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-indigo-100">
+                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-300" fill="currentColor">
+                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+
             <Button
               href="https://pay.hotmart.com/B106997595Q?bid=1785730636924"
               className="mt-6 w-full justify-center"
               size="lg"
             >
-              Assinar agora
+              Assinar Plano Empresarial
             </Button>
           </div>
         </div>

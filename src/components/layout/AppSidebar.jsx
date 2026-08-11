@@ -4,9 +4,16 @@ import { useAuth } from '../../lib/auth.jsx'
 
 const items = [
   {
+    to: '/app',
+    end: true,
+    label: 'Início',
+    hint: 'Painel geral',
+    icon: <path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h4v-6h2v6h4a1 1 0 001-1v-9" />,
+  },
+  {
     to: '/app/avalia',
     label: 'IncluiPro Avalia',
-    hint: 'Relatórios de avaliação social',
+    hint: 'Relatórios técnicos de inclusão',
     icon: (
       <path d="M6 4h9l3 3v13a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1zM8 12h8M8 16h5M8 8h4" />
     ),
@@ -45,6 +52,7 @@ export function AppSidebar({ onNavigate }) {
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.end}
             onClick={onNavigate}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${

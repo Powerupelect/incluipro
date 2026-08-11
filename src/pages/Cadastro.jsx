@@ -73,7 +73,7 @@ export function Cadastro() {
         </Button>
         <p className="text-center text-xs text-graphite-300">
           Cadastro simulado nesta versão. Seu acesso à plataforma depende de um pagamento
-          confirmado para este e-mail — veja os planos em{' '}
+          confirmado para este e-mail — veja o plano em{' '}
           <Link to="/assinatura" className="font-semibold text-graphite-500 hover:text-signal-700">
             Assinatura
           </Link>

@@ -12,6 +12,7 @@ import { Produtos } from './pages/Produtos.jsx'
 import { Assinatura } from './pages/Assinatura.jsx'
 import { Login } from './pages/Login.jsx'
 import { Cadastro } from './pages/Cadastro.jsx'
+import { Dashboard } from './pages/app/Dashboard.jsx'
 import { Avalia } from './pages/app/Avalia.jsx'
 import { Lidera } from './pages/app/Lidera.jsx'
 import { Conta } from './pages/app/Conta.jsx'
@@ -50,7 +51,7 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Avalia />} />
+            <Route index element={<Dashboard />} />
             <Route path="avalia" element={<Avalia />} />
             <Route path="lidera" element={<Lidera />} />
             <Route path="conta" element={<Conta />} />
