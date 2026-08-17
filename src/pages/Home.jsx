@@ -4,6 +4,7 @@ import { Reveal } from '../components/Reveal.jsx'
 import { SlideGallery } from '../components/SlideGallery.jsx'
 import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
 import { FaqAccordion } from '../components/FaqAccordion.jsx'
+import { AnimatedCounter } from '../components/AnimatedCounter.jsx'
 
 const LINK_PLANO_EMPRESARIAL = 'https://pay.hotmart.com/B106997595Q?bid=1785730636924'
 const LINK_KIT_PERSONALIZADO =
@@ -165,16 +166,18 @@ export function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-indigo-800">
+      <section className="grain relative overflow-hidden bg-indigo-800">
         <div className="step-pattern absolute inset-0 opacity-40" />
-        <div className="absolute -right-24 top-1/2 hidden h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-volt-500/20 blur-3xl md:block" />
+        <div className="glow-orb absolute -right-24 top-1/2 hidden h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-volt-500/20 blur-3xl md:block" />
+        <div className="glow-orb-alt absolute -left-16 bottom-0 hidden h-[320px] w-[320px] rounded-full bg-signal-500/15 blur-3xl md:block" />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-2 md:items-center md:py-28">
-          <div>
+          <Reveal>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-signal-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal-400" style={{ animation: 'pulseGlow 2.2s ease-in-out infinite' }} />
               Plataforma Especializada em Inclusão Corporativa
             </span>
             <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] text-white sm:text-5xl">
-              Estruture a inclusão de pessoas com deficiência em um só lugar.
+              Estruture a inclusão de pessoas com deficiência <span className="text-gradient">em um só lugar.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-indigo-200">
               Relatórios técnicos, treinamentos para lideranças e ferramentas para apoiar o RH na
@@ -197,10 +200,11 @@ export function Home() {
                 ✅ Atualizações constantes
               </span>
             </div>
-          </div>
+          </Reveal>
 
-          <Reveal direction="left" className="relative mx-auto w-full max-w-md">
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-pop">
+          <Reveal direction="left" delay={100} className="relative mx-auto w-full max-w-md">
+            <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-signal-500/25 via-transparent to-volt-500/25 blur-2xl" />
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-pop transition-transform duration-500 hover:-translate-y-1">
               <div className="flex items-center gap-1.5 border-b border-mist-300 bg-mist-100 px-4 py-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
                 <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
@@ -216,7 +220,9 @@ export function Home() {
               />
             </div>
             <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-mist-300 bg-white px-5 py-4 shadow-pop sm:block">
-              <p className="font-display text-2xl font-semibold text-signal-700">80%</p>
+              <p className="font-display text-2xl font-semibold text-signal-700">
+                <AnimatedCounter value={80} suffix="%" />
+              </p>
               <p className="max-w-[9rem] text-xs leading-snug text-graphite-500">
                 de economia no tempo com processos estruturados
               </p>
@@ -238,9 +244,10 @@ export function Home() {
             <Reveal
               key={p.titulo}
               delay={i * 100}
-              className="rounded-2xl border border-mist-300 bg-white p-6 text-center shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+              direction="scale"
+              className="group rounded-2xl border border-mist-300 bg-white p-6 text-center shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:ring-4 hover:ring-signal-100"
             >
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-signal-50 text-signal-700">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-signal-50 text-signal-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-signal-100">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   {p.icon}
                 </svg>
@@ -277,7 +284,8 @@ export function Home() {
               <Reveal
                 key={s.nome}
                 delay={i * 120}
-                className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-signal-300 hover:shadow-pop"
+                direction="scale"
+                className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-signal-300 hover:shadow-pop hover:ring-4 hover:ring-signal-100"
               >
                 <span
                   className={`inline-block w-fit rounded-full px-3 py-1 text-xs font-semibold ${
@@ -323,35 +331,41 @@ export function Home() {
         </Reveal>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <Reveal delay={0} className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop">
-            <img
-              src="/previews/diagnostico-resultado.png"
-              alt="Tela real do resultado do Diagnóstico de Maturidade em Inclusão"
-              className="h-40 w-full object-cover object-top"
-            />
+          <Reveal delay={0} className="group overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:ring-4 hover:ring-signal-100">
+            <div className="overflow-hidden">
+              <img
+                src="/previews/diagnostico-resultado.png"
+                alt="Tela real do resultado do Diagnóstico de Maturidade em Inclusão"
+                className="h-40 w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
             <p className="p-4 text-sm font-semibold text-indigo-800">Diagnóstico</p>
           </Reveal>
           <button
             onClick={() => setAmostraAberta(true)}
-            className="overflow-hidden rounded-2xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+            className="group overflow-hidden rounded-2xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:ring-4 hover:ring-signal-100"
           >
-            <img
-              src="/previews/avalia-relatorio.png"
-              alt="Relatório Técnico de Inclusão real gerado pelo IncluiPro Avalia"
-              className="h-40 w-full object-cover object-top"
-            />
+            <div className="overflow-hidden">
+              <img
+                src="/previews/avalia-relatorio.png"
+                alt="Relatório Técnico de Inclusão real gerado pelo IncluiPro Avalia"
+                className="h-40 w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
             <p className="p-4 text-sm font-semibold text-indigo-800">IncluiPro Avalia</p>
           </button>
-          <Reveal delay={100} className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop">
-            <img
-              src="/previews/gallery/checklist.png"
-              alt="Slide real de um kit do IncluiPro Lidera"
-              className="h-40 w-full object-cover object-top"
-            />
+          <Reveal delay={100} className="group overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:ring-4 hover:ring-signal-100">
+            <div className="overflow-hidden">
+              <img
+                src="/previews/gallery/checklist.png"
+                alt="Slide real de um kit do IncluiPro Lidera"
+                className="h-40 w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
             <p className="p-4 text-sm font-semibold text-indigo-800">IncluiPro Lidera</p>
           </Reveal>
-          <Reveal delay={150} className="flex flex-col items-start justify-center rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+          <Reveal delay={150} className="group flex flex-col items-start justify-center rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:ring-4 hover:ring-amber-100">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-amber-100">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" />
               </svg>
@@ -419,9 +433,9 @@ export function Home() {
                 <Reveal
                   key={item.titulo}
                   delay={i * 80}
-                  className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-signal-300 hover:shadow-pop"
+                  className="group rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-signal-300 hover:shadow-pop hover:ring-4 hover:ring-signal-100"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-50 text-signal-700">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-50 text-signal-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-signal-100">
                     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
                       {item.icon}
                     </svg>
@@ -449,10 +463,13 @@ export function Home() {
         </Reveal>
 
         <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="absolute left-0 right-0 top-6 hidden h-px bg-mist-300 lg:block" />
+          <Reveal
+            direction="scale"
+            className="absolute left-0 right-0 top-6 hidden h-px origin-left bg-gradient-to-r from-signal-400 via-volt-400 to-signal-400 lg:block"
+          />
           {comoFunciona.map((p, i) => (
             <Reveal key={p.numero} delay={i * 100} className="relative">
-              <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-700 font-display text-sm font-semibold text-white">
+              <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-700 font-display text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(30,42,74,0.5)] transition-transform duration-300 hover:scale-110">
                 {p.numero}
               </span>
               <h3 className="mt-4 font-display text-lg font-semibold text-indigo-800">
@@ -465,10 +482,16 @@ export function Home() {
       </section>
 
       {/* Kit Personalizado */}
-      <section id="kit-personalizado" className="bg-mist-200 py-20">
-        <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
-          <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-wide text-amber-700">
+      <section id="kit-personalizado" className="relative overflow-hidden bg-mist-200 py-20">
+        <div className="glow-orb absolute left-1/2 top-0 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-amber-300/25 blur-3xl md:block" />
+        <div className="relative mx-auto max-w-4xl px-5 text-center sm:px-8">
+          <Reveal direction="scale">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 shadow-card">
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" />
+              </svg>
+            </span>
+            <p className="mt-5 text-sm font-semibold uppercase tracking-wide text-amber-700">
               Kit Personalizado
             </p>
             <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
@@ -497,10 +520,14 @@ export function Home() {
               Uma plataforma que acompanha a evolução da inclusão.
             </h2>
           </Reveal>
-          <Reveal delay={100} className="rounded-2xl border border-mist-300 bg-white p-8 shadow-card">
+          <Reveal delay={100} direction="scale" className="rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:shadow-pop">
             <ul className="space-y-3.5">
-              {atualizacoes.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
+              {atualizacoes.map((item, i) => (
+                <li
+                  key={item}
+                  className="fade-item flex items-start gap-2.5 text-sm text-graphite-700"
+                  style={{ animationDelay: `${150 + i * 90}ms` }}
+                >
                   <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
                     <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                   </svg>
@@ -513,8 +540,9 @@ export function Home() {
       </section>
 
       {/* Planos e valores */}
-      <section id="planos" className="bg-indigo-800 py-20">
-        <div className="mx-auto max-w-5xl px-5 sm:px-8">
+      <section id="planos" className="grain relative overflow-hidden bg-indigo-800 py-20">
+        <div className="glow-orb absolute -right-32 top-0 hidden h-[420px] w-[420px] rounded-full bg-volt-500/15 blur-3xl md:block" />
+        <div className="relative mx-auto max-w-5xl px-5 sm:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-semibold uppercase tracking-wide text-signal-300">
               Planos e valores
@@ -569,8 +597,10 @@ export function Home() {
                   ))}
                 </ul>
                 <div className="mt-8 border-t border-white/15 pt-6">
-                  <p className="flex items-baseline gap-1.5">
-                    <span className="font-display text-4xl font-semibold text-signal-300">R$ 497,00</span>
+                  <p className="price-glow flex items-baseline gap-1.5">
+                    <span className="font-display text-4xl font-semibold text-signal-300">
+                      R$ <AnimatedCounter value={497} decimals={2} />
+                    </span>
                     <span className="text-sm text-indigo-200">/ mês</span>
                   </p>
                   <p className="mt-1 text-xs text-indigo-300">tudo incluso, sem taxas extras</p>
@@ -609,11 +639,15 @@ export function Home() {
             benefícios específicos de implantação e personalização.
           </p>
 
-          <div className="mx-auto mt-8 max-w-xl rounded-2xl border border-volt-200 bg-volt-50 p-6 text-left">
-            <p className="text-sm font-bold uppercase tracking-wide text-volt-700">
-              🎁 Benefício exclusivo
+          <div className="relative mx-auto mt-8 max-w-xl overflow-hidden rounded-2xl border border-volt-200 bg-volt-50 p-6 text-left shadow-[0_12px_36px_-16px_rgba(108,76,230,0.4)]">
+            <div className="glow-orb absolute -right-10 -top-10 h-32 w-32 rounded-full bg-volt-300/35 blur-2xl" />
+            <p className="relative text-sm font-bold uppercase tracking-wide text-volt-700">
+              <span className="inline-block" style={{ animation: 'pulseGlow 2.4s ease-in-out infinite' }}>
+                🎁
+              </span>{' '}
+              Benefício exclusivo
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-graphite-700">
+            <p className="relative mt-2 text-sm leading-relaxed text-graphite-700">
               Os primeiros clientes recebem Kit Personalizado e acréscimos sem custo adicional
               enquanto durar a fase inicial.
             </p>
@@ -648,7 +682,7 @@ export function Home() {
               'Recursos para RH e lideranças',
               'Evolução contínua',
             ].map((item) => (
-              <div key={item} className="flex items-start gap-2.5 rounded-xl border border-mist-300 bg-white p-4 text-sm text-graphite-700">
+              <div key={item} className="flex items-start gap-2.5 rounded-xl border border-mist-300 bg-white p-4 text-sm text-graphite-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card">
                 <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
                   <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                 </svg>
@@ -667,9 +701,10 @@ export function Home() {
               <Reveal
                 key={d.nome}
                 delay={i * 100}
-                className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+                direction="scale"
+                className="group flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:ring-4 hover:ring-signal-100"
               >
-                <svg viewBox="0 0 32 24" className="h-7 w-7 text-signal-300" fill="currentColor">
+                <svg viewBox="0 0 32 24" className="h-7 w-7 text-signal-200 transition-colors duration-300 group-hover:text-signal-400" fill="currentColor">
                   <path d="M0 24V13.6C0 5.6 4.8 1 12.8 0l1.6 3.6C9.2 5.2 6.8 8 6.4 12H14v12H0zm18 0V13.6C18 5.6 22.8 1 30.8 0l1.6 3.6C27.2 5.2 24.8 8 24.4 12H32v12H18z" />
                 </svg>
                 <p className="mt-4 flex-1 text-[15px] italic leading-relaxed text-graphite-700">
@@ -704,7 +739,9 @@ export function Home() {
 
       {/* CTA final */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
-        <Reveal className="step-pattern relative overflow-hidden rounded-3xl bg-indigo-800 px-8 py-14 text-center sm:px-16">
+        <Reveal direction="scale" className="grain step-pattern relative overflow-hidden rounded-3xl bg-indigo-800 px-8 py-14 text-center sm:px-16">
+          <div className="glow-orb absolute -right-20 -top-20 hidden h-72 w-72 rounded-full bg-volt-500/20 blur-3xl md:block" />
+          <div className="glow-orb-alt absolute -left-20 -bottom-20 hidden h-72 w-72 rounded-full bg-signal-500/20 blur-3xl md:block" />
           <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">
             Pronto para estruturar a inclusão de forma mais organizada?
           </h2>

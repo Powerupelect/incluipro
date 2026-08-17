@@ -82,6 +82,13 @@
     font-family: var(--font-body);
     color: var(--color-graphite-900);
     background-color: var(--color-mist-100);
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
@@ -107,6 +114,85 @@
     );
   }
 
+  /* Orbs desfocados com flutuação lenta — profundidade sutil em seções escuras */
+  .glow-orb {
+    animation: floatOrb 11s ease-in-out infinite;
+    will-change: transform;
+  }
+  .glow-orb-alt {
+    animation: floatOrb 14s ease-in-out infinite;
+    animation-delay: -6s;
+    will-change: transform;
+  }
+
+  /* Texto com gradiente de marca — usar em uma palavra/frase de destaque por vez */
+  .text-gradient {
+    background: linear-gradient(90deg, var(--color-signal-300), var(--color-volt-300));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Textura de grão finíssima para dar profundidade a superfícies escuras */
+  .grain {
+    position: relative;
+    isolation: isolate;
+  }
+  .grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .grain > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Sweep de brilho diagonal — usado nos botões primários no hover */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.32) 48%, transparent 66%);
+    transform: translateX(-120%);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-shine:hover::after {
+    transform: translateX(120%);
+  }
+
+  /* Item de lista que surge com fade + leve deslocamento (usar com animationDelay inline) */
+  .fade-item {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  /* Glow suave e pulsante — usado atrás do preço de destaque */
+  .price-glow {
+    position: relative;
+  }
+  .price-glow::before {
+    content: '';
+    position: absolute;
+    inset: -20% -10%;
+    z-index: -1;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-signal-400) 35%, transparent), transparent 72%);
+    animation: pulseGlow 3.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
   .prose-report {
     line-height: 1.65;
   }
@@ -123,4 +209,29 @@
   .prose-report ul { margin: 0.6em 0; padding-left: 1.25em; list-style: disc; }
   .prose-report li { margin: 0.25em 0; color: var(--color-graphite-700); }
   .prose-report strong { color: var(--color-graphite-900); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-18px, 22px) scale(1.06); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-orb, .glow-orb-alt, .price-glow::before {
+    animation: none !important;
+  }
+  .fade-item {
+    opacity: 1;
+    animation: none !important;
+  }
 }

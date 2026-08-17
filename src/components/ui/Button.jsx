@@ -25,26 +25,27 @@ export function Button({
   children,
   ...props
 }) {
-  const classes = `inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${variants[variant]} ${sizes[size]} ${className}`
+  const classes = `btn-shine inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${variants[variant]} ${sizes[size]} ${className}`
+  const content = <span className="relative z-10 inline-flex items-center gap-2">{children}</span>
 
   if (to) {
     return (
       <Link to={to} className={classes} {...props}>
-        {children}
+        {content}
       </Link>
     )
   }
   if (href) {
     return (
       <a href={href} className={classes} {...props}>
-        {children}
+        {content}
       </a>
     )
   }
   const Comp = as
   return (
     <Comp className={classes} {...props}>
-      {children}
+      {content}
     </Comp>
   )
 }
