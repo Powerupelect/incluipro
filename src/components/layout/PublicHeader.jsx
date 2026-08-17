@@ -4,9 +4,11 @@ import { Logo } from '../ui/Logo.jsx'
 import { Button } from '../ui/Button.jsx'
 
 const links = [
-  { to: '/', label: 'Início', end: true },
+  { to: '/#solucoes', label: 'Soluções' },
   { to: '/diagnostico', label: 'Diagnóstico' },
-  { to: '/produtos', label: 'Produtos' },
+  { to: '/#como-funciona', label: 'Como funciona' },
+  { to: '/#planos', label: 'Planos' },
+  { to: '/#fundadores', label: 'Programa Fundadores' },
 ]
 
 export function PublicHeader() {
@@ -29,36 +31,29 @@ export function PublicHeader() {
           <Logo />
         </NavLink>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-1 lg:flex">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
-              end={l.end}
-              className={({ isActive }) =>
-                `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-indigo-700 text-white'
-                    : 'text-graphite-700 hover:bg-mist-200'
-                }`
-              }
+              className="rounded-full px-3.5 py-2 text-sm font-medium text-graphite-700 transition-colors hover:bg-mist-200"
             >
               {l.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <Button to="/login" variant="ghost" size="sm">
             Entrar
           </Button>
-          <Button to="/cadastro" variant="primary" size="sm">
-            Criar conta
+          <Button to="/diagnostico" variant="primary" size="sm">
+            Começar diagnóstico
           </Button>
         </div>
 
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-mist-400 md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-mist-400 lg:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label="Abrir menu"
         >
@@ -69,19 +64,14 @@ export function PublicHeader() {
       </div>
 
       {open && (
-        <div className="border-t border-mist-300 bg-white px-5 py-4 md:hidden">
+        <div className="border-t border-mist-300 bg-white px-5 py-4 lg:hidden">
           <nav className="flex flex-col gap-1">
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
-                end={l.end}
                 onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `rounded-lg px-3 py-2.5 text-sm font-medium ${
-                    isActive ? 'bg-indigo-700 text-white' : 'text-graphite-700 hover:bg-mist-200'
-                  }`
-                }
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-graphite-700 hover:bg-mist-200"
               >
                 {l.label}
               </NavLink>
@@ -90,8 +80,8 @@ export function PublicHeader() {
               <Button to="/login" variant="ghost" className="flex-1" onClick={() => setOpen(false)}>
                 Entrar
               </Button>
-              <Button to="/cadastro" variant="primary" className="flex-1" onClick={() => setOpen(false)}>
-                Criar conta
+              <Button to="/diagnostico" variant="primary" className="flex-1" onClick={() => setOpen(false)}>
+                Começar diagnóstico
               </Button>
             </div>
           </nav>

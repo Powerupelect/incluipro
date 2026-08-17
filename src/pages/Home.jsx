@@ -1,50 +1,56 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button.jsx'
-import { Mark } from '../components/ui/Logo.jsx'
 import { Reveal } from '../components/Reveal.jsx'
 import { SlideGallery } from '../components/SlideGallery.jsx'
 import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
+import { FaqAccordion } from '../components/FaqAccordion.jsx'
 
-const produtos = [
+const LINK_PLANO_EMPRESARIAL = 'https://pay.hotmart.com/B106997595Q?bid=1785730636924'
+const LINK_KIT_PERSONALIZADO =
+  'mailto:contato.incluipro@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
+
+const problemas = [
+  {
+    titulo: 'Documentação',
+    texto: 'Informações e avaliações precisam estar organizadas.',
+    icon: <path d="M6 4h9l3 3v13a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1zM8 12h8M8 16h5M8 8h4" />,
+  },
+  {
+    titulo: 'Tempo operacional',
+    texto: 'Processos manuais consomem horas da equipe.',
+    icon: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></>,
+  },
+  {
+    titulo: 'Liderança',
+    texto: 'Gestores precisam estar preparados para conduzir equipes inclusivas.',
+    icon: <><circle cx="12" cy="8" r="3.2" /><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" /></>,
+  },
+]
+
+const solucoes = [
   {
     nome: 'IncluiPro Avalia',
-    tag: 'Avaliação social estruturada',
-    descricao:
-      'Transforma anotações de entrevista de avaliação social em um Relatório Técnico de Inclusão estruturado e profissional — em minutos, não em horas.',
+    tag: 'Relatórios Técnicos de Inclusão',
     itens: [
-      'Reduz as horas de trabalho do RH em cada avaliação',
-      'Recomendações certas na hora certa, por tipo de deficiência',
-      'Documentação organizada, pronta para auditorias e fiscalizações',
+      'Relatórios padronizados',
+      'Organização das informações',
+      'Redução do trabalho operacional',
+      'Processo mais rápido e estruturado',
     ],
+    cta: 'Ver como funciona',
     accent: 'signal',
-    preco: null,
   },
   {
     nome: 'IncluiPro Lidera',
-    tag: 'Capacitação de lideranças',
-    descricao:
-      'Biblioteca de kits de treinamento em slides, prontos para uso, para capacitar líderes na gestão de equipes inclusivas.',
+    tag: 'Treinamentos para Lideranças',
     itens: [
-      'Reduz turnover e afastamentos evitáveis por falta de preparo',
-      'Pronto para usar hoje, sem esperar cronograma de consultoria',
-      'Conteúdo atualizado continuamente, sem custo adicional',
+      'Conteúdo pronto para uso',
+      'Comunicação e inclusão',
+      'Orientações para lideranças',
+      'Atualizações de conteúdos',
     ],
+    cta: 'Ver demonstração',
     accent: 'volt',
-    preco: null,
-  },
-  {
-    nome: 'Kit Personalizado',
-    tag: 'Sob consulta',
-    descricao:
-      'Desenvolvemos conteúdo de treinamento sob medida para a realidade e os desafios específicos da sua empresa.',
-    itens: [
-      'Conteúdo pensado para o seu setor',
-      'Alinhado com sua cultura e processos internos',
-      'Orçamento personalizado, sem taxa fixa',
-    ],
-    accent: 'amber',
-    preco: 'Sob consulta e orçamento',
   },
 ]
 
@@ -71,6 +77,21 @@ const diagnosticoItens = [
   },
 ]
 
+const comoFunciona = [
+  { numero: '01', titulo: 'Diagnostique', texto: 'Descubra o nível de maturidade em inclusão da sua empresa hoje, gratuitamente.' },
+  { numero: '02', titulo: 'Estruture', texto: 'Use o IncluiPro Avalia para padronizar avaliações e gerar Relatórios Técnicos de Inclusão.' },
+  { numero: '03', titulo: 'Capacite', texto: 'Distribua os treinamentos do IncluiPro Lidera para preparar as lideranças.' },
+  { numero: '04', titulo: 'Evolua', texto: 'Acompanhe atualizações constantes de conteúdo, legislação e funcionalidades.' },
+]
+
+const atualizacoes = [
+  'Atualizações de conteúdo',
+  'Melhorias da plataforma',
+  'Novos materiais',
+  'Atualizações legais e normativas, quando aplicáveis',
+  'Evolução contínua das soluções',
+]
+
 const depoimentos = [
   {
     citacao:
@@ -95,21 +116,46 @@ const depoimentos = [
   },
 ]
 
-const passos = [
+const faqItems = [
   {
-    numero: '01',
-    titulo: 'Cadastro',
-    texto: 'Sua empresa cria uma conta em minutos e já recebe um diagnóstico inicial gratuito.',
+    pergunta: 'O que está incluído no plano de R$497?',
+    resposta:
+      'O Plano Empresarial inclui acesso completo ao IncluiPro Avalia e ao IncluiPro Lidera, atualizações constantes da plataforma, novos treinamentos, atualizações legais e melhorias contínuas, além de suporte dedicado para a equipe de RH — tudo por R$497/mês, sem taxas extras.',
   },
   {
-    numero: '02',
-    titulo: 'Assinatura',
-    texto: 'Um único Plano Empresarial libera IncluiPro Avalia e IncluiPro Lidera, com tudo incluso.',
+    pergunta: 'Para quais empresas a IncluiPro é indicada?',
+    resposta:
+      'Para times de RH, Diversidade e Compliance que precisam estruturar processos de inclusão de pessoas com deficiência de forma organizada — desde a avaliação de candidatos até a capacitação de lideranças.',
   },
   {
-    numero: '03',
-    titulo: 'Acesso à plataforma',
-    texto: 'Sua equipe gera relatórios de avaliação e distribui treinamentos para líderes.',
+    pergunta: 'Como funciona o diagnóstico?',
+    resposta:
+      'O Diagnóstico de Maturidade em Inclusão é um questionário gratuito que avalia indicadores-chave do processo atual da empresa e devolve, na hora, o nível de maturidade (Inicial, Em desenvolvimento ou Avançado) com recomendações práticas.',
+  },
+  {
+    pergunta: 'Como funciona o IncluiPro Avalia?',
+    resposta:
+      'Você preenche as anotações da entrevista em um formulário organizado por blocos, com uma Consulta Rápida de recursos sugeridos por tipo de deficiência. O sistema monta o Relatório Técnico de Inclusão automaticamente, que pode ser editado livremente antes de exportar em PDF.',
+  },
+  {
+    pergunta: 'Como funcionam os treinamentos?',
+    resposta:
+      'O IncluiPro Lidera oferece uma biblioteca de kits de treinamento em slides, organizados por tema (fundamentos, comunicação e postura, gestão do dia a dia, casos práticos), prontos para baixar e usar em reuniões e capacitações internas.',
+  },
+  {
+    pergunta: 'Posso solicitar materiais personalizados?',
+    resposta:
+      'Sim. Quando os kits padrão não cobrem um cenário específico da sua empresa, você pode solicitar um Kit Personalizado, desenvolvido sob consulta e orçamento conforme o escopo necessário.',
+  },
+  {
+    pergunta: 'Como funcionam as atualizações?',
+    resposta:
+      'A plataforma recebe atualizações constantes: novos treinamentos, melhorias de funcionalidades e atualizações legais e normativas, quando aplicável — tudo incluído na assinatura, sem custo adicional.',
+  },
+  {
+    pergunta: 'Como posso contratar?',
+    resposta:
+      'Basta assinar o Plano Empresarial diretamente pelo site — o pagamento é processado com segurança pela Hotmart e o acesso à plataforma é liberado automaticamente assim que o pagamento for confirmado.',
   },
 ]
 
@@ -125,24 +171,19 @@ export function Home() {
         <div className="relative mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-2 md:items-center md:py-28">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-signal-300">
-              Plataforma especializada em inclusão corporativa
+              Plataforma Especializada em Inclusão Corporativa
             </span>
             <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] text-white sm:text-5xl">
-              Inclusão corporativa, com a organização e o controle de um processo de verdade.
+              Estruture a inclusão de pessoas com deficiência em um só lugar.
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-indigo-200">
-              A IncluiPro estrutura avaliações sociais, forma lideranças e mantém sua empresa
-              alinhada à legislação — em uma única plataforma que sua equipe de RH gerencia com
-              poucos cliques, sem depender de planilhas soltas ou esforço individual.
-            </p>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-indigo-300">
-              Desenvolvido com base em anos de experiência em avaliação social e inclusão
-              profissional de pessoas com deficiência.
+              Relatórios técnicos, treinamentos para lideranças e ferramentas para apoiar o RH na
+              construção de processos de inclusão mais organizados e consistentes.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button to="/assinatura" size="lg">Ver plano e assinar</Button>
-              <Button to="/diagnostico" variant="outlineLight" size="lg">
-                Fazer diagnóstico gratuito
+              <Button to="/#solucoes" size="lg">Conhecer as soluções</Button>
+              <Button to="/#planos" variant="outlineLight" size="lg">
+                Ver planos
               </Button>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-indigo-200">
@@ -158,137 +199,98 @@ export function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-7 shadow-pop backdrop-blur">
-              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-300">
-                Nível de maturidade em inclusão
-              </p>
-              <div className="mt-5 flex items-end gap-3">
-                <div className="flex h-16 w-10 items-end rounded-md bg-white/10">
-                  <div className="h-6 w-full rounded-md bg-signal-400" />
-                </div>
-                <div className="flex h-24 w-10 items-end rounded-md bg-white/10">
-                  <div className="h-16 w-full rounded-md bg-signal-400" />
-                </div>
-                <div className="flex h-32 w-10 items-end rounded-md bg-white/10">
-                  <div className="h-28 w-full rounded-md bg-volt-400" />
-                </div>
-                <div className="ml-2 flex flex-col justify-end pb-1">
-                  <p className="font-display text-3xl font-semibold text-white">Avançado</p>
-                  <p className="text-sm text-indigo-300">baseado em 4 indicadores</p>
-                </div>
-              </div>
-              <div className="mt-6 space-y-2 border-t border-white/10 pt-5 text-sm text-indigo-200">
-                <p className="flex items-center gap-2">
-                  <Mark className="h-4 w-4" /> Processo de avaliação estruturado
-                </p>
-                <p className="flex items-center gap-2">
-                  <Mark className="h-4 w-4" /> Líderes treinados para gestão inclusiva
-                </p>
-                <p className="flex items-center gap-2">
-                  <Mark className="h-4 w-4" /> Conformidade com a legislação vigente
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Prova social */}
-      <section className="border-b border-mist-300 bg-white py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 text-center sm:px-8 md:flex-row md:justify-between md:text-left">
-          <p className="max-w-md text-sm leading-relaxed text-graphite-500">
-            Desenvolvido com base em anos de experiência em avaliação social e inclusão
-            profissional — a mesma metodologia usada por empresas de todo o Brasil para
-            estruturar processos de inclusão de PCD.
-          </p>
-          <div className="flex items-center gap-4 rounded-2xl border border-signal-200 bg-signal-50 px-6 py-4">
-            <span className="font-display text-3xl font-semibold text-signal-700">80%</span>
-            <span className="max-w-[10rem] text-left text-xs font-semibold uppercase leading-snug tracking-wide text-signal-800">
-              de economia no tempo com processos estruturados
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Diagnóstico de Maturidade */}
-      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
-        <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-              Diagnóstico de Maturidade
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-              Antes de assinar, saiba onde sua empresa está hoje
-            </h2>
-            <p className="mt-4 leading-relaxed text-graphite-500">
-              O Diagnóstico de Maturidade em Inclusão é um questionário gratuito que avalia
-              quatro indicadores-chave do seu processo atual e devolve, na hora, um panorama
-              claro do que já funciona e do que precisa de estrutura.
-            </p>
-            <Button to="/diagnostico" className="mt-7">
-              Fazer diagnóstico gratuito
-            </Button>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {diagnosticoItens.map((item, i) => (
-              <Reveal
-                key={item.titulo}
-                delay={i * 80}
-                className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-signal-300 hover:shadow-pop"
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-50 text-signal-700">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
-                    {item.icon}
-                  </svg>
+          <Reveal direction="left" className="relative mx-auto w-full max-w-md">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-pop">
+              <div className="flex items-center gap-1.5 border-b border-mist-300 bg-mist-100 px-4 py-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
+                <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
+                <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
+                <span className="ml-2 text-[11px] font-medium text-graphite-400">
+                  Relatório Técnico de Inclusão
                 </span>
-                <p className="mt-3 font-display text-sm font-semibold text-indigo-800">
-                  {item.titulo}
-                </p>
-                <p className="mt-1 text-sm leading-relaxed text-graphite-500">{item.texto}</p>
-              </Reveal>
-            ))}
-          </div>
+              </div>
+              <img
+                src="/previews/avalia-relatorio.png"
+                alt="Relatório Técnico de Inclusão real, gerado pelo IncluiPro Avalia"
+                className="h-[26rem] w-full object-cover object-top"
+              />
+            </div>
+            <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-mist-300 bg-white px-5 py-4 shadow-pop sm:block">
+              <p className="font-display text-2xl font-semibold text-signal-700">80%</p>
+              <p className="max-w-[9rem] text-xs leading-snug text-graphite-500">
+                de economia no tempo com processos estruturados
+              </p>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Produtos */}
-      <section className="bg-mist-200 py-20">
+      {/* Problema */}
+      <section id="problema" className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <h2 className="font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+            Quando a inclusão depende de processos manuais, o RH perde tempo.
+          </h2>
+        </Reveal>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {problemas.map((p, i) => (
+            <Reveal
+              key={p.titulo}
+              delay={i * 100}
+              className="rounded-2xl border border-mist-300 bg-white p-6 text-center shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+            >
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-signal-50 text-signal-700">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  {p.icon}
+                </svg>
+              </span>
+              <p className="mt-4 font-display text-base font-semibold text-indigo-800">
+                {p.titulo}
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-graphite-500">{p.texto}</p>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal delay={200} className="mx-auto mt-10 max-w-lg text-center">
+          <p className="font-display text-lg font-semibold text-indigo-800">
+            A IncluiPro reúne essas frentes em uma única plataforma.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* Soluções */}
+      <section id="solucoes" className="bg-mist-200 py-20">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="max-w-2xl">
+          <Reveal className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-              Três formas de estruturar a inclusão
+              Soluções
             </p>
             <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-              Tudo o que a inclusão precisa para sair do improviso
+              Do diagnóstico à capacitação, em um só lugar.
             </h2>
-          </div>
+          </Reveal>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {produtos.map((p, i) => (
+          <div className="mt-12 grid gap-6 lg:grid-cols-2">
+            {solucoes.map((s, i) => (
               <Reveal
-                key={p.nome}
-                delay={i * 100}
+                key={s.nome}
+                delay={i * 120}
                 className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:border-signal-300 hover:shadow-pop"
               >
                 <span
                   className={`inline-block w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                    p.accent === 'signal'
-                      ? 'bg-signal-50 text-signal-700'
-                      : p.accent === 'volt'
-                        ? 'bg-volt-50 text-volt-700'
-                        : 'bg-amber-50 text-amber-700'
+                    s.accent === 'signal' ? 'bg-signal-50 text-signal-700' : 'bg-volt-50 text-volt-700'
                   }`}
                 >
-                  {p.tag}
+                  {s.tag}
                 </span>
                 <h3 className="mt-4 font-display text-2xl font-semibold text-indigo-800">
-                  {p.nome}
+                  {s.nome}
                 </h3>
-                <p className="mt-3 flex-1 leading-relaxed text-graphite-500">{p.descricao}</p>
-                <ul className="mt-6 space-y-2.5">
-                  {p.itens.map((item) => (
+                <ul className="mt-6 flex-1 space-y-2.5">
+                  {s.itens.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
                       <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
                         <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
@@ -297,152 +299,423 @@ export function Home() {
                     </li>
                   ))}
                 </ul>
-                {p.preco && (
-                  <p className="mt-6 border-t border-mist-300 pt-4 text-sm font-semibold text-amber-700">
-                    {p.preco}
-                  </p>
-                )}
+                <Button to="/#demonstracao" variant="ghost" className="mt-6 w-fit">
+                  {s.cta}
+                </Button>
               </Reveal>
             ))}
-          </div>
-
-          <div className="mt-8 text-center">
-            <Link to="/produtos" className="text-sm font-semibold text-indigo-700 hover:text-signal-600">
-              Ver plano e detalhes dos produtos →
-            </Link>
           </div>
         </div>
       </section>
 
-      {/* Galeria de slides */}
-      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+      {/* Demonstração visual */}
+      <section id="demonstracao" className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
         <Reveal className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-wide text-volt-600">
-            Antes de criar sua conta
+            Prova visual
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-            Veja como fica o resultado na prática
+            Veja como funciona na prática
           </h2>
           <p className="mt-3 leading-relaxed text-graphite-500">
-            Slides reais dos kits do IncluiPro Lidera — clique em qualquer miniatura para ampliar.
+            Nada de telas ilustrativas — abaixo estão capturas reais da plataforma.
           </p>
         </Reveal>
 
-        <Reveal delay={100} className="mt-10">
-          <SlideGallery />
-        </Reveal>
-
-        <Reveal delay={150} className="mt-14 grid gap-8 md:grid-cols-2 md:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-              Relatório do IncluiPro Avalia
-            </p>
-            <h3 className="mt-2 font-display text-2xl font-semibold text-indigo-800">
-              Um relatório completo, com estrutura fixa e recursos sugeridos por deficiência
-            </h3>
-            <p className="mt-3 leading-relaxed text-graphite-500">
-              Veja uma amostra completa e ilustrativa, com dados fictícios, sem precisar criar
-              conta: cabeçalho, identificação, seções coloridas por tema, recursos sugeridos,
-              plano de ação e o aviso legal fixo — exatamente como no PDF exportado.
-            </p>
-            <button
-              onClick={() => setAmostraAberta(true)}
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-indigo-700 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-800 hover:shadow-pop"
-            >
-              📄 Ver amostra completa do relatório
-            </button>
-          </div>
-          <div className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-transform duration-300 hover:-translate-y-1 hover:shadow-pop">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Reveal delay={0} className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop">
+            <img
+              src="/previews/diagnostico-resultado.png"
+              alt="Tela real do resultado do Diagnóstico de Maturidade em Inclusão"
+              className="h-40 w-full object-cover object-top"
+            />
+            <p className="p-4 text-sm font-semibold text-indigo-800">Diagnóstico</p>
+          </Reveal>
+          <button
+            onClick={() => setAmostraAberta(true)}
+            className="overflow-hidden rounded-2xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+          >
             <img
               src="/previews/avalia-relatorio.png"
-              alt="Exemplo real de relatório gerado pelo IncluiPro Avalia, com dados da avaliação, deficiência, rotina e autonomia, e parecer final"
-              className="h-72 w-full object-cover object-top"
+              alt="Relatório Técnico de Inclusão real gerado pelo IncluiPro Avalia"
+              className="h-40 w-full object-cover object-top"
             />
+            <p className="p-4 text-sm font-semibold text-indigo-800">IncluiPro Avalia</p>
+          </button>
+          <Reveal delay={100} className="overflow-hidden rounded-2xl border border-mist-300 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop">
+            <img
+              src="/previews/gallery/checklist.png"
+              alt="Slide real de um kit do IncluiPro Lidera"
+              className="h-40 w-full object-cover object-top"
+            />
+            <p className="p-4 text-sm font-semibold text-indigo-800">IncluiPro Lidera</p>
+          </Reveal>
+          <Reveal delay={150} className="flex flex-col items-start justify-center rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" />
+              </svg>
+            </span>
+            <p className="mt-3 text-sm font-semibold text-indigo-800">Personalização</p>
+            <p className="mt-1 text-xs leading-relaxed text-graphite-500">Sob consulta e orçamento</p>
+          </Reveal>
+        </div>
+
+        <Reveal delay={200} className="mt-14">
+          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+            Todos os slides do IncluiPro Lidera
+          </p>
+          <p className="mt-2 text-sm text-graphite-500">
+            Clique em qualquer miniatura para ampliar.
+          </p>
+          <div className="mt-6">
+            <SlideGallery />
           </div>
+        </Reveal>
+
+        <Reveal delay={250} className="mt-10 flex flex-wrap items-center gap-4 rounded-2xl border border-mist-300 bg-mist-100 p-6">
+          <div className="flex-1">
+            <p className="font-display text-base font-semibold text-indigo-800">
+              Quer ver o Relatório Técnico de Inclusão completo?
+            </p>
+            <p className="mt-1 text-sm text-graphite-500">
+              Amostra ilustrativa, com dados fictícios, sem precisar criar conta.
+            </p>
+          </div>
+          <button
+            onClick={() => setAmostraAberta(true)}
+            className="shrink-0 inline-flex items-center gap-2 rounded-full bg-indigo-700 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-800 hover:shadow-pop"
+          >
+            📄 Ver amostra completa do relatório
+          </button>
         </Reveal>
       </section>
 
       <ReportSampleModal open={amostraAberta} onClose={() => setAmostraAberta(false)} />
 
-      {/* Como funciona */}
-      <section className="bg-mist-200 py-20">
+      {/* Diagnóstico */}
+      <section id="diagnostico" className="bg-mist-200 py-20">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-              Como funciona
+          <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+            <Reveal>
+              <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+                Diagnóstico gratuito
+              </p>
+              <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+                Comece entendendo o nível de estruturação da sua empresa.
+              </h2>
+              <p className="mt-4 leading-relaxed text-graphite-500">
+                Um questionário gratuito que avalia indicadores-chave do seu processo atual e
+                devolve, na hora, um panorama claro do que já funciona e do que precisa de
+                estrutura.
+              </p>
+              <Button to="/diagnostico" className="mt-7">
+                Fazer diagnóstico gratuito
+              </Button>
+            </Reveal>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {diagnosticoItens.map((item, i) => (
+                <Reveal
+                  key={item.titulo}
+                  delay={i * 80}
+                  className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-signal-300 hover:shadow-pop"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal-50 text-signal-700">
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
+                      {item.icon}
+                    </svg>
+                  </span>
+                  <p className="mt-3 font-display text-sm font-semibold text-indigo-800">
+                    {item.titulo}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-graphite-500">{item.texto}</p>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Como funciona */}
+      <section id="como-funciona" className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+        <Reveal className="max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+            Como funciona
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+            Um fluxo simples, do diagnóstico à evolução contínua
+          </h2>
+        </Reveal>
+
+        <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="absolute left-0 right-0 top-6 hidden h-px bg-mist-300 lg:block" />
+          {comoFunciona.map((p, i) => (
+            <Reveal key={p.numero} delay={i * 100} className="relative">
+              <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-700 font-display text-sm font-semibold text-white">
+                {p.numero}
+              </span>
+              <h3 className="mt-4 font-display text-lg font-semibold text-indigo-800">
+                {p.titulo}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-graphite-500">{p.texto}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Kit Personalizado */}
+      <section id="kit-personalizado" className="bg-mist-200 py-20">
+        <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
+          <Reveal>
+            <p className="text-sm font-semibold uppercase tracking-wide text-amber-700">
+              Kit Personalizado
             </p>
             <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-              Da conta criada ao primeiro relatório, em um único fluxo
+              Sua empresa precisa de algo específico?
             </h2>
+            <p className="mx-auto mt-4 max-w-xl leading-relaxed text-graphite-500">
+              Solicite conteúdos e materiais personalizados conforme as necessidades da sua
+              empresa — desenvolvidos sob consulta e orçamento, com o mesmo padrão de qualidade
+              do IncluiPro Lidera.
+            </p>
+            <Button href={LINK_KIT_PERSONALIZADO} className="mt-7">
+              Solicitar personalização
+            </Button>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Atualização contínua */}
+      <section id="atualizacoes" className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+        <div className="grid gap-12 md:grid-cols-2 md:items-center">
+          <Reveal>
+            <p className="text-sm font-semibold uppercase tracking-wide text-volt-600">
+              Evolução contínua
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+              Uma plataforma que acompanha a evolução da inclusão.
+            </h2>
+          </Reveal>
+          <Reveal delay={100} className="rounded-2xl border border-mist-300 bg-white p-8 shadow-card">
+            <ul className="space-y-3.5">
+              {atualizacoes.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
+                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Planos e valores */}
+      <section id="planos" className="bg-indigo-800 py-20">
+        <div className="mx-auto max-w-5xl px-5 sm:px-8">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wide text-signal-300">
+              Planos e valores
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-white sm:text-4xl">
+              Quanto custa NÃO ter a IncluiPro?
+            </h2>
+            <p className="mt-4 leading-relaxed text-indigo-200">
+              O investimento mensal deve ser analisado considerando o conjunto de atividades,
+              recursos e tempo envolvidos na estruturação da inclusão.
+            </p>
+          </Reveal>
+
+          <Reveal delay={100} className="mt-12 overflow-hidden rounded-3xl border border-white/10 shadow-pop">
+            <div className="grid md:grid-cols-2">
+              <div className="bg-white/[0.04] p-8 sm:p-10">
+                <p className="text-xs font-bold uppercase tracking-wide text-indigo-300">
+                  Sem IncluiPro
+                </p>
+                <ul className="mt-6 space-y-6">
+                  <li>
+                    <p className="text-sm text-indigo-200">1 avaliação com consultora</p>
+                    <p className="mt-1 font-display text-2xl font-semibold text-white">R$ 300–800</p>
+                  </li>
+                  <li>
+                    <p className="text-sm text-indigo-200">1 multa por vaga*</p>
+                    <p className="mt-1 font-display text-2xl font-semibold text-white">até R$ 3.499,80</p>
+                  </li>
+                  <li>
+                    <p className="text-sm text-indigo-200">Treinamento criado do zero</p>
+                    <p className="mt-1 font-display text-2xl font-semibold text-white">R$ 2.000+</p>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-white/[0.09] p-8 sm:p-10">
+                <p className="text-xs font-bold uppercase tracking-wide text-signal-300">
+                  Com IncluiPro
+                </p>
+                <ul className="mt-6 space-y-4">
+                  {[
+                    'Avaliações ILIMITADAS',
+                    'Documentação segura e organizada',
+                    'Treinamentos prontos e atualizados',
+                    'Suporte prioritário',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-white">
+                      <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-300" fill="currentColor">
+                        <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                      </svg>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8 border-t border-white/15 pt-6">
+                  <p className="flex items-baseline gap-1.5">
+                    <span className="font-display text-4xl font-semibold text-signal-300">R$ 497,00</span>
+                    <span className="text-sm text-indigo-200">/ mês</span>
+                  </p>
+                  <p className="mt-1 text-xs text-indigo-300">tudo incluso, sem taxas extras</p>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+
+          <p className="mx-auto mt-5 max-w-2xl text-center text-xs leading-relaxed text-indigo-300">
+            *Valor de referência sobre o risco de irregularidade por vaga não preenchida na Lei de
+            Cotas (Lei 8.213/1991). A IncluiPro não garante isenção de multas nem substitui
+            orientação jurídica — o objetivo da plataforma é apoiar a organização e a
+            documentação dos processos de inclusão.
+          </p>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button href={LINK_PLANO_EMPRESARIAL} size="lg">Começar agora</Button>
+            <Button to="/produtos" variant="outlineLight" size="lg">
+              Conhecer antes de contratar
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Programa Fundadores */}
+      <section id="fundadores" className="mx-auto max-w-4xl px-5 py-20 text-center sm:px-8">
+        <Reveal>
+          <p className="text-sm font-semibold uppercase tracking-wide text-volt-600">
+            Programa Fundadores
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+            Condições especiais para as primeiras empresas participantes.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-graphite-500">
+            As empresas participantes desta fase contam com acompanhamento mais próximo e
+            benefícios específicos de implantação e personalização.
+          </p>
+
+          <div className="mx-auto mt-8 max-w-xl rounded-2xl border border-volt-200 bg-volt-50 p-6 text-left">
+            <p className="text-sm font-bold uppercase tracking-wide text-volt-700">
+              🎁 Benefício exclusivo
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-graphite-700">
+              Os primeiros clientes recebem Kit Personalizado e acréscimos sem custo adicional
+              enquanto durar a fase inicial.
+            </p>
           </div>
 
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {passos.map((p, i) => (
-              <Reveal key={p.numero} delay={i * 100} direction="left" className="relative">
-                <span className="font-display text-5xl font-semibold text-mist-400">
-                  {p.numero}
-                </span>
-                <h3 className="mt-3 font-display text-xl font-semibold text-indigo-800">
-                  {p.titulo}
-                </h3>
-                <p className="mt-2 leading-relaxed text-graphite-500">{p.texto}</p>
-                {i < passos.length - 1 && (
-                  <div className="absolute right-[-1.5rem] top-6 hidden h-px w-8 bg-mist-400 md:block" />
-                )}
+          <p className="mt-5 text-sm font-semibold text-graphite-500">
+            Vagas limitadas — condição especial válida enquanto durar a fase inicial.
+          </p>
+
+          <Button href={LINK_PLANO_EMPRESARIAL} className="mt-7">
+            Conhecer o Programa Fundadores
+          </Button>
+        </Reveal>
+      </section>
+
+      {/* Confiança e conformidade */}
+      <section id="confianca" className="bg-mist-200 py-20">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+              Confiança
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+              Construída para empresas que querem ir além do cumprimento formal.
+            </h2>
+          </Reveal>
+
+          <Reveal delay={100} className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2">
+            {[
+              'Alinhamento à Lei de Cotas e legislação aplicável',
+              'Estrutura organizada',
+              'Recursos para RH e lideranças',
+              'Evolução contínua',
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-2.5 rounded-xl border border-mist-300 bg-white p-4 text-sm text-graphite-700">
+                <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+                  <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                </svg>
+                {item}
+              </div>
+            ))}
+          </Reveal>
+
+          <p className="mx-auto mt-5 max-w-2xl text-center text-xs leading-relaxed text-graphite-400">
+            A IncluiPro apoia a organização dos processos de inclusão da sua empresa; não
+            substitui orientação jurídica nem garante resultados de conformidade.
+          </p>
+
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+            {depoimentos.map((d, i) => (
+              <Reveal
+                key={d.nome}
+                delay={i * 100}
+                className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
+              >
+                <svg viewBox="0 0 32 24" className="h-7 w-7 text-signal-300" fill="currentColor">
+                  <path d="M0 24V13.6C0 5.6 4.8 1 12.8 0l1.6 3.6C9.2 5.2 6.8 8 6.4 12H14v12H0zm18 0V13.6C18 5.6 22.8 1 30.8 0l1.6 3.6C27.2 5.2 24.8 8 24.4 12H32v12H18z" />
+                </svg>
+                <p className="mt-4 flex-1 text-[15px] italic leading-relaxed text-graphite-700">
+                  "{d.citacao}"
+                </p>
+                <div className="mt-6 border-t border-mist-300 pt-4">
+                  <p className="font-display text-sm font-semibold text-indigo-800">{d.nome}</p>
+                  <p className="text-xs text-graphite-500">{d.cargo}</p>
+                  <p className="text-xs text-graphite-300">{d.empresa}</p>
+                </div>
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Depoimentos */}
-      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
-        <Reveal className="max-w-2xl">
+      {/* FAQ */}
+      <section id="faq" className="mx-auto max-w-3xl px-5 py-20 sm:px-8">
+        <Reveal className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-            Quem já usa
+            Perguntas frequentes
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-            O que dizem os times de RH, Diversidade e Compliance
+            Tudo o que você precisa saber antes de contratar
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {depoimentos.map((d, i) => (
-            <Reveal
-              key={d.nome}
-              delay={i * 100}
-              className="flex flex-col rounded-2xl border border-mist-300 bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
-            >
-              <svg viewBox="0 0 32 24" className="h-7 w-7 text-signal-300" fill="currentColor">
-                <path d="M0 24V13.6C0 5.6 4.8 1 12.8 0l1.6 3.6C9.2 5.2 6.8 8 6.4 12H14v12H0zm18 0V13.6C18 5.6 22.8 1 30.8 0l1.6 3.6C27.2 5.2 24.8 8 24.4 12H32v12H18z" />
-              </svg>
-              <p className="mt-4 flex-1 text-[15px] italic leading-relaxed text-graphite-700">
-                "{d.citacao}"
-              </p>
-              <div className="mt-6 border-t border-mist-300 pt-4">
-                <p className="font-display text-sm font-semibold text-indigo-800">{d.nome}</p>
-                <p className="text-xs text-graphite-500">{d.cargo}</p>
-                <p className="text-xs text-graphite-300">{d.empresa}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={100} className="mt-10">
+          <FaqAccordion items={faqItems} />
+        </Reveal>
       </section>
 
       {/* CTA final */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
         <Reveal className="step-pattern relative overflow-hidden rounded-3xl bg-indigo-800 px-8 py-14 text-center sm:px-16">
           <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">
-            Pronto para estruturar a inclusão na sua empresa?
+            Pronto para estruturar a inclusão de forma mais organizada?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-indigo-200">
-            Comece com o diagnóstico gratuito ou crie sua conta e assine para acessar a
-            plataforma completa.
+            Conheça a plataforma, explore as soluções e veja como a IncluiPro pode apoiar sua
+            empresa.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button to="/assinatura" size="lg">Ver plano e assinar</Button>
+            <Button to="/produtos" size="lg">Conhecer a IncluiPro</Button>
             <Button to="/diagnostico" variant="outlineLight" size="lg">
-              Fazer diagnóstico gratuito
+              Começar diagnóstico gratuito
             </Button>
           </div>
         </Reveal>
