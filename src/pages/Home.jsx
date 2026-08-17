@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../components/ui/Button.jsx'
+import { Mark } from '../components/ui/Logo.jsx'
 import { Reveal } from '../components/Reveal.jsx'
 import { SlideGallery } from '../components/SlideGallery.jsx'
 import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
@@ -204,20 +205,33 @@ export function Home() {
 
           <Reveal direction="left" delay={100} className="relative mx-auto w-full max-w-md">
             <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-signal-500/25 via-transparent to-volt-500/25 blur-2xl" />
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-pop transition-transform duration-500 hover:-translate-y-1">
-              <div className="flex items-center gap-1.5 border-b border-mist-300 bg-mist-100 px-4 py-3">
-                <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
-                <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
-                <span className="h-2.5 w-2.5 rounded-full bg-mist-400" />
-                <span className="ml-2 text-[11px] font-medium text-graphite-400">
-                  Relatório Técnico de Inclusão
-                </span>
+            <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-7 shadow-pop backdrop-blur transition-transform duration-500 hover:-translate-y-1 sm:pb-24">
+              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-300">
+                Nível de maturidade em inclusão
+              </p>
+              <div className="mt-5 flex items-end gap-3">
+                <div className="flex h-16 w-10 items-end rounded-md bg-white/10">
+                  <div className="h-6 w-full rounded-md bg-signal-400" />
+                </div>
+                <div className="flex h-24 w-10 items-end rounded-md bg-white/10">
+                  <div className="h-16 w-full rounded-md bg-signal-400" />
+                </div>
+                <div className="flex h-32 w-10 items-end rounded-md bg-white/10">
+                  <div className="h-28 w-full rounded-md bg-volt-400" />
+                </div>
+                <div className="ml-2 flex flex-col justify-end pb-1">
+                  <p className="font-display text-3xl font-semibold text-white">Avançado</p>
+                  <p className="text-sm text-indigo-300">baseado em 4 indicadores</p>
+                </div>
               </div>
-              <img
-                src="/previews/avalia-relatorio.png"
-                alt="Relatório Técnico de Inclusão real, gerado pelo IncluiPro Avalia"
-                className="h-[26rem] w-full object-cover object-top"
-              />
+              <div className="mt-6 space-y-2 border-t border-white/10 pt-5 text-sm text-indigo-200">
+                <p className="flex items-center gap-2">
+                  <Mark className="h-4 w-4" /> Processo de avaliação estruturado
+                </p>
+                <p className="flex items-center gap-2">
+                  <Mark className="h-4 w-4" /> Líderes treinados para gestão inclusiva
+                </p>
+              </div>
             </div>
             <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-mist-300 bg-white px-5 py-4 shadow-pop sm:block">
               <p className="font-display text-2xl font-semibold text-signal-700">
