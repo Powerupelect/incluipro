@@ -1,13 +1,44 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../lib/auth.jsx'
 import { checkAccess } from '../../lib/api.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PLANO_LABEL } from '../../lib/plano.js'
+import { exportBackup, importBackup } from '../../lib/backup.js'
 
 export function Conta() {
   const { user } = useAuth()
   const [acesso, setAcesso] = useState(null)
   const [erro, setErro] = useState('')
+  const fileInputRef = useRef(null)
+  const [arquivoSelecionado, setArquivoSelecionado] = useState(null)
+  const [importState, setImportState] = useState(null) // null | 'confirm' | 'done'
+  const [erroImport, setErroImport] = useState('')
+
+  function handleSelecionarArquivo(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setArquivoSelecionado(file)
+    setImportState('confirm')
+    setErroImport('')
+  }
+
+  async function handleConfirmarImport() {
+    try {
+      await importBackup(arquivoSelecionado)
+      setImportState('done')
+    } catch (err) {
+      setErroImport(err.message)
+      setImportState(null)
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  function handleCancelarImport() {
+    setImportState(null)
+    setArquivoSelecionado(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   useEffect(() => {
     if (!user?.email) return
@@ -74,6 +105,61 @@ export function Conta() {
         <Button to="/assinatura" variant="ghost" size="sm" className="mt-3">
           Ver plano
         </Button>
+      </div>
+
+      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+        <h2 className="font-display text-lg font-semibold text-indigo-800">Backup de dados</h2>
+        <p className="mt-1 text-sm text-graphite-500">
+          Seus relatórios ficam salvos apenas neste navegador. Exporte um backup regularmente e,
+          principalmente, antes de trocar de computador ou limpar os dados do navegador — assim
+          você não perde nada.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Button as="button" type="button" variant="ghost" size="sm" onClick={exportBackup}>
+            Exportar backup
+          </Button>
+          <Button
+            as="button"
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Importar backup
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={handleSelecionarArquivo}
+          />
+        </div>
+
+        {importState === 'confirm' && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <p className="font-semibold">
+              Isso vai substituir os relatórios e leads salvos neste navegador pelos do arquivo
+              importado. Confirma?
+            </p>
+            <div className="mt-3 flex gap-2">
+              <Button as="button" type="button" size="sm" onClick={handleConfirmarImport}>
+                Confirmar importação
+              </Button>
+              <Button as="button" type="button" variant="ghost" size="sm" onClick={handleCancelarImport}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {importState === 'done' && (
+          <p className="mt-4 text-sm font-semibold text-signal-700">
+            ✅ Backup importado. Atualize a página para ver os dados restaurados.
+          </p>
+        )}
+
+        {erroImport && <p className="mt-4 text-sm text-red-600">{erroImport}</p>}
       </div>
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">

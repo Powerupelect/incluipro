@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import { Button } from '../../components/ui/Button.jsx'
 import { montarRelatorio } from '../../lib/montarRelatorio.js'
@@ -563,7 +564,12 @@ export function Avalia() {
               </ul>
             )}
             <p className="mt-4 text-xs text-graphite-300">
-              Histórico salvo neste navegador. {/* TODO: persistir em banco de dados real. */}
+              Os relatórios ficam salvos apenas neste navegador. Baixe o PDF de cada avaliação e
+              exporte um backup em{' '}
+              <Link to="/app/conta" className="font-semibold text-graphite-500 hover:text-signal-700">
+                Minha conta
+              </Link>{' '}
+              antes de trocar de computador ou limpar os dados do navegador.
             </p>
           </div>
         </div>
