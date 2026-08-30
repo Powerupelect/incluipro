@@ -2,7 +2,7 @@
 // Se RESEND_API_KEY não estiver configurada, retorna sem enviar em vez de
 // falhar — a liberação de acesso não deve depender do envio de e-mail.
 
-export const CONTACT_EMAIL = 'contato.incluipro@gmail.com'
+export const CONTACT_EMAIL = 'contato@incluipro.com'
 
 function textoConfirmacao({ nome, plano, linkAcesso }) {
   const pacote = plano === 'vitalicio' ? 'Acesso Vitalício' : 'Assinatura Mensal'

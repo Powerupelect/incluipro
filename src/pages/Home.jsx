@@ -6,10 +6,15 @@ import { SlideGallery } from '../components/SlideGallery.jsx'
 import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
 import { FaqAccordion } from '../components/FaqAccordion.jsx'
 import { AnimatedCounter } from '../components/AnimatedCounter.jsx'
+import { CalculadoraCota } from '../components/CalculadoraCota.jsx'
 
-const LINK_PLANO_EMPRESARIAL = 'https://pay.hotmart.com/B106997595Q?bid=1785730636924'
 const LINK_KIT_PERSONALIZADO =
-  'mailto:contato.incluipro@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
+  'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
+const LINK_SOLICITAR_PROPOSTA =
+  'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Proposta%20-%20Plano%20Empresarial'
+const LINK_FALAR_CONSULTOR = 'mailto:contato@incluipro.com?subject=Contato%20Enterprise'
+const LINK_PROGRAMA_FUNDADORES =
+  'mailto:contato@incluipro.com?subject=Interesse%20no%20Programa%20Fundadores'
 
 const problemas = [
   {
@@ -80,10 +85,11 @@ const diagnosticoItens = [
 ]
 
 const comoFunciona = [
-  { numero: '01', titulo: 'Diagnostique', texto: 'Descubra o nível de maturidade em inclusão da sua empresa hoje, gratuitamente.' },
-  { numero: '02', titulo: 'Estruture', texto: 'Use o IncluiPro Avalia para padronizar avaliações e gerar Relatórios Técnicos de Inclusão.' },
-  { numero: '03', titulo: 'Capacite', texto: 'Distribua os treinamentos do IncluiPro Lidera para preparar as lideranças.' },
-  { numero: '04', titulo: 'Evolua', texto: 'Acompanhe atualizações constantes de conteúdo, legislação e funcionalidades.' },
+  { numero: '01', titulo: 'Cadastro da empresa', texto: 'Crie a conta da empresa em poucos minutos.' },
+  { numero: '02', titulo: 'Cálculo da cota', texto: 'Descubra a cota de PCD devida por lei e quantas vagas estão em aberto, com nosso calculador gratuito.' },
+  { numero: '03', titulo: 'Avaliação dos colaboradores', texto: 'Gere Relatórios Técnicos de Inclusão padronizados com o IncluiPro Avalia.' },
+  { numero: '04', titulo: 'Capacitação das lideranças', texto: 'Distribua treinamentos prontos do IncluiPro Lidera para as equipes de gestão.' },
+  { numero: '05', titulo: 'Documentação organizada', texto: 'Centralize toda a documentação de inclusão em um só lugar.' },
 ]
 
 const atualizacoes = [
@@ -120,9 +126,9 @@ const depoimentos = [
 
 const faqItems = [
   {
-    pergunta: 'O que está incluído no plano de R$497?',
+    pergunta: 'O que está incluído no Plano Empresarial?',
     resposta:
-      'O Plano Empresarial inclui acesso completo ao IncluiPro Avalia e ao IncluiPro Lidera, atualizações constantes da plataforma, novos treinamentos, atualizações legais e melhorias contínuas, além de suporte dedicado para a equipe de RH — tudo por R$497/mês, sem taxas extras.',
+      'O Plano Empresarial inclui acesso completo ao IncluiPro Avalia e ao IncluiPro Lidera, atualizações constantes da plataforma, novos treinamentos, atualizações legais e melhorias contínuas, além de suporte por e-mail para a equipe de RH. O preço varia conforme o porte da empresa — solicite uma proposta para ver a condição do seu caso.',
   },
   {
     pergunta: 'Para quais empresas a IncluiPro é indicada?',
@@ -157,7 +163,7 @@ const faqItems = [
   {
     pergunta: 'Como posso contratar?',
     resposta:
-      'Basta assinar o Plano Empresarial diretamente pelo site — o pagamento é processado com segurança pela Hotmart e o acesso à plataforma é liberado automaticamente assim que o pagamento for confirmado.',
+      'Solicite uma proposta pelo site. Nossa equipe entra em contato para entender o porte da sua empresa, apresentar a condição comercial e liberar o acesso à plataforma.',
   },
 ]
 
@@ -465,6 +471,26 @@ export function Home() {
         </div>
       </section>
 
+      {/* Calculadora de cota */}
+      <section id="calculadora" className="mx-auto max-w-4xl px-5 py-20 sm:px-8">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
+            Calculadora gratuita
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
+            Qual é a cota de PCD da sua empresa?
+          </h2>
+          <p className="mt-3 leading-relaxed text-graphite-500">
+            Sem cadastro. Informe alguns números do seu quadro e veja a cota devida, as vagas em
+            aberto e a exposição estimada.
+          </p>
+        </Reveal>
+
+        <Reveal delay={100} className="mt-10">
+          <CalculadoraCota />
+        </Reveal>
+      </section>
+
       {/* Como funciona */}
       <section id="como-funciona" className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
         <Reveal className="max-w-2xl">
@@ -472,11 +498,11 @@ export function Home() {
             Como funciona
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-            Um fluxo simples, do diagnóstico à evolução contínua
+            Um fluxo simples, do cadastro à documentação organizada
           </h2>
         </Reveal>
 
-        <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <Reveal
             direction="scale"
             className="absolute left-0 right-0 top-6 hidden h-px origin-left bg-gradient-to-r from-signal-400 via-volt-400 to-signal-400 lg:block"
@@ -583,7 +609,7 @@ export function Home() {
                   </li>
                   <li>
                     <p className="text-sm text-indigo-200">1 multa por vaga*</p>
-                    <p className="mt-1 font-display text-2xl font-semibold text-white">até R$ 3.499,80</p>
+                    <p className="mt-1 font-display text-2xl font-semibold text-white">R$ 3.499,80 a R$ 349.978,53</p>
                   </li>
                   <li>
                     <p className="text-sm text-indigo-200">Treinamento criado do zero</p>
@@ -597,10 +623,10 @@ export function Home() {
                 </p>
                 <ul className="mt-6 space-y-4">
                   {[
-                    'Avaliações ILIMITADAS',
+                    'Sem limite de relatórios no período',
                     'Documentação segura e organizada',
                     'Treinamentos prontos e atualizados',
-                    'Suporte prioritário',
+                    'Suporte por e-mail em até 1 dia útil',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm text-white">
                       <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-300" fill="currentColor">
@@ -611,27 +637,57 @@ export function Home() {
                   ))}
                 </ul>
                 <div className="mt-8 border-t border-white/15 pt-6">
-                  <p className="price-glow flex items-baseline gap-1.5">
-                    <span className="font-display text-4xl font-semibold text-signal-300">
-                      R$ <AnimatedCounter value={497} decimals={2} />
-                    </span>
-                    <span className="text-sm text-indigo-200">/ mês</span>
+                  <p className="font-display text-xl font-semibold text-signal-300">
+                    Planos conforme o porte da empresa
                   </p>
-                  <p className="mt-1 text-xs text-indigo-300">tudo incluso, sem taxas extras</p>
+                  <p className="mt-1 text-xs text-indigo-300">
+                    Produto único, sem travamento de recurso — o que varia é o preço, por faixa de
+                    funcionários.
+                  </p>
+                  <Button href={LINK_SOLICITAR_PROPOSTA} className="mt-5 w-full justify-center">
+                    Solicitar proposta
+                  </Button>
                 </div>
               </div>
             </div>
           </Reveal>
 
+          <Reveal delay={150} className="mt-6 overflow-hidden rounded-3xl border border-volt-300/30 bg-white/[0.06] p-8 sm:p-10">
+            <span className="inline-block w-fit rounded-full bg-volt-500/20 px-3 py-1 text-xs font-semibold text-volt-200">
+              Enterprise
+            </span>
+            <p className="mt-3 font-display text-xl font-semibold text-white">
+              Para empresas com múltiplas unidades ou operações de grande porte
+            </p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {[
+                'Múltiplas unidades',
+                'Gestão de acessos',
+                'Importação em massa',
+                'Onboarding assistido',
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-indigo-100">
+                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-volt-300" fill="currentColor">
+                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Button href={LINK_FALAR_CONSULTOR} variant="outlineLight" className="mt-6">
+              Falar com consultor
+            </Button>
+          </Reveal>
+
           <p className="mx-auto mt-5 max-w-2xl text-center text-xs leading-relaxed text-indigo-300">
-            *Valor de referência sobre o risco de irregularidade por vaga não preenchida na Lei de
-            Cotas (Lei 8.213/1991). A IncluiPro não garante isenção de multas nem substitui
-            orientação jurídica — o objetivo da plataforma é apoiar a organização e a
+            *De R$ 3.499,80 a R$ 349.978,53 por vaga (Portaria Interministerial MPS/MF nº 13/2026).
+            Valor sujeito a critérios de gradação. A IncluiPro não garante isenção de multas nem
+            substitui orientação jurídica — o objetivo da plataforma é apoiar a organização e a
             documentação dos processos de inclusão.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button href={LINK_PLANO_EMPRESARIAL} size="lg">Começar agora</Button>
+            <Button href={LINK_SOLICITAR_PROPOSTA} size="lg">Solicitar proposta</Button>
             <Button to="/produtos" variant="outlineLight" size="lg">
               Conhecer antes de contratar
             </Button>
@@ -649,8 +705,9 @@ export function Home() {
             Condições especiais para as primeiras empresas participantes.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-graphite-500">
-            As empresas participantes desta fase contam com acompanhamento mais próximo e
-            benefícios específicos de implantação e personalização.
+            O Programa Fundadores é a fase inicial de adoção da IncluiPro, com um número limitado
+            de vagas. As empresas participantes contam com acompanhamento mais próximo da nossa
+            equipe durante a implantação.
           </p>
 
           <div className="relative mx-auto mt-8 max-w-xl overflow-hidden rounded-2xl border border-volt-200 bg-volt-50 p-6 text-left shadow-[0_12px_36px_-16px_rgba(108,76,230,0.4)]">
@@ -659,20 +716,22 @@ export function Home() {
               <span className="inline-block" style={{ animation: 'pulseGlow 2.4s ease-in-out infinite' }}>
                 🎁
               </span>{' '}
-              Benefício exclusivo
+              O que a empresa participante recebe
             </p>
-            <p className="relative mt-2 text-sm leading-relaxed text-graphite-700">
-              Os primeiros clientes recebem Kit Personalizado e acréscimos sem custo adicional
-              enquanto durar a fase inicial.
-            </p>
+            <ul className="relative mt-3 space-y-2 text-sm leading-relaxed text-graphite-700">
+              <li>• Um Kit Personalizado sem custo adicional</li>
+              <li>• Onboarding acompanhado pela nossa equipe</li>
+              <li>• Prioridade no atendimento durante a fase inicial</li>
+            </ul>
           </div>
 
           <p className="mt-5 text-sm font-semibold text-graphite-500">
-            Vagas limitadas — condição especial válida enquanto durar a fase inicial.
+            Como participar: vagas limitadas, condição especial válida enquanto durar a fase
+            inicial. Envie sua solicitação e nossa equipe entra em contato.
           </p>
 
-          <Button href={LINK_PLANO_EMPRESARIAL} className="mt-7">
-            Conhecer o Programa Fundadores
+          <Button href={LINK_PROGRAMA_FUNDADORES} className="mt-7">
+            Solicitar participação no Programa Fundadores
           </Button>
         </Reveal>
       </section>

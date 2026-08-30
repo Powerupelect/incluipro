@@ -19,10 +19,10 @@ export function PublicHeader() {
       <div className="hidden border-b border-mist-200 bg-indigo-900 md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-end px-5 py-1.5 sm:px-8">
           <a
-            href="mailto:contato.incluipro@gmail.com"
+            href="mailto:contato@incluipro.com"
             className="text-xs font-medium text-indigo-200 hover:text-white"
           >
-            contato.incluipro@gmail.com
+            contato@incluipro.com
           </a>
         </div>
       </div>

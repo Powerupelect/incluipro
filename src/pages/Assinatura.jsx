@@ -4,16 +4,17 @@ import { Button } from '../components/ui/Button.jsx'
 import { checkAccess } from '../lib/api.js'
 import { PLANO_LABEL } from '../lib/plano.js'
 
-const LINK_PLANO_EMPRESARIAL = 'https://pay.hotmart.com/B106997595Q?bid=1785730636924'
+const LINK_SOLICITAR_PROPOSTA =
+  'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Proposta%20-%20Plano%20Empresarial'
 
 const ITENS_INCLUSOS = [
-  'IncluiPro Avalia — avaliações sociais estruturadas, ilimitadas',
+  'IncluiPro Avalia — avaliações sociais estruturadas, sem limite no período',
   'IncluiPro Lidera — biblioteca completa de treinamentos',
   'Atualizações constantes da plataforma',
   'Novos treinamentos adicionados continuamente',
   'Atualizações legais, sempre que a legislação mudar',
   'Melhorias e novas funcionalidades sem custo adicional',
-  'Suporte dedicado para sua equipe de RH',
+  'Suporte por e-mail em até 1 dia útil',
 ]
 
 export function Assinatura() {
@@ -47,8 +48,8 @@ export function Assinatura() {
           Um plano único, com tudo incluso
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-graphite-500">
-          Pagamento processado com segurança pela Hotmart. O acesso é liberado automaticamente
-          assim que o pagamento for confirmado.
+          Produto único, sem travamento de recurso por plano. O que varia é o preço, por faixa de
+          funcionários — solicite uma proposta para a sua empresa.
         </p>
         {semAcesso && (
           <p className="mx-auto mt-6 max-w-xl rounded-xl bg-amber-50 px-5 py-3 text-sm font-medium text-amber-700">
@@ -67,9 +68,8 @@ export function Assinatura() {
           <h2 className="relative font-display text-2xl font-semibold text-indigo-800">
             Plano Empresarial
           </h2>
-          <p className="relative mt-3 flex items-baseline gap-1">
-            <span className="font-display text-5xl font-semibold text-indigo-900">R$ 497</span>
-            <span className="text-sm text-graphite-500">/mês</span>
+          <p className="relative mt-3 font-display text-2xl font-semibold text-indigo-900">
+            Planos conforme o porte da empresa
           </p>
           <p className="relative mt-1 text-sm text-graphite-500">tudo incluso, sem taxas extras</p>
 
@@ -84,11 +84,11 @@ export function Assinatura() {
             ))}
           </ul>
 
-          <Button href={LINK_PLANO_EMPRESARIAL} className="relative mt-8 w-full justify-center" size="lg">
-            Assinar Plano Empresarial
+          <Button href={LINK_SOLICITAR_PROPOSTA} className="relative mt-8 w-full justify-center" size="lg">
+            Solicitar proposta
           </Button>
           <p className="relative mt-3 text-center text-xs text-graphite-300">
-            Cancele quando quiser. Pagamento processado pela Hotmart.
+            Nossa equipe entra em contato com a condição comercial para o porte da sua empresa.
           </p>
         </div>
       </section>
@@ -138,8 +138,8 @@ export function Assinatura() {
               <p className="mt-2 text-sm text-graphite-700">
                 Se você acabou de pagar, aguarde alguns minutos e tente de novo. Se o problema
                 continuar, fale com a gente em{' '}
-                <a href="mailto:contato.incluipro@gmail.com" className="font-semibold text-amber-800">
-                  contato.incluipro@gmail.com
+                <a href="mailto:contato@incluipro.com" className="font-semibold text-amber-800">
+                  contato@incluipro.com
                 </a>
                 .
               </p>

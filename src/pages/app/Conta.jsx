@@ -80,8 +80,8 @@ export function Conta() {
         <h2 className="font-display text-lg font-semibold text-indigo-800">Suporte</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Dúvidas sobre sua conta, relatórios ou kits de treinamento? Fale com a gente em{' '}
-          <a href="mailto:contato.incluipro@gmail.com" className="font-semibold text-signal-700 hover:text-signal-800">
-            contato.incluipro@gmail.com
+          <a href="mailto:contato@incluipro.com" className="font-semibold text-signal-700 hover:text-signal-800">
+            contato@incluipro.com
           </a>
           .
         </p>

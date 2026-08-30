@@ -103,8 +103,8 @@ export function Produtos() {
             Um plano único, com tudo incluso
           </h2>
           <p className="mt-3 text-indigo-200">
-            Pagamento processado com segurança pela Hotmart. O acesso é liberado automaticamente
-            assim que o pagamento for confirmado.
+            Produto único, sem travamento de recurso por plano. O que varia é o preço, por faixa
+            de funcionários.
           </p>
         </div>
 
@@ -114,9 +114,8 @@ export function Produtos() {
               Plano Principal
             </span>
             <p className="mt-3 font-display text-lg font-semibold text-white">Plano Empresarial</p>
-            <p className="mt-2 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-semibold text-white">R$ 497</span>
-              <span className="text-sm text-indigo-300">/mês</span>
+            <p className="mt-2 font-display text-xl font-semibold text-white">
+              Planos conforme o porte da empresa
             </p>
             <p className="mt-1 text-sm text-indigo-300">tudo incluso, sem taxas extras</p>
 
@@ -125,7 +124,7 @@ export function Produtos() {
                 'IncluiPro Avalia e IncluiPro Lidera completos',
                 'Atualizações constantes e novos treinamentos',
                 'Atualizações legais e melhorias contínuas',
-                'Suporte dedicado para sua equipe de RH',
+                'Suporte por e-mail em até 1 dia útil',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2.5 text-sm text-indigo-100">
                   <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-300" fill="currentColor">
@@ -137,13 +136,24 @@ export function Produtos() {
             </ul>
 
             <Button
-              href="https://pay.hotmart.com/B106997595Q?bid=1785730636924"
+              href="mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Proposta%20-%20Plano%20Empresarial"
               className="mt-6 w-full justify-center"
               size="lg"
             >
-              Assinar Plano Empresarial
+              Solicitar proposta
             </Button>
           </div>
+
+          <p className="mt-6 text-center text-sm text-indigo-300">
+            Múltiplas unidades ou operação de grande porte?{' '}
+            <a
+              href="mailto:contato@incluipro.com?subject=Contato%20Enterprise"
+              className="font-semibold text-white hover:text-signal-300"
+            >
+              Falar com consultor
+            </a>
+            .
+          </p>
         </div>
 
         <p className="mt-8 text-center text-sm text-indigo-300">

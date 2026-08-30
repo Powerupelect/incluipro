@@ -13,10 +13,10 @@ export function PublicFooter() {
               trabalho, com metodologia própria.
             </p>
             <a
-              href="mailto:contato.incluipro@gmail.com"
+              href="mailto:contato@incluipro.com"
               className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-signal-300 hover:text-signal-200"
             >
-              contato.incluipro@gmail.com
+              contato@incluipro.com
             </a>
           </div>
           <div>

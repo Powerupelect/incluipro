@@ -78,8 +78,8 @@ export function ProtectedRoute({ children }) {
         </p>
         <p className="mt-2 text-sm text-graphite-500">
           Tente novamente em instantes ou fale com a gente em{' '}
-          <a href="mailto:contato.incluipro@gmail.com" className="font-semibold text-signal-700">
-            contato.incluipro@gmail.com
+          <a href="mailto:contato@incluipro.com" className="font-semibold text-signal-700">
+            contato@incluipro.com
           </a>
           .
         </p>
