@@ -4,6 +4,7 @@ import { checkAccess } from '../../lib/api.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PLANO_LABEL } from '../../lib/plano.js'
 import { exportBackup, importBackup } from '../../lib/backup.js'
+import { getEmpresa, atualizarDadosCota } from '../../lib/empresa.js'
 
 export function Conta() {
   const { user } = useAuth()
@@ -13,6 +14,44 @@ export function Conta() {
   const [arquivoSelecionado, setArquivoSelecionado] = useState(null)
   const [importState, setImportState] = useState(null) // null | 'confirm' | 'done'
   const [erroImport, setErroImport] = useState('')
+
+  const [dadosCota, setDadosCota] = useState({ totalFuncionarios: '', aprendizes: '', aposentadosInvalidez: '' })
+  const [salvandoCota, setSalvandoCota] = useState(false)
+  const [cotaSalva, setCotaSalva] = useState(false)
+  const [erroCota, setErroCota] = useState('')
+
+  useEffect(() => {
+    if (!user?.empresaId) return
+    getEmpresa(user.empresaId)
+      .then((empresa) => {
+        if (!empresa) return
+        setDadosCota({
+          totalFuncionarios: empresa.total_funcionarios || '',
+          aprendizes: empresa.aprendizes || '',
+          aposentadosInvalidez: empresa.aposentados_invalidez || '',
+        })
+      })
+      .catch(() => {})
+  }, [user?.empresaId])
+
+  async function handleSalvarCota(e) {
+    e.preventDefault()
+    setErroCota('')
+    setSalvandoCota(true)
+    try {
+      await atualizarDadosCota(user.empresaId, {
+        totalFuncionarios: Number(dadosCota.totalFuncionarios) || 0,
+        aprendizes: Number(dadosCota.aprendizes) || 0,
+        aposentadosInvalidez: Number(dadosCota.aposentadosInvalidez) || 0,
+      })
+      setCotaSalva(true)
+      setTimeout(() => setCotaSalva(false), 2500)
+    } catch {
+      setErroCota('Não foi possível salvar agora. Tente novamente.')
+    } finally {
+      setSalvandoCota(false)
+    }
+  }
 
   function handleSelecionarArquivo(e) {
     const file = e.target.files?.[0]
@@ -74,6 +113,53 @@ export function Conta() {
             <dd className="mt-1 text-sm text-graphite-900">{user?.email}</dd>
           </div>
         </dl>
+      </div>
+
+      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+        <h2 className="font-display text-lg font-semibold text-indigo-800">Quadro de funcionários</h2>
+        <p className="mt-1 text-sm text-graphite-500">
+          Usado para calcular a cota de PCD da empresa (Lei 8.213/1991). A cota é global — some
+          matriz e filiais.
+        </p>
+        <form onSubmit={handleSalvarCota} className="mt-4 grid gap-4 sm:grid-cols-3">
+          <label className="text-sm">
+            <span className="font-semibold text-graphite-700">Total de funcionários (CLT)</span>
+            <input
+              type="number"
+              min="0"
+              value={dadosCota.totalFuncionarios}
+              onChange={(e) => setDadosCota((d) => ({ ...d, totalFuncionarios: e.target.value }))}
+              className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+            />
+          </label>
+          <label className="text-sm">
+            <span className="font-semibold text-graphite-700">Aprendizes</span>
+            <input
+              type="number"
+              min="0"
+              value={dadosCota.aprendizes}
+              onChange={(e) => setDadosCota((d) => ({ ...d, aprendizes: e.target.value }))}
+              className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+            />
+          </label>
+          <label className="text-sm">
+            <span className="font-semibold text-graphite-700">Aposentados por invalidez</span>
+            <input
+              type="number"
+              min="0"
+              value={dadosCota.aposentadosInvalidez}
+              onChange={(e) => setDadosCota((d) => ({ ...d, aposentadosInvalidez: e.target.value }))}
+              className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+            />
+          </label>
+          <div className="flex items-center gap-3 sm:col-span-3">
+            <Button as="button" type="submit" size="sm" disabled={salvandoCota}>
+              {salvandoCota ? 'Salvando…' : 'Salvar'}
+            </Button>
+            {cotaSalva && <span className="text-sm font-semibold text-signal-700">✅ Salvo</span>}
+            {erroCota && <span className="text-sm text-red-600">{erroCota}</span>}
+          </div>
+        </form>
       </div>
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">

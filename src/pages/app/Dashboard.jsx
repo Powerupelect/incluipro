@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { getReports } from '../../lib/reports.js'
+import { getEmpresa, contarPcdAtivos } from '../../lib/empresa.js'
+import { calcularCota } from '../../lib/cota.js'
 import { kits } from '../../lib/kits.js'
 import { Button } from '../../components/ui/Button.jsx'
+import { PainelCota } from '../../components/PainelCota.jsx'
 
 const CARD_ICONS = {
   realizadas: (
@@ -18,6 +21,8 @@ const CARD_ICONS = {
 export function Dashboard() {
   const { user } = useAuth()
   const [historico, setHistorico] = useState([])
+  const [empresa, setEmpresa] = useState(null)
+  const [pcdAtivos, setPcdAtivos] = useState(0)
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -27,6 +32,13 @@ export function Dashboard() {
         if (ativo) setHistorico(relatorios)
       })
       .catch(() => {})
+    Promise.all([getEmpresa(user.empresaId), contarPcdAtivos(user.empresaId)])
+      .then(([empresaData, count]) => {
+        if (!ativo) return
+        setEmpresa(empresaData)
+        setPcdAtivos(count)
+      })
+      .catch(() => {})
     return () => {
       ativo = false
     }
@@ -34,6 +46,16 @@ export function Dashboard() {
 
   const recentes = historico.slice(0, 5)
   const novosKits = kits.filter((k) => k.novo)
+
+  const cotaResultado =
+    empresa && empresa.total_funcionarios > 0
+      ? calcularCota({
+          totalFuncionarios: empresa.total_funcionarios || 0,
+          aprendizes: empresa.aprendizes || 0,
+          aposentadosInvalidez: empresa.aposentados_invalidez || 0,
+          pcdAtuais: pcdAtivos,
+        })
+      : null
 
   const stats = [
     {
@@ -107,6 +129,24 @@ export function Dashboard() {
           </div>
         ))}
       </div>
+
+      <div className="mt-8">
+        <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
+      </div>
+
+      {cotaResultado && (
+        <div className="mt-6 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+          <h2 className="font-display text-lg font-semibold text-indigo-800">Pendências</h2>
+          {cotaResultado.vagasEmAberto > 0 ? (
+            <p className="mt-2 text-sm text-graphite-700">
+              ⚠️ Ainda faltam <strong>{cotaResultado.vagasEmAberto}</strong> vaga
+              {cotaResultado.vagasEmAberto !== 1 ? 's' : ''} para cumprir a cota de PCD.
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-graphite-500">✅ Nenhuma pendência de cota no momento.</p>
+          )}
+        </div>
+      )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
