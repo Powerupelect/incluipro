@@ -1,6 +1,6 @@
-// Relatórios do IncluiPro Avalia — agora persistidos no Supabase (colaboradores + avaliacoes),
-// em vez de localStorage. Cada relatório cria um colaborador novo nesta etapa (sem seletor de
-// colaborador existente ainda); apagar o relatório apaga o colaborador junto (cascade).
+// Relatórios do IncluiPro Avalia — persistidos no Supabase (colaboradores + avaliacoes).
+// Um colaborador pode ter mais de uma avaliação (avaliação completa inicial + revisões
+// anuais), então apagar um relatório apaga só a avaliação, não o colaborador.
 
 import { supabase } from './supabase.js'
 
@@ -9,6 +9,7 @@ function mapAvaliacaoToReport(row) {
   return {
     id: row.id,
     colaboradorId: row.colaborador_id,
+    tipo: row.tipo || 'completa',
     createdAt: row.criado_em,
     updatedAt: row.atualizado_em,
     candidato: colaborador.nome || 'Candidato sem nome',
@@ -41,27 +42,47 @@ export async function getReports(empresaId) {
   return (data || []).map(mapAvaliacaoToReport)
 }
 
-export async function saveReport(fields, empresaId) {
+/**
+ * Salva uma avaliação completa. Se `colaboradorIdExistente` for informado, atualiza esse
+ * colaborador e cria uma NOVA avaliação para ele (reaproveitamento/revisão anual alterada) —
+ * em vez de criar um colaborador novo do zero.
+ */
+export async function saveReport(fields, empresaId, colaboradorIdExistente) {
   if (!empresaId) throw new Error('Empresa não identificada.')
 
-  const { data: colaborador, error: erroColaborador } = await supabase
-    .from('colaboradores')
-    .insert({
-      empresa_id: empresaId,
-      nome: fields.candidato || 'Candidato sem nome',
-      cargo: fields.cargo || null,
-      tipo_deficiencia: fields.tipoDeficiencia || null,
-      observacoes_condicao: fields.observacoesCondicao || null,
-    })
-    .select()
-    .single()
-  if (erroColaborador) throw erroColaborador
+  const dadosColaborador = {
+    nome: fields.candidato || 'Candidato sem nome',
+    cargo: fields.cargo || null,
+    tipo_deficiencia: fields.tipoDeficiencia || null,
+    observacoes_condicao: fields.observacoesCondicao || null,
+  }
+
+  let colaborador
+  if (colaboradorIdExistente) {
+    const { data, error } = await supabase
+      .from('colaboradores')
+      .update(dadosColaborador)
+      .eq('id', colaboradorIdExistente)
+      .select()
+      .single()
+    if (error) throw error
+    colaborador = data
+  } else {
+    const { data, error } = await supabase
+      .from('colaboradores')
+      .insert({ empresa_id: empresaId, ...dadosColaborador })
+      .select()
+      .single()
+    if (error) throw error
+    colaborador = data
+  }
 
   const { data: avaliacao, error: erroAvaliacao } = await supabase
     .from('avaliacoes')
     .insert({
       colaborador_id: colaborador.id,
       empresa_id: empresaId,
+      tipo: 'completa',
       rotina: fields.rotina || null,
       historico: fields.historico || null,
       necessidades: fields.necessidades || null,
@@ -74,6 +95,31 @@ export async function saveReport(fields, empresaId) {
     .select()
     .single()
   if (erroAvaliacao) throw erroAvaliacao
+
+  return mapAvaliacaoToReport({ ...avaliacao, colaboradores: colaborador })
+}
+
+/** Revisão anual simplificada: confirma que nada mudou desde a última avaliação do colaborador. */
+export async function registrarRevisaoConfirmada({ colaboradorId, empresaId, avaliador }) {
+  const { data: colaborador, error: erroColaborador } = await supabase
+    .from('colaboradores')
+    .select('*')
+    .eq('id', colaboradorId)
+    .single()
+  if (erroColaborador) throw erroColaborador
+
+  const { data: avaliacao, error } = await supabase
+    .from('avaliacoes')
+    .insert({
+      colaborador_id: colaboradorId,
+      empresa_id: empresaId,
+      tipo: 'revisao_confirmada',
+      avaliador: avaliador || null,
+      conteudo_gerado: `Revisão anual confirmada em ${new Date().toLocaleDateString('pt-BR')} — nenhuma alteração relatada desde a última avaliação.`,
+    })
+    .select()
+    .single()
+  if (error) throw error
 
   return mapAvaliacaoToReport({ ...avaliacao, colaboradores: colaborador })
 }
@@ -125,13 +171,7 @@ export async function updateReport(id, patch) {
 }
 
 export async function deleteReport(id) {
-  const { data: atual, error: erroBusca } = await supabase
-    .from('avaliacoes')
-    .select('colaborador_id')
-    .eq('id', id)
-    .single()
-  if (erroBusca) throw erroBusca
-  // Apaga o colaborador; a avaliação cascade-apaga junto (mapeamento 1:1 nesta etapa).
-  const { error } = await supabase.from('colaboradores').delete().eq('id', atual.colaborador_id)
+  // Apaga só a avaliação — um colaborador pode ter outras avaliações (revisões anuais).
+  const { error } = await supabase.from('avaliacoes').delete().eq('id', id)
   if (error) throw error
 }

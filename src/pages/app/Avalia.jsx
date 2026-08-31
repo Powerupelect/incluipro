@@ -5,9 +5,23 @@ import { Button } from '../../components/ui/Button.jsx'
 import { montarRelatorio } from '../../lib/montarRelatorio.js'
 import { identificarCategoria } from '../../lib/accessibilityResources.js'
 import { ConsultaRapida } from '../../components/ConsultaRapida.jsx'
-import { getReports, saveReport, deleteReport, updateReport } from '../../lib/reports.js'
+import {
+  getReports,
+  saveReport,
+  deleteReport,
+  updateReport,
+  registrarRevisaoConfirmada,
+} from '../../lib/reports.js'
 import { baixarRelatorioPDF } from '../../lib/pdf.js'
 import { useAuth } from '../../lib/auth.jsx'
+import { getSugestaoRedacao } from '../../lib/sugestoesRedacao.js'
+
+const CAMPOS_ESSENCIAIS = [
+  { key: 'nome', label: 'Nome do candidato' },
+  { key: 'tipoDeficiencia', label: 'Tipo de deficiência' },
+  { key: 'necessidades', label: 'Necessidades específicas no trabalho' },
+  { key: 'observacoesErgonomicas', label: 'Observações ergonômicas/ambientais' },
+]
 
 const blocos = [
   {
@@ -187,6 +201,9 @@ export function Avalia() {
   const [categoriaAtiva, setCategoriaAtiva] = useState(null)
   const [painelAberto, setPainelAberto] = useState(false)
   const [sucesso, setSucesso] = useState(false)
+  const [colaboradorIdParaSalvar, setColaboradorIdParaSalvar] = useState(null)
+  const [revisaoModal, setRevisaoModal] = useState(null) // { colaboradorId, nome } | null
+  const [revisaoSalvando, setRevisaoSalvando] = useState(false)
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -214,6 +231,13 @@ export function Avalia() {
       setError('Não foi possível identificar sua empresa. Recarregue a página e tente novamente.')
       return
     }
+    const faltando = CAMPOS_ESSENCIAIS.filter((c) => !form[c.key]?.trim())
+    if (faltando.length > 0) {
+      const prosseguir = confirm(
+        `Alguns campos essenciais ainda estão vazios: ${faltando.map((c) => c.label).join(', ')}.\n\nGerar o relatório mesmo assim?`,
+      )
+      if (!prosseguir) return
+    }
     setError('')
     const texto = montarRelatorio({ ...form, recursosSugeridos })
     setRelatorio(texto)
@@ -235,8 +259,10 @@ export function Avalia() {
           conteudo: texto,
         },
         empresaId,
+        colaboradorIdParaSalvar,
       )
       setCurrentReportId(saved.id)
+      setColaboradorIdParaSalvar(null)
       setHistorico((h) => [saved, ...h])
       window.scrollTo({ top: 0, behavior: 'smooth' })
       setSucesso(true)
@@ -250,12 +276,79 @@ export function Avalia() {
     setForm(initialForm)
     setRelatorio('')
     setCurrentReportId(null)
+    setColaboradorIdParaSalvar(null)
     setEditMode(false)
     setEditDraft('')
     setRecursosSugeridos([])
     setCategoriaAtiva(null)
     setError('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  /** Pré-preenche o formulário a partir de um relatório anterior — usado tanto para
+   * "revisão anual com alteração" (reaproveita o mesmo colaborador) quanto para "duplicar"
+   * (cria um colaborador novo a partir do modelo). */
+  function preencherFormularioApartirDe(item, { reaproveitarColaborador }) {
+    setForm({
+      ...initialForm,
+      nome: item.candidato,
+      cargo: item.cargo || '',
+      tipoDeficiencia: item.tipoDeficiencia || '',
+      observacoesCondicao: item.observacoesCondicao || '',
+      rotina: item.rotina || '',
+      historico: item.historico || '',
+      necessidades: item.necessidades || '',
+      expectativas: item.expectativas || '',
+      observacoesErgonomicas: item.observacoesErgonomicas || '',
+      notasLivres: item.notasLivres || '',
+    })
+    setRecursosSugeridos(item.recursosSugeridos || [])
+    setCategoriaAtiva(identificarCategoria(item.tipoDeficiencia || ''))
+    setRelatorio('')
+    setCurrentReportId(null)
+    setColaboradorIdParaSalvar(reaproveitarColaborador ? item.colaboradorId : null)
+    setEditMode(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function handleDuplicar(item) {
+    preencherFormularioApartirDe(item, { reaproveitarColaborador: false })
+  }
+
+  function handleIniciarRevisao(item) {
+    setRevisaoModal({ colaboradorId: item.colaboradorId, nome: item.candidato, item })
+  }
+
+  function handleRevisaoComAlteracao() {
+    if (!revisaoModal) return
+    preencherFormularioApartirDe(revisaoModal.item, { reaproveitarColaborador: true })
+    setRevisaoModal(null)
+  }
+
+  async function handleRevisaoSemAlteracao() {
+    if (!revisaoModal || !empresaId) return
+    setRevisaoSalvando(true)
+    try {
+      const registrada = await registrarRevisaoConfirmada({
+        colaboradorId: revisaoModal.colaboradorId,
+        empresaId,
+      })
+      setHistorico((h) => [registrada, ...h])
+      setRevisaoModal(null)
+    } catch {
+      setError('Não foi possível registrar a revisão agora. Tente novamente.')
+    } finally {
+      setRevisaoSalvando(false)
+    }
+  }
+
+  function handleInserirSugestao(campo) {
+    const sugestao = getSugestaoRedacao(categoriaAtiva, campo)
+    if (!sugestao) return
+    setForm((f) => ({
+      ...f,
+      [campo]: f[campo]?.trim() ? `${f[campo]}\n${sugestao}` : sugestao,
+    }))
   }
 
   function handleCopiar() {
@@ -363,7 +456,7 @@ export function Avalia() {
     return historico.filter(
       (r) =>
         (r.candidato || '').toLowerCase().includes(q) ||
-        (r.empresa || '').toLowerCase().includes(q),
+        (r.cargo || '').toLowerCase().includes(q),
     )
   }, [historico, busca])
 
@@ -441,7 +534,20 @@ export function Avalia() {
               <div className="mt-4 space-y-4">
                 {bloco.campos.map((campo) => (
                   <div key={campo.key}>
-                    <label className="text-sm font-medium text-graphite-700">{campo.label}</label>
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-sm font-medium text-graphite-700">{campo.label}</label>
+                      {(campo.key === 'necessidades' || campo.key === 'observacoesErgonomicas') &&
+                        categoriaAtiva &&
+                        getSugestaoRedacao(categoriaAtiva, campo.key) && (
+                          <button
+                            type="button"
+                            onClick={() => handleInserirSugestao(campo.key)}
+                            className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
+                          >
+                            ✨ Usar sugestão
+                          </button>
+                        )}
+                    </div>
                     {campo.type === 'textarea' ? (
                       <textarea
                         rows={3}
@@ -565,6 +671,33 @@ export function Avalia() {
           </div>
 
           <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+            <h2 className="font-display text-lg font-semibold text-indigo-800">
+              ✅ O que não pode faltar
+            </h2>
+            <ul className="mt-3 space-y-2">
+              {CAMPOS_ESSENCIAIS.map((campo) => {
+                const preenchido = Boolean(form[campo.key]?.trim())
+                return (
+                  <li key={campo.key} className="flex items-center gap-2.5 text-sm">
+                    <span
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                        preenchido ? 'bg-signal-600 text-white' : 'border border-mist-400 text-transparent'
+                      }`}
+                    >
+                      <svg viewBox="0 0 20 20" className="h-3 w-3" fill="currentColor">
+                        <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                      </svg>
+                    </span>
+                    <span className={preenchido ? 'text-graphite-500 line-through' : 'text-graphite-900'}>
+                      {campo.label}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
                 📂 Meus Relatórios
@@ -573,7 +706,7 @@ export function Avalia() {
             <input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar por candidato ou empresa…"
+              placeholder="Buscar por candidato ou cargo…"
               className="mt-3 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
 
@@ -592,9 +725,14 @@ export function Avalia() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-graphite-900">
                         {item.candidato} {item.editado && <span className="text-graphite-300">· editado</span>}
+                        {item.tipo === 'revisao_confirmada' && (
+                          <span className="ml-1.5 rounded-full bg-mist-300 px-2 py-0.5 text-[10px] font-semibold text-graphite-700">
+                            revisão confirmada
+                          </span>
+                        )}
                       </p>
                       <p className="truncate text-xs text-graphite-300">
-                        {item.empresa || 'Empresa não informada'} ·{' '}
+                        {item.cargo || 'Cargo não informado'} ·{' '}
                         {new Date(item.updatedAt || item.createdAt).toLocaleString('pt-BR')}
                       </p>
                     </div>
@@ -604,6 +742,12 @@ export function Avalia() {
                       </button>
                       <button onClick={() => handleAbrirHistorico(item, true)} className="text-indigo-700 hover:text-indigo-900">
                         ✏️ Editar
+                      </button>
+                      <button onClick={() => handleIniciarRevisao(item)} className="text-volt-700 hover:text-volt-800">
+                        🔁 Revisão anual
+                      </button>
+                      <button onClick={() => handleDuplicar(item)} className="text-graphite-700 hover:text-graphite-900">
+                        📋 Duplicar
                       </button>
                       <button onClick={() => handleBaixarHistoricoPdf(item)} className="text-signal-700 hover:text-signal-800">
                         📥 Baixar PDF
@@ -617,12 +761,13 @@ export function Avalia() {
               </ul>
             )}
             <p className="mt-4 text-xs text-graphite-300">
-              Os relatórios ficam salvos apenas neste navegador. Baixe o PDF de cada avaliação e
-              exporte um backup em{' '}
+              Seus relatórios ficam salvos com segurança na nuvem — acesse de qualquer
+              computador com o login da sua empresa. Você também pode exportar uma cópia extra
+              em{' '}
               <Link to="/app/conta" className="font-semibold text-graphite-500 hover:text-signal-700">
                 Minha conta
-              </Link>{' '}
-              antes de trocar de computador ou limpar os dados do navegador.
+              </Link>
+              , se quiser.
             </p>
           </div>
         </div>
@@ -636,6 +781,37 @@ export function Avalia() {
         recursosSelecionados={recursosSugeridos}
         onToggleRecurso={handleToggleRecurso}
       />
+
+      {revisaoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite-900/50 px-5">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-pop">
+            <h2 className="font-display text-lg font-semibold text-indigo-800">Revisão anual</h2>
+            <p className="mt-2 text-sm text-graphite-700">
+              Algo mudou desde a última avaliação de <strong>{revisaoModal.nome}</strong>?
+            </p>
+            <div className="mt-6 flex flex-col gap-2.5">
+              <Button as="button" onClick={handleRevisaoComAlteracao} className="w-full justify-center">
+                Sim, algo mudou — abrir avaliação completa
+              </Button>
+              <Button
+                as="button"
+                variant="ghost"
+                disabled={revisaoSalvando}
+                onClick={handleRevisaoSemAlteracao}
+                className="w-full justify-center"
+              >
+                {revisaoSalvando ? 'Registrando…' : 'Não, confirmar sem alterações'}
+              </Button>
+              <button
+                onClick={() => setRevisaoModal(null)}
+                className="mt-1 text-sm font-semibold text-graphite-500 hover:text-graphite-700"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
