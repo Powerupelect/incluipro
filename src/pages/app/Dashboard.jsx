@@ -7,6 +7,8 @@ import { calcularCota } from '../../lib/cota.js'
 import { kits } from '../../lib/kits.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PainelCota } from '../../components/PainelCota.jsx'
+import { getColaboradoresComDeficiencia, getDocumentos } from '../../lib/documentos.js'
+import { resumoTriagem } from '../../lib/triagemLaudos.js'
 
 const CARD_ICONS = {
   realizadas: (
@@ -23,6 +25,7 @@ export function Dashboard() {
   const [historico, setHistorico] = useState([])
   const [empresa, setEmpresa] = useState(null)
   const [pcdAtivos, setPcdAtivos] = useState(0)
+  const [triagem, setTriagem] = useState(null)
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -37,6 +40,11 @@ export function Dashboard() {
         if (!ativo) return
         setEmpresa(empresaData)
         setPcdAtivos(count)
+      })
+      .catch(() => {})
+    Promise.all([getColaboradoresComDeficiencia(user.empresaId), getDocumentos(user.empresaId)])
+      .then(([cols, docs]) => {
+        if (ativo) setTriagem(resumoTriagem(cols, docs))
       })
       .catch(() => {})
     return () => {
@@ -145,6 +153,26 @@ export function Dashboard() {
           ) : (
             <p className="mt-2 text-sm text-graphite-500">✅ Nenhuma pendência de cota no momento.</p>
           )}
+        </div>
+      )}
+
+      {triagem && triagem.total > 0 && (
+        <div className="mt-6 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-display text-lg font-semibold text-indigo-800">Triagem de laudos</h2>
+              <p className="mt-2 text-sm text-graphite-700">
+                {triagem.total} cadastrado{triagem.total === 1 ? '' : 's'} · {triagem.consistentes} com
+                documentação consistente · {triagem.emRisco} em risco
+              </p>
+              <p className="mt-1 text-xs text-graphite-300">
+                Indicativo de risco documental — não é parecer jurídico ou médico.
+              </p>
+            </div>
+            <Link to="/app/laudos" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
+              Ver detalhes →
+            </Link>
+          </div>
         </div>
       )}
 

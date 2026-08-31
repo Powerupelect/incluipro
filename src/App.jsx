@@ -18,6 +18,7 @@ import { Avalia } from './pages/app/Avalia.jsx'
 import { Lidera } from './pages/app/Lidera.jsx'
 import { Conta } from './pages/app/Conta.jsx'
 import { MatrizCompatibilidade } from './pages/app/MatrizCompatibilidade.jsx'
+import { TriagemLaudos } from './pages/app/TriagemLaudos.jsx'
 import { AdminLogin } from './pages/admin/AdminLogin.jsx'
 import { AdminPainel } from './pages/admin/AdminPainel.jsx'
 
@@ -57,6 +58,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="avalia" element={<Avalia />} />
             <Route path="matriz" element={<MatrizCompatibilidade />} />
+            <Route path="laudos" element={<TriagemLaudos />} />
             <Route path="lidera" element={<Lidera />} />
             <Route path="conta" element={<Conta />} />
           </Route>

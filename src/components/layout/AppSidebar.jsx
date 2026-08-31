@@ -25,6 +25,12 @@ const items = [
     icon: <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />,
   },
   {
+    to: '/app/laudos',
+    label: 'Triagem de Laudos',
+    hint: 'Documentos e consistência',
+    icon: <path d="M7 4h7l4 4v12a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1zM14 4v4h4M9 13l2 2 4-4" />,
+  },
+  {
     to: '/app/lidera',
     label: 'IncluiPro Lidera',
     hint: 'Kits de treinamento',
