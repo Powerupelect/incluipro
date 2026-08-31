@@ -160,18 +160,27 @@ candidato/empresa e ações de abrir, editar, baixar PDF e excluir por item.
 ### LGPD e dados sensíveis
 
 O **IncluiPro Avalia** processa dados sensíveis — informações de saúde, deficiência e rotina de
-candidatos — o que se enquadra como dado sensível sob a LGPD (Lei 13.709/2018). Quando a
-persistência de dados for implementada de verdade (banco de dados real, no lugar do
-`localStorage` usado neste protótipo), é necessário, no mínimo:
+candidatos — o que se enquadra como dado sensível sob a LGPD (Lei 13.709/2018). Desde a Etapa 3,
+os dados ficam em Postgres gerenciado pela Supabase (não mais em `localStorage`), com Row Level
+Security isolando os dados de cada empresa e, dentro dela, por papel de acesso (admin/RH/gestor/
+leitura — Etapa 6). A Etapa 11 tratou o restante do requisito legal:
 
-- **Criptografia em repouso** para os dados armazenados (relatórios, anotações de entrevista).
-- **Política de retenção de dados** definida e documentada (por quanto tempo os relatórios ficam
-  armazenados, quando e como são anonimizados ou excluídos).
-- **Termo de uso e política de privacidade específicos**, informando aos candidatos como seus
-  dados serão tratados, com base legal adequada (geralmente consentimento explícito, dado o
-  caráter sensível da informação).
-- Controle de acesso por empresa/conta, para que uma empresa nunca veja relatórios de candidatos
-  avaliados por outra.
+- **Termos de Uso, Política de Privacidade e Contrato de Operador** publicados em `/termos-de-uso`,
+  `/privacidade` e `/contrato-operador` (`src/pages/legal/`) — ainda **minutas técnicas, pendentes
+  de revisão por advogado**, sinalizado no próprio texto de cada página.
+- **Aceite de termos com data registrada**: checkbox obrigatório no cadastro (`Cadastro.jsx`),
+  gravado em `contas.aceite_termos_em` / `contas.aceite_termos_versao` (`schema_etapa11.sql`).
+- **Aviso de finalidade** nos formulários com dado de saúde (Avalia, Triagem de Laudos, Central de
+  Acessibilidade), com link para a Política de Privacidade.
+- **Exclusão definitiva**: Minha conta → "Excluir conta e todos os dados" (admin, com confirmação
+  digitando o nome da empresa) — apaga a empresa e tudo vinculado a ela por cascata de FK.
+- **Política de retenção declarada** em `/privacidade` e `/seguranca`.
+- Página `/seguranca` (11.3) descreve o que existe de fato — onde os dados ficam, quem acessa,
+  backup, exclusão, subprocessadores — para o time de TI do cliente avaliar.
+
+O que ainda depende de trabalho fora do código: revisão jurídica das três minutas antes de valerem
+como documento legal definitivo, e uma auditoria de acessibilidade formal (ver `/acessibilidade`,
+que já deixa claro que WCAG 2.1 AA ainda não foi certificado, só perseguido como referência).
 
 ### Segurança da liberação de acesso
 
@@ -185,8 +194,10 @@ persistência de dados for implementada de verdade (banco de dados real, no luga
   motivo (rede, backend fora do ar), mostra um erro explícito com opção de tentar de novo — nunca
   deixa passar silenciosamente.
 
-### Autenticação e persistência de relatórios mockadas
+### Autenticação e persistência
 
-Autenticação de empresa (login/cadastro) e o histórico de relatórios do IncluiPro Avalia ainda
-são simulados em `localStorage` nesta versão — apenas a **liberação de acesso por pagamento** já
-usa backend real (Netlify Functions + Blobs), como descrito acima.
+Autenticação (login/cadastro), empresas, colaboradores, avaliações, laudos e solicitações de
+acessibilidade usam Supabase real desde a Etapa 3 — não há mais simulação em `localStorage`. A
+liberação de acesso por pagamento continua em backend próprio (Netlify Functions + Blobs), como
+descrito acima. Ver os arquivos `supabase/schema*.sql` para o schema completo, na ordem em que
+devem ser rodados (schema.sql primeiro, depois schema_etapa4.sql em diante).

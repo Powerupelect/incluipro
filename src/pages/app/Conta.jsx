@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { checkAccess } from '../../lib/api.js'
 import { Button } from '../../components/ui/Button.jsx'
@@ -9,9 +10,11 @@ import { getMembros, convidarMembro, removerMembro, PAPEL_LABEL } from '../../li
 import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacaoTotal.js'
 import { montarDadosDossie } from '../../lib/dossie.js'
 import { gerarDossieTecnicoPDF, gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
+import { excluirEmpresaDefinitivamente } from '../../lib/exclusaoConta.js'
 
 export function Conta() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [acesso, setAcesso] = useState(null)
   const [erro, setErro] = useState('')
   const fileInputRef = useRef(null)
@@ -37,6 +40,23 @@ export function Conta() {
   const [gerandoDossie, setGerandoDossie] = useState(false)
   const [gerandoResumo, setGerandoResumo] = useState(false)
   const [erroDossie, setErroDossie] = useState('')
+
+  const [confirmacaoExclusao, setConfirmacaoExclusao] = useState('')
+  const [excluindo, setExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState('')
+
+  async function handleExcluirConta() {
+    setErroExclusao('')
+    setExcluindo(true)
+    try {
+      await excluirEmpresaDefinitivamente(user.empresaId)
+      await logout()
+      navigate('/')
+    } catch {
+      setErroExclusao('Não foi possível excluir agora. Tente novamente.')
+      setExcluindo(false)
+    }
+  }
 
   const ehAdmin = user?.papel === 'admin'
 
@@ -538,6 +558,36 @@ export function Conta() {
 
         {erroImport && <p className="mt-4 text-sm text-red-600">{erroImport}</p>}
       </div>
+
+      {ehAdmin && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-card sm:p-8">
+          <h2 className="font-display text-lg font-semibold text-red-800">Excluir conta e todos os dados</h2>
+          <p className="mt-1 text-sm text-red-700">
+            Apaga definitivamente colaboradores, relatórios, laudos, solicitações de
+            acessibilidade e cargos cadastrados desta empresa. Não pode ser desfeito. Digite o
+            nome da empresa (<strong>{user?.companyName}</strong>) para confirmar.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <input
+              value={confirmacaoExclusao}
+              onChange={(e) => setConfirmacaoExclusao(e.target.value)}
+              placeholder={user?.companyName}
+              className="flex-1 rounded-xl border border-red-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"
+            />
+            <Button
+              as="button"
+              type="button"
+              variant="danger"
+              size="sm"
+              disabled={excluindo || confirmacaoExclusao !== user?.companyName}
+              onClick={handleExcluirConta}
+            >
+              {excluindo ? 'Excluindo…' : 'Excluir definitivamente'}
+            </Button>
+          </div>
+          {erroExclusao && <p className="mt-3 text-sm text-red-700">{erroExclusao}</p>}
+        </div>
+      )}
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Suporte</h2>

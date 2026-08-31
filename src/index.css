@@ -101,6 +101,14 @@
     font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
+
+  /* Indicador de foco visível para navegação por teclado (WCAG 2.1 AA, critério 2.4.7) —
+     só aparece em :focus-visible, então não interfere com cliques de mouse. */
+  :focus-visible {
+    outline: 2px solid var(--color-signal-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
 @layer components {

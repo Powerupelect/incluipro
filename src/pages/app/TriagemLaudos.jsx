@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
 import {
@@ -96,6 +97,10 @@ export function TriagemLaudos() {
         <p className="mt-2 max-w-2xl text-graphite-500">
           Repositório e checagem de consistência dos documentos que fundamentam o enquadramento na
           cota. Sinalização de indicativo de risco documental — não é parecer jurídico ou médico.
+        </p>
+        <p className="mt-2 text-xs text-graphite-400">
+          Os documentos aqui contêm dado sensível de saúde (LGPD art. 11) — ver{' '}
+          <Link to="/privacidade" className="underline hover:text-graphite-600">Política de Privacidade</Link>.
         </p>
       </div>
 

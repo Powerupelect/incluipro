@@ -10,6 +10,7 @@ export function Cadastro() {
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [confirmarEmail, setConfirmarEmail] = useState(false)
+  const [aceitouTermos, setAceitouTermos] = useState(false)
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -20,7 +21,7 @@ export function Cadastro() {
     setError('')
     setEnviando(true)
     try {
-      const resultado = await register(form)
+      const resultado = await register({ ...form, aceitouTermos })
       if (resultado?.requiresEmailConfirmation) {
         setConfirmarEmail(true)
       } else {
@@ -96,7 +97,27 @@ export function Cadastro() {
             placeholder="Mínimo 6 caracteres"
           />
         </div>
-        <Button as="button" type="submit" disabled={enviando} className="w-full justify-center">
+        <label className="flex items-start gap-2.5 text-xs text-graphite-500">
+          <input
+            type="checkbox"
+            required
+            checked={aceitouTermos}
+            onChange={(e) => setAceitouTermos(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span>
+            Li e aceito os{' '}
+            <Link to="/termos-de-uso" target="_blank" className="font-semibold text-graphite-700 hover:text-signal-700">
+              Termos de Uso
+            </Link>{' '}
+            e a{' '}
+            <Link to="/privacidade" target="_blank" className="font-semibold text-graphite-700 hover:text-signal-700">
+              Política de Privacidade
+            </Link>
+            .
+          </span>
+        </label>
+        <Button as="button" type="submit" disabled={enviando || !aceitouTermos} className="w-full justify-center">
           {enviando ? 'Criando conta…' : 'Criar conta e assinar'}
         </Button>
         <p className="text-center text-xs text-graphite-300">

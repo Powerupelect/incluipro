@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
 import {
@@ -77,6 +78,10 @@ export function CentralAcessibilidade() {
           <p className="mt-2 max-w-2xl text-graphite-500">
             O RH registra o pedido feito pelo colaborador — conversa, e-mail, mensagem — e
             acompanha o fluxo até a conclusão. Visível apenas para admin, RH e gestores.
+          </p>
+          <p className="mt-1 text-xs text-graphite-400">
+            Estas solicitações contêm dado sensível de saúde (LGPD art. 11) — ver{' '}
+            <Link to="/privacidade" className="underline hover:text-graphite-600">Política de Privacidade</Link>.
           </p>
         </div>
         <Button as="button" onClick={() => setFormAberto((v) => !v)} size="lg">

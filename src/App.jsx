@@ -13,6 +13,11 @@ import { Assinatura } from './pages/Assinatura.jsx'
 import { Login } from './pages/Login.jsx'
 import { Cadastro } from './pages/Cadastro.jsx'
 import { RedefinirSenha } from './pages/RedefinirSenha.jsx'
+import { PoliticaPrivacidade } from './pages/legal/PoliticaPrivacidade.jsx'
+import { TermosDeUso } from './pages/legal/TermosDeUso.jsx'
+import { ContratoOperador } from './pages/legal/ContratoOperador.jsx'
+import { Seguranca } from './pages/legal/Seguranca.jsx'
+import { Acessibilidade } from './pages/legal/Acessibilidade.jsx'
 import { Dashboard } from './pages/app/Dashboard.jsx'
 import { Avalia } from './pages/app/Avalia.jsx'
 import { Lidera } from './pages/app/Lidera.jsx'
@@ -37,6 +42,11 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+            <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+            <Route path="/termos-de-uso" element={<TermosDeUso />} />
+            <Route path="/contrato-operador" element={<ContratoOperador />} />
+            <Route path="/seguranca" element={<Seguranca />} />
+            <Route path="/acessibilidade" element={<Acessibilidade />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin"

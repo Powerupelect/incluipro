@@ -592,6 +592,13 @@ export function Avalia() {
                   {bloco.titulo}
                 </h2>
               </div>
+              {bloco.titulo === 'Deficiência' && (
+                <p className="mt-3 text-xs text-graphite-400">
+                  Estes campos contêm dado sensível de saúde (LGPD art. 11). Usados só para
+                  viabilizar a adaptação do ambiente de trabalho e o cumprimento da cota legal —
+                  ver <Link to="/privacidade" className="underline hover:text-graphite-600">Política de Privacidade</Link>.
+                </p>
+              )}
               <div className="mt-4 space-y-4">
                 {bloco.campos.map((campo) => (
                   <div key={campo.key}>
