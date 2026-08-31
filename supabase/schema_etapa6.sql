@@ -109,30 +109,42 @@ create policy "unidades escreve admin-rh" on unidades
     )
   );
 
+-- Funções security definer: buscam as empresas do usuário ignorando RLS internamente.
+-- Necessário porque as próprias políticas de membros_empresa precisam consultar
+-- membros_empresa — uma subquery direta nessa mesma tabela causa
+-- "infinite recursion detected in policy for relation membros_empresa".
+create or replace function minhas_empresas()
+returns setof uuid
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select empresa_id from membros_empresa where conta_id = auth.uid()
+$$;
+
+create or replace function minhas_empresas_admin()
+returns setof uuid
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select empresa_id from membros_empresa where conta_id = auth.uid() and papel = 'admin'
+$$;
+
 alter table membros_empresa enable row level security;
 create policy "membros select da propria empresa" on membros_empresa
-  for select using (
-    empresa_id in (select empresa_id from membros_empresa m2 where m2.conta_id = auth.uid())
-  );
+  for select using (empresa_id in (select minhas_empresas()));
 create policy "membros escreve admin" on membros_empresa
   for insert with check (
-    empresa_id in (
-      select empresa_id from membros_empresa m2 where m2.conta_id = auth.uid() and m2.papel = 'admin'
-    )
+    empresa_id in (select minhas_empresas_admin())
     or conta_id = auth.uid() -- permite o próprio cadastro se tornar admin da empresa que criou
   );
 create policy "membros atualiza admin" on membros_empresa
-  for update using (
-    empresa_id in (
-      select empresa_id from membros_empresa m2 where m2.conta_id = auth.uid() and m2.papel = 'admin'
-    )
-  );
+  for update using (empresa_id in (select minhas_empresas_admin()));
 create policy "membros remove admin" on membros_empresa
-  for delete using (
-    empresa_id in (
-      select empresa_id from membros_empresa m2 where m2.conta_id = auth.uid() and m2.papel = 'admin'
-    )
-  );
+  for delete using (empresa_id in (select minhas_empresas_admin()));
 
 -- Permite a uma pessoa convidada (ainda sem conta_id vinculado) aceitar o próprio convite,
 -- casando pelo e-mail da conta dela — sem isso, ninguém consegue aceitar convite (só admin
