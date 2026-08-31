@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { calcularCota } from '../lib/cota.js'
-
-function corSemaforo(percentualCumprimento) {
-  if (percentualCumprimento >= 100) return { cor: 'signal', label: 'Cota cumprida' }
-  if (percentualCumprimento >= 80) return { cor: 'amber', label: 'Falta pouco' }
-  return { cor: 'red', label: 'Abaixo da cota' }
-}
+import { calcularCota, corSemaforo } from '../lib/cota.js'
 
 const CORES = {
   signal: { bg: 'bg-signal-50', text: 'text-signal-700', dot: 'bg-signal-500' },

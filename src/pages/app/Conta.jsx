@@ -7,6 +7,8 @@ import { exportBackup, importBackup } from '../../lib/backup.js'
 import { getEmpresa, atualizarDadosCota, getUnidades, criarUnidade, removerUnidade } from '../../lib/empresa.js'
 import { getMembros, convidarMembro, removerMembro, PAPEL_LABEL } from '../../lib/membros.js'
 import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacaoTotal.js'
+import { montarDadosDossie } from '../../lib/dossie.js'
+import { gerarDossieTecnicoPDF, gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
 
 export function Conta() {
   const { user } = useAuth()
@@ -32,6 +34,9 @@ export function Conta() {
   const [erroConvite, setErroConvite] = useState('')
 
   const [exportando, setExportando] = useState(false)
+  const [gerandoDossie, setGerandoDossie] = useState(false)
+  const [gerandoResumo, setGerandoResumo] = useState(false)
+  const [erroDossie, setErroDossie] = useState('')
 
   const ehAdmin = user?.papel === 'admin'
 
@@ -344,6 +349,60 @@ export function Conta() {
           </form>
         )}
         {erroConvite && <p className="mt-2 hidden text-sm text-red-600 sm:block">{erroConvite}</p>}
+      </div>
+
+      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+        <h2 className="font-display text-lg font-semibold text-indigo-800">Documentos de saída</h2>
+        <p className="mt-1 text-sm text-graphite-500">
+          Dois documentos para públicos distintos: o dossiê técnico traz evidência verificável
+          para a fiscalização (sem enfeite), e o resumo executivo é uma página para a diretoria.
+          Seções sem dado registrado no sistema aparecem marcadas para preenchimento manual.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Button
+            as="button"
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={gerandoDossie}
+            onClick={async () => {
+              setErroDossie('')
+              setGerandoDossie(true)
+              try {
+                const dados = await montarDadosDossie(user.empresaId)
+                await gerarDossieTecnicoPDF(dados)
+              } catch {
+                setErroDossie('Não foi possível gerar o dossiê agora. Tente novamente.')
+              } finally {
+                setGerandoDossie(false)
+              }
+            }}
+          >
+            {gerandoDossie ? 'Gerando…' : 'Baixar dossiê técnico'}
+          </Button>
+          <Button
+            as="button"
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={gerandoResumo}
+            onClick={async () => {
+              setErroDossie('')
+              setGerandoResumo(true)
+              try {
+                const dados = await montarDadosDossie(user.empresaId)
+                gerarResumoExecutivoPDF(dados)
+              } catch {
+                setErroDossie('Não foi possível gerar o resumo agora. Tente novamente.')
+              } finally {
+                setGerandoResumo(false)
+              }
+            }}
+          >
+            {gerandoResumo ? 'Gerando…' : 'Baixar resumo executivo'}
+          </Button>
+        </div>
+        {erroDossie && <p className="mt-3 text-sm text-red-600">{erroDossie}</p>}
       </div>
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">

@@ -12,6 +12,12 @@ function percentualCota(base) {
   return 0.05
 }
 
+export function corSemaforo(percentualCumprimento) {
+  if (percentualCumprimento >= 100) return { cor: 'signal', label: 'Cota cumprida' }
+  if (percentualCumprimento >= 80) return { cor: 'amber', label: 'Falta pouco' }
+  return { cor: 'red', label: 'Abaixo da cota' }
+}
+
 export function calcularCota({
   totalFuncionarios = 0,
   aprendizes = 0,
