@@ -24,7 +24,7 @@ export function Conta() {
 
   async function handleConfirmarImport() {
     try {
-      await importBackup(arquivoSelecionado)
+      await importBackup(arquivoSelecionado, user?.empresaId)
       setImportState('done')
     } catch (err) {
       setErroImport(err.message)
@@ -110,12 +110,17 @@ export function Conta() {
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Backup de dados</h2>
         <p className="mt-1 text-sm text-graphite-500">
-          Seus relatórios ficam salvos apenas neste navegador. Exporte um backup regularmente e,
-          principalmente, antes de trocar de computador ou limpar os dados do navegador — assim
-          você não perde nada.
+          Seus relatórios já ficam salvos com segurança na IncluiPro. Este backup é uma cópia
+          extra em JSON — útil para levar seus dados para outro lugar, se precisar.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Button as="button" type="button" variant="ghost" size="sm" onClick={exportBackup}>
+          <Button
+            as="button"
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => exportBackup(user?.empresaId)}
+          >
             Exportar backup
           </Button>
           <Button
@@ -139,8 +144,8 @@ export function Conta() {
         {importState === 'confirm' && (
           <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
             <p className="font-semibold">
-              Isso vai substituir os relatórios e leads salvos neste navegador pelos do arquivo
-              importado. Confirma?
+              Isso vai adicionar os relatórios do arquivo importado aos que você já tem (pode
+              gerar duplicados se importar o mesmo arquivo mais de uma vez). Confirma?
             </p>
             <div className="mt-3 flex gap-2">
               <Button as="button" type="button" size="sm" onClick={handleConfirmarImport}>

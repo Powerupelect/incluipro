@@ -28,7 +28,7 @@ function writeCache(email, status) {
 // de verdade — via pagamento Hotmart confirmado ou liberação manual no
 // painel administrativo (ver netlify/functions/access-check.mjs).
 export function ProtectedRoute({ children }) {
-  const { user } = useAuth()
+  const { user, loading: sessaoCarregando } = useAuth()
   const location = useLocation()
   const email = user?.email?.trim().toLowerCase()
   const [status, setStatus] = useState(() => (email ? readCache(email) : null))
@@ -57,6 +57,14 @@ export function ProtectedRoute({ children }) {
       cancelado = true
     }
   }, [email, tentativa])
+
+  if (sessaoCarregando) {
+    return (
+      <div className="flex min-h-[60svh] items-center justify-center px-5 text-center">
+        <p className="text-sm text-graphite-500">Carregando sua sessão…</p>
+      </div>
+    )
+  }
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />

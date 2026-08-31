@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import { Button } from '../../components/ui/Button.jsx'
@@ -7,6 +7,7 @@ import { identificarCategoria } from '../../lib/accessibilityResources.js'
 import { ConsultaRapida } from '../../components/ConsultaRapida.jsx'
 import { getReports, saveReport, deleteReport, updateReport } from '../../lib/reports.js'
 import { baixarRelatorioPDF } from '../../lib/pdf.js'
+import { useAuth } from '../../lib/auth.jsx'
 
 const blocos = [
   {
@@ -149,6 +150,8 @@ function reportToPdfPayload(fields) {
 }
 
 export function Avalia() {
+  const { user } = useAuth()
+  const empresaId = user?.empresaId
   const [form, setForm] = useState(initialForm)
   const [error, setError] = useState('')
   const [relatorio, setRelatorio] = useState('')
@@ -157,8 +160,28 @@ export function Avalia() {
   const [editDraft, setEditDraft] = useState('')
   const [copiado, setCopiado] = useState(false)
   const [salvo, setSalvo] = useState(false)
-  const [historico, setHistorico] = useState(() => getReports())
+  const [historico, setHistorico] = useState([])
+  const [historicoCarregando, setHistoricoCarregando] = useState(true)
   const [busca, setBusca] = useState('')
+
+  useEffect(() => {
+    if (!empresaId) return
+    let ativo = true
+    setHistoricoCarregando(true)
+    getReports(empresaId)
+      .then((relatorios) => {
+        if (ativo) setHistorico(relatorios)
+      })
+      .catch(() => {
+        if (ativo) setError('Não foi possível carregar seus relatórios agora.')
+      })
+      .finally(() => {
+        if (ativo) setHistoricoCarregando(false)
+      })
+    return () => {
+      ativo = false
+    }
+  }, [empresaId])
 
   const [recursosSugeridos, setRecursosSugeridos] = useState([])
   const [categoriaAtiva, setCategoriaAtiva] = useState(null)
@@ -182,29 +205,45 @@ export function Avalia() {
     )
   }
 
-  function handleGerar() {
+  async function handleGerar() {
     if (!form.nome.trim()) {
       setError('Informe ao menos o nome do candidato para gerar o relatório.')
+      return
+    }
+    if (!empresaId) {
+      setError('Não foi possível identificar sua empresa. Recarregue a página e tente novamente.')
       return
     }
     setError('')
     const texto = montarRelatorio({ ...form, recursosSugeridos })
     setRelatorio(texto)
     setEditMode(false)
-    const saved = saveReport({
-      candidato: form.nome || 'Candidato sem nome',
-      cargo: form.cargo,
-      empresa: form.empresa,
-      tipoDeficiencia: form.tipoDeficiencia,
-      observacoesCondicao: form.observacoesCondicao,
-      recursosSugeridos,
-      conteudo: texto,
-    })
-    setCurrentReportId(saved.id)
-    setHistorico((h) => [saved, ...h])
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    setSucesso(true)
-    setTimeout(() => setSucesso(false), 4000)
+    try {
+      const saved = await saveReport(
+        {
+          candidato: form.nome || 'Candidato sem nome',
+          cargo: form.cargo,
+          tipoDeficiencia: form.tipoDeficiencia,
+          observacoesCondicao: form.observacoesCondicao,
+          rotina: form.rotina,
+          historico: form.historico,
+          necessidades: form.necessidades,
+          expectativas: form.expectativas,
+          observacoesErgonomicas: form.observacoesErgonomicas,
+          notasLivres: form.notasLivres,
+          recursosSugeridos,
+          conteudo: texto,
+        },
+        empresaId,
+      )
+      setCurrentReportId(saved.id)
+      setHistorico((h) => [saved, ...h])
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setSucesso(true)
+      setTimeout(() => setSucesso(false), 4000)
+    } catch {
+      setError('Não foi possível salvar o relatório agora. Tente novamente.')
+    }
   }
 
   function handleNovoRelatorio() {
@@ -230,21 +269,23 @@ export function Avalia() {
     setEditMode(true)
   }
 
-  function handleSalvarEdicao() {
+  async function handleSalvarEdicao() {
     setRelatorio(editDraft)
     setEditMode(false)
     if (currentReportId) {
-      const updated = updateReport(currentReportId, {
-        conteudo: editDraft,
-        candidato: form.nome || 'Candidato sem nome',
-        cargo: form.cargo,
-        empresa: form.empresa,
-        tipoDeficiencia: form.tipoDeficiencia,
-        observacoesCondicao: form.observacoesCondicao,
-        recursosSugeridos,
-      })
-      if (updated) {
+      try {
+        const updated = await updateReport(currentReportId, {
+          conteudo: editDraft,
+          candidato: form.nome || 'Candidato sem nome',
+          cargo: form.cargo,
+          tipoDeficiencia: form.tipoDeficiencia,
+          observacoesCondicao: form.observacoesCondicao,
+          recursosSugeridos,
+        })
         setHistorico((h) => h.map((r) => (r.id === updated.id ? updated : r)))
+      } catch {
+        setError('Não foi possível salvar a edição agora. Tente novamente.')
+        return
       }
     }
     setSalvo(true)
@@ -269,9 +310,14 @@ export function Avalia() {
       ...f,
       nome: item.candidato,
       cargo: item.cargo || '',
-      empresa: item.empresa || '',
       tipoDeficiencia: item.tipoDeficiencia || '',
       observacoesCondicao: item.observacoesCondicao || '',
+      rotina: item.rotina || '',
+      historico: item.historico || '',
+      necessidades: item.necessidades || '',
+      expectativas: item.expectativas || '',
+      observacoesErgonomicas: item.observacoesErgonomicas || '',
+      notasLivres: item.notasLivres || '',
     }))
     setRecursosSugeridos(item.recursosSugeridos || [])
     setCategoriaAtiva(identificarCategoria(item.tipoDeficiencia || ''))
@@ -289,9 +335,14 @@ export function Avalia() {
     baixarRelatorioPDF(reportToPdfPayload(item))
   }
 
-  function handleExcluirHistorico(id) {
+  async function handleExcluirHistorico(id) {
     if (!confirm('Excluir este relatório do histórico? Esta ação não pode ser desfeita.')) return
-    deleteReport(id)
+    try {
+      await deleteReport(id)
+    } catch {
+      setError('Não foi possível excluir o relatório agora. Tente novamente.')
+      return
+    }
     setHistorico((h) => h.filter((r) => r.id !== id))
     if (currentReportId === id) {
       setRelatorio('')
@@ -526,7 +577,9 @@ export function Avalia() {
               className="mt-3 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
 
-            {historicoFiltrado.length === 0 ? (
+            {historicoCarregando ? (
+              <p className="mt-4 text-sm text-graphite-500">Carregando relatórios…</p>
+            ) : historicoFiltrado.length === 0 ? (
               <p className="mt-4 text-sm text-graphite-500">
                 {historico.length === 0
                   ? 'Nenhum relatório gerado ainda nesta conta.'

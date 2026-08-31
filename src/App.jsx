@@ -12,6 +12,7 @@ import { Produtos } from './pages/Produtos.jsx'
 import { Assinatura } from './pages/Assinatura.jsx'
 import { Login } from './pages/Login.jsx'
 import { Cadastro } from './pages/Cadastro.jsx'
+import { RedefinirSenha } from './pages/RedefinirSenha.jsx'
 import { Dashboard } from './pages/app/Dashboard.jsx'
 import { Avalia } from './pages/app/Avalia.jsx'
 import { Lidera } from './pages/app/Lidera.jsx'
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/assinatura" element={<Assinatura />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/redefinir-senha" element={<RedefinirSenha />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin"

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { getReports } from '../../lib/reports.js'
@@ -16,7 +17,21 @@ const CARD_ICONS = {
 
 export function Dashboard() {
   const { user } = useAuth()
-  const historico = getReports()
+  const [historico, setHistorico] = useState([])
+
+  useEffect(() => {
+    if (!user?.empresaId) return
+    let ativo = true
+    getReports(user.empresaId)
+      .then((relatorios) => {
+        if (ativo) setHistorico(relatorios)
+      })
+      .catch(() => {})
+    return () => {
+      ativo = false
+    }
+  }, [user?.empresaId])
+
   const recentes = historico.slice(0, 5)
   const novosKits = kits.filter((k) => k.novo)
 
@@ -122,7 +137,7 @@ export function Dashboard() {
                       {item.candidato}
                     </p>
                     <p className="truncate text-xs text-graphite-300">
-                      {item.empresa || 'Empresa não informada'} ·{' '}
+                      {item.cargo || 'Cargo não informado'} ·{' '}
                       {new Date(item.updatedAt || item.createdAt).toLocaleDateString('pt-BR')}
                     </p>
                   </div>

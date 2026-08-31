@@ -4,21 +4,45 @@ import { useAuth } from '../lib/auth.jsx'
 import { Button } from '../components/ui/Button.jsx'
 
 export function Login() {
-  const { login } = useAuth()
+  const { login, solicitarRecuperacaoSenha } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
+  const [entrando, setEntrando] = useState(false)
 
-  function handleSubmit(e) {
+  const [mostrarRecuperacao, setMostrarRecuperacao] = useState(false)
+  const [emailRecuperacao, setEmailRecuperacao] = useState('')
+  const [enviandoRecuperacao, setEnviandoRecuperacao] = useState(false)
+  const [recuperacaoEnviada, setRecuperacaoEnviada] = useState(false)
+  const [erroRecuperacao, setErroRecuperacao] = useState('')
+
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    setEntrando(true)
     try {
-      login(form)
+      await login(form)
       const from = location.state?.from?.pathname || '/app/avalia'
       navigate(from, { replace: true })
     } catch (err) {
       setError(err.message)
+    } finally {
+      setEntrando(false)
+    }
+  }
+
+  async function handleSolicitarRecuperacao(e) {
+    e.preventDefault()
+    setErroRecuperacao('')
+    setEnviandoRecuperacao(true)
+    try {
+      await solicitarRecuperacaoSenha(emailRecuperacao)
+      setRecuperacaoEnviada(true)
+    } catch (err) {
+      setErroRecuperacao(err.message)
+    } finally {
+      setEnviandoRecuperacao(false)
     }
   }
 
@@ -43,7 +67,20 @@ export function Login() {
           />
         </div>
         <div>
-          <label className="text-sm font-semibold text-graphite-900">Senha</label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-graphite-900">Senha</label>
+            <button
+              type="button"
+              onClick={() => {
+                setMostrarRecuperacao((v) => !v)
+                setRecuperacaoEnviada(false)
+                setErroRecuperacao('')
+              }}
+              className="text-xs font-semibold text-signal-700 hover:text-signal-800"
+            >
+              Esqueci minha senha
+            </button>
+          </div>
           <input
             required
             type="password"
@@ -53,10 +90,39 @@ export function Login() {
             placeholder="••••••••"
           />
         </div>
-        <Button as="button" type="submit" className="w-full justify-center">
-          Entrar
+        <Button as="button" type="submit" disabled={entrando} className="w-full justify-center">
+          {entrando ? 'Entrando…' : 'Entrar'}
         </Button>
       </form>
+
+      {mostrarRecuperacao && (
+        <div className="mt-4 rounded-2xl border border-mist-300 bg-mist-100 p-6">
+          {recuperacaoEnviada ? (
+            <p className="text-sm text-signal-700">
+              ✅ Se este e-mail tiver uma conta, enviamos um link para redefinir a senha. Verifique
+              sua caixa de entrada.
+            </p>
+          ) : (
+            <form onSubmit={handleSolicitarRecuperacao} className="space-y-3">
+              <label className="text-sm font-semibold text-graphite-900">
+                Digite seu e-mail para receber o link de recuperação
+              </label>
+              {erroRecuperacao && <p className="text-sm text-red-600">{erroRecuperacao}</p>}
+              <input
+                required
+                type="email"
+                value={emailRecuperacao}
+                onChange={(e) => setEmailRecuperacao(e.target.value)}
+                placeholder="voce@empresa.com.br"
+                className="w-full rounded-xl border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+              <Button as="button" type="submit" size="sm" disabled={enviandoRecuperacao}>
+                {enviandoRecuperacao ? 'Enviando…' : 'Enviar link de recuperação'}
+              </Button>
+            </form>
+          )}
+        </div>
+      )}
 
       <p className="mt-6 text-center text-sm text-graphite-500">
         Ainda não tem conta?{' '}

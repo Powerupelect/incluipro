@@ -8,20 +8,48 @@ export function Cadastro() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ companyName: '', email: '', password: '' })
   const [error, setError] = useState('')
+  const [enviando, setEnviando] = useState(false)
+  const [confirmarEmail, setConfirmarEmail] = useState(false)
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    setEnviando(true)
     try {
-      register(form)
-      navigate('/app/avalia', { replace: true })
+      const resultado = await register(form)
+      if (resultado?.requiresEmailConfirmation) {
+        setConfirmarEmail(true)
+      } else {
+        navigate('/app/avalia', { replace: true })
+      }
     } catch (err) {
       setError(err.message)
+    } finally {
+      setEnviando(false)
     }
+  }
+
+  if (confirmarEmail) {
+    return (
+      <section className="mx-auto flex min-h-[70svh] max-w-md flex-col justify-center px-5 py-16 text-center sm:px-8">
+        <div className="rounded-2xl border border-signal-200 bg-signal-50 p-8">
+          <h1 className="font-display text-2xl font-semibold text-indigo-800">
+            Confirme seu e-mail
+          </h1>
+          <p className="mt-3 text-sm text-graphite-700">
+            Enviamos um link de confirmação para <strong>{form.email}</strong>. Clique nele para
+            ativar sua conta e depois volte para fazer login.
+          </p>
+          <Button to="/login" className="mt-6">
+            Ir para o login
+          </Button>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -68,12 +96,12 @@ export function Cadastro() {
             placeholder="Mínimo 6 caracteres"
           />
         </div>
-        <Button as="button" type="submit" className="w-full justify-center">
-          Criar conta e assinar
+        <Button as="button" type="submit" disabled={enviando} className="w-full justify-center">
+          {enviando ? 'Criando conta…' : 'Criar conta e assinar'}
         </Button>
         <p className="text-center text-xs text-graphite-300">
-          Cadastro simulado nesta versão. Seu acesso à plataforma depende de um pagamento
-          confirmado para este e-mail — veja o plano em{' '}
+          Seu acesso à plataforma depende de um pagamento confirmado para este e-mail — veja o
+          plano em{' '}
           <Link to="/assinatura" className="font-semibold text-graphite-500 hover:text-signal-700">
             Assinatura
           </Link>
