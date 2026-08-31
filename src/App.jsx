@@ -19,6 +19,7 @@ import { Lidera } from './pages/app/Lidera.jsx'
 import { Conta } from './pages/app/Conta.jsx'
 import { MatrizCompatibilidade } from './pages/app/MatrizCompatibilidade.jsx'
 import { TriagemLaudos } from './pages/app/TriagemLaudos.jsx'
+import { CentralAcessibilidade } from './pages/app/CentralAcessibilidade.jsx'
 import { AdminLogin } from './pages/admin/AdminLogin.jsx'
 import { AdminPainel } from './pages/admin/AdminPainel.jsx'
 
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="avalia" element={<Avalia />} />
             <Route path="matriz" element={<MatrizCompatibilidade />} />
             <Route path="laudos" element={<TriagemLaudos />} />
+            <Route path="acessibilidade" element={<CentralAcessibilidade />} />
             <Route path="lidera" element={<Lidera />} />
             <Route path="conta" element={<Conta />} />
           </Route>

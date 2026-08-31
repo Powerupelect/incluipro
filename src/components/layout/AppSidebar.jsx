@@ -31,6 +31,13 @@ const items = [
     icon: <path d="M7 4h7l4 4v12a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1zM14 4v4h4M9 13l2 2 4-4" />,
   },
   {
+    to: '/app/acessibilidade',
+    label: 'Central de Acessibilidade',
+    hint: 'Solicitações de adaptação',
+    restritoA: ['admin', 'rh', 'gestor'],
+    icon: <path d="M12 4a3 3 0 110 6 3 3 0 010-6zM5 20c1.2-3.6 3.8-6 7-6s5.8 2.4 7 6M9 13l1.5 2L14 11" />,
+  },
+  {
     to: '/app/lidera',
     label: 'IncluiPro Lidera',
     hint: 'Kits de treinamento',
@@ -60,7 +67,9 @@ export function AppSidebar({ onNavigate }) {
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
-        {items.map((item) => (
+        {items
+          .filter((item) => !item.restritoA || item.restritoA.includes(user?.papel))
+          .map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
