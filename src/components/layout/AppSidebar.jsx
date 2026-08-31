@@ -19,6 +19,12 @@ const items = [
     ),
   },
   {
+    to: '/app/matriz',
+    label: 'Matriz de Compatibilidade',
+    hint: 'Cargo × tipo de deficiência',
+    icon: <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />,
+  },
+  {
     to: '/app/lidera',
     label: 'IncluiPro Lidera',
     hint: 'Kits de treinamento',
