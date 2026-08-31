@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { supabase } from './supabase.js'
 import { getPrimeiraEmpresa, criarEmpresa } from './empresa.js'
 import { migrarRelatoriosLocais } from './migracao.js'
+import { aceitarConvitesPendentes } from './membros.js'
 
 const AuthContext = createContext(null)
 
@@ -46,6 +47,8 @@ async function garantirSessao(authUser, nomeSugerido) {
     }
   }
 
+  await aceitarConvitesPendentes(conta.id, conta.email).catch(() => {})
+
   let empresa = await getPrimeiraEmpresa(conta.id)
   if (!empresa) {
     empresa = await criarEmpresa({ contaId: conta.id, nome: nomeSugerido || conta.nome || conta.email })
@@ -58,6 +61,7 @@ async function garantirSessao(authUser, nomeSugerido) {
     companyName: empresa.nome,
     email: conta.email,
     plan: conta.plano,
+    papel: empresa.papel || 'admin',
   }
 }
 
