@@ -161,10 +161,15 @@ create policy "membros aceita proprio convite" on membros_empresa
 -- ============================================================
 
 -- EMPRESAS
+-- SELECT libera pelo vínculo em membros_empresa OU por ser o próprio criador (conta_id):
+-- sem essa segunda condição, o INSERT de uma empresa nova falha, porque o insert usa
+-- RETURNING (via .select() no supabase-js) e RETURNING é filtrado pela política de SELECT —
+-- e o vínculo em membros_empresa só é criado LOGO DEPOIS do insert da empresa, em criarEmpresa().
 drop policy if exists "empresas da conta" on empresas;
 create policy "empresas select membro" on empresas
   for select using (
-    id in (select empresa_id from membros_empresa where conta_id = auth.uid())
+    conta_id = auth.uid()
+    or id in (select minhas_empresas())
   );
 create policy "empresas insere dono" on empresas
   for insert with check (conta_id = auth.uid());
