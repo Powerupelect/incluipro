@@ -45,3 +45,37 @@ export async function enviarEmailConfirmacao({ nome, email, plano, linkAcesso })
   }
   return { enviado: true }
 }
+
+/** Envia um e-mail com um PDF anexado (usado no diagnóstico completo da calculadora de cota). */
+export async function enviarEmailComAnexo({ email, assunto, texto, nomeArquivo, bufferPdf }) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    return { enviado: false, motivo: 'RESEND_API_KEY não configurado no ambiente' }
+  }
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: process.env.RESEND_FROM || 'IncluiPro <onboarding@resend.dev>',
+      to: [email],
+      subject: assunto,
+      text: texto,
+      attachments: [
+        {
+          filename: nomeArquivo,
+          content: bufferPdf.toString('base64'),
+        },
+      ],
+    }),
+  })
+
+  if (!res.ok) {
+    const detalhe = await res.text().catch(() => '')
+    return { enviado: false, motivo: `Resend respondeu ${res.status}: ${detalhe}` }
+  }
+  return { enviado: true }
+}

@@ -9,7 +9,7 @@ export const NIVEIS = {
     descricao:
       'Sua empresa está no começo da jornada de inclusão. Existem, no máximo, iniciativas pontuais e não estruturadas — o que significa dependência de esforço individual, risco de conformidade com a Lei de Cotas (Lei 8.213/1991) e alta chance de rotatividade de colaboradores PCD por falta de suporte adequado.',
     recomendacoes: [
-      'Estruture um processo formal de avaliação social para candidatos e colaboradores PCD, em vez de decisões caso a caso.',
+      'Estruture um processo formal de Relatórios Técnicos de Inclusão para candidatos e colaboradores PCD, em vez de decisões caso a caso.',
       'Capacite as lideranças diretas antes de qualquer contratação — elas são quem sustenta a inclusão no dia a dia.',
       'Faça um levantamento básico de acessibilidade física do ambiente de trabalho (rampas, banheiros, rotas de circulação).',
       'Defina uma pessoa ou área responsável por conduzir o tema internamente, mesmo que não seja dedicação exclusiva.',
@@ -21,7 +21,7 @@ export const NIVEIS = {
     descricao:
       'Sua empresa já saiu do zero: existem iniciativas de inclusão em andamento, mas ainda faltam padronização e consistência entre áreas. É comum que a experiência do colaborador PCD varie muito dependendo do time ou da liderança em que ele está — o que limita escala e gera desigualdade interna.',
     recomendacoes: [
-      'Padronize o processo de avaliação social entre todas as áreas que contratam, não apenas as mais engajadas.',
+      'Padronize o processo de Relatórios Técnicos de Inclusão entre todas as áreas que contratam, não apenas as mais engajadas.',
       'Torne o treinamento de líderes recorrente (não um evento único) e meça se ele está mudando comportamento.',
       'Comece a acompanhar indicadores de retenção e permanência de colaboradores PCD, não só de contratação.',
       'Revise canais de comunicação interna (comunicados, treinamentos, reuniões) quanto à acessibilidade.',
@@ -33,7 +33,7 @@ export const NIVEIS = {
     descricao:
       'Sua empresa já trata inclusão como processo estruturado e monitorado, com times capacitados e acompanhamento de indicadores. O próximo passo deixa de ser "criar processo" e passa a ser ganhar eficiência, profundidade e consistência — é exatamente aí que uma metodologia estruturada, com recursos padronizados de avaliação e treinamento, faz diferença mensurável.',
     recomendacoes: [
-      'Padronize e agilize a produção de relatórios de avaliação social com um processo estruturado, mantendo qualidade em escala.',
+      'Padronize e agilize a produção de Relatórios Técnicos de Inclusão com um processo estruturado, mantendo qualidade em escala.',
       'Revise periodicamente os kits de treinamento de líderes para refletir casos reais vividos pela empresa.',
       'Formalize metas e indicadores de inclusão em relatórios de gestão, não apenas em iniciativas de RH.',
       'Avalie a criação de um Kit Personalizado para temas específicos do seu setor ou da sua cultura interna.',
@@ -46,7 +46,7 @@ export const CRITERIOS = [
   {
     key: 'hasAssessmentProcess',
     peso: 2,
-    label: 'Processo estruturado de avaliação social para candidatos PCD',
+    label: 'Processo estruturado de Relatórios Técnicos de Inclusão para candidatos PCD',
     categoria: 'Processos',
   },
   {

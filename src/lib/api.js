@@ -21,6 +21,10 @@ export function checkAccess(email) {
   return postJSON('/api/access-check', { email })
 }
 
+export function enviarDiagnostico(payload) {
+  return postJSON('/api/enviar-diagnostico', payload)
+}
+
 export function adminLogin(email, senha) {
   return postJSON('/api/admin-login', { email, senha })
 }

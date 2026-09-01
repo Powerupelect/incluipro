@@ -4,10 +4,10 @@ import { Button } from '../components/ui/Button.jsx'
 const produtos = [
   {
     nome: 'IncluiPro Avalia',
-    tag: 'Avaliação social estruturada',
+    tag: 'Relatórios Técnicos de Inclusão',
     accent: 'signal',
     descricao:
-      'Metodologia estruturada que transforma as anotações de uma entrevista de avaliação social em um Relatório Técnico de Inclusão profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
+      'Metodologia estruturada que transforma as anotações de uma entrevista em um Relatório Técnico de Inclusão profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
     recursos: [
       'Reduz o tempo do RH em cada avaliação — formulário guiado por blocos substitui anotações soltas e retrabalho.',
       'Relatório técnico pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',

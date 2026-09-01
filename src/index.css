@@ -102,6 +102,12 @@
     letter-spacing: -0.01em;
   }
 
+  /* Compensa o header fixo (sticky) ao rolar até uma âncora de seção —
+     sem isso, o topo da seção fica escondido atrás do header. */
+  section[id] {
+    scroll-margin-top: 110px;
+  }
+
   /* Indicador de foco visível para navegação por teclado (WCAG 2.1 AA, critério 2.4.7) —
      só aparece em :focus-visible, então não interfere com cliques de mouse. */
   :focus-visible {
@@ -244,6 +250,38 @@
       transform 700ms ease-out,
       opacity 700ms ease-out;
   }
+  /* Anel giratório sutil — sinaliza a opção "ativa"/recomendada (Planos: Com IncluiPro).
+     Técnica de máscara: só a faixa de 2px da borda fica visível, não o quadrado inteiro. */
+  .orbit-glow {
+    position: relative;
+    isolation: isolate;
+  }
+  .orbit-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      var(--color-signal-400) 10%,
+      transparent 22%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: orbitSpin 7s linear infinite;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-glow::before {
+      animation: none;
+      background: var(--color-signal-300);
+    }
+  }
+
   @supports (animation-timeline: view()) {
     .momento-nativo {
       animation: momento-fundo linear both;
@@ -271,6 +309,11 @@
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes momento-fundo {

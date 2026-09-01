@@ -6,12 +6,12 @@ import { useEffect, useRef, useState } from 'react'
 // (reversível ao rolar de volta, o que é aceitável para o visual). O texto usa um
 // disparo único via IntersectionObserver — ele não deve repetir ao rolar de volta.
 const DOCUMENTOS = [
-  { tx: -220, ty: -90, rot: -14 },
-  { tx: 200, ty: -70, rot: 10 },
-  { tx: -180, ty: 60, rot: 8 },
-  { tx: 190, ty: 90, rot: -9 },
-  { tx: -80, ty: -130, rot: 5 },
-  { tx: 90, ty: 120, rot: -6 },
+  { tx: -220, ty: -90, rot: -14, label: 'Avaliação', accent: '#12a594' },
+  { tx: 200, ty: -70, rot: 10, label: 'Laudo médico', accent: '#1e2a4a' },
+  { tx: -180, ty: 60, rot: 8, label: 'Comprovante', accent: '#12a594' },
+  { tx: 190, ty: 90, rot: -9, label: 'CID', accent: '#1e2a4a' },
+  { tx: -80, ty: -130, rot: 5, label: 'Relatório', accent: '#12a594' },
+  { tx: 90, ty: 120, rot: -6, label: 'Comprovante', accent: '#1e2a4a' },
 ]
 
 export function MomentoDossie() {
@@ -80,7 +80,7 @@ export function MomentoDossie() {
           {DOCUMENTOS.map((doc, i) => (
             <div
               key={i}
-              className="momento-doc absolute inset-x-16 top-1/2 h-40 -translate-y-1/2 rounded-lg border border-mist-300 bg-white shadow-xl"
+              className="momento-doc absolute inset-x-16 top-1/2 h-40 -translate-y-1/2 overflow-hidden rounded-lg border border-mist-300 bg-white shadow-xl"
               style={{
                 '--doc-tx': `${doc.tx}px`,
                 '--doc-ty': `${doc.ty}px`,
@@ -88,9 +88,18 @@ export function MomentoDossie() {
                 zIndex: i,
               }}
             >
-              <div className="mx-4 mt-3.5 h-2 w-2/3 rounded-full bg-mist-300" />
-              <div className="mx-4 mt-3 h-1.5 w-1/2 rounded-full bg-mist-200" />
+              <div className="h-2" style={{ backgroundColor: doc.accent }} />
+              <div className="flex items-center gap-2 px-4 pt-3.5">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke={doc.accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 3h9l3 3v15a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" />
+                  <path d="M15 3v3h3" />
+                </svg>
+                <p className="truncate text-xs font-semibold" style={{ color: doc.accent }}>{doc.label}</p>
+              </div>
+              <div className="mx-4 mt-3.5 h-1.5 w-2/3 rounded-full bg-mist-200" />
+              <div className="mx-4 mt-2 h-1.5 w-1/2 rounded-full bg-mist-200" />
               <div className="mx-4 mt-2 h-1.5 w-5/6 rounded-full bg-mist-200" />
+              <div className="mx-4 mt-2 h-1.5 w-2/5 rounded-full bg-mist-200" />
             </div>
           ))}
         </div>

@@ -379,12 +379,12 @@ export function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="bg-white p-8 sm:p-10">
+              <div className="orbit-glow bg-white p-8 sm:p-10">
                 <p className="text-xs font-semibold text-signal-700">Com IncluiPro</p>
-                <ul className="mt-6 space-y-3">
+                <ul className="mt-6 space-y-4">
                   {['Sem limite de relatórios no período', ...atualizacoes.slice(0, 3)].map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
-                      <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+                    <li key={item} className="flex items-start gap-3 text-base font-medium text-indigo-900">
+                      <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 shrink-0 text-signal-600" fill="currentColor">
                         <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                       </svg>
                       {item}
@@ -436,14 +436,25 @@ export function Home() {
 
           <div className="mt-16 grid gap-6 lg:grid-cols-3">
             {depoimentos.map((d, i) => (
-              <Reveal key={d.nome} delay={i * 100} className="flex flex-col rounded-xl border border-mist-300 p-7">
-                <p className="flex-1 text-[15px] italic leading-relaxed text-graphite-700">
-                  "{d.citacao}"
+              <Reveal
+                key={d.nome}
+                delay={i * 100}
+                className="flex flex-col rounded-2xl border border-mist-300 bg-mist-100 p-7 shadow-card"
+              >
+                <svg viewBox="0 0 32 24" className="h-8 w-8 text-signal-300" fill="currentColor">
+                  <path d="M0 24V13.6C0 5.6 4.8 1 12.8 0l1.6 3.6C9.2 5.2 6.8 8 6.4 12H14v12H0zm18 0V13.6C18 5.6 22.8 1 30.8 0l1.6 3.6C27.2 5.2 24.8 8 24.4 12H32v12H18z" />
+                </svg>
+                <p className="mt-3 flex-1 text-base leading-relaxed text-graphite-800">
+                  {d.citacao}
                 </p>
-                <div className="mt-6 border-t border-mist-300 pt-4">
-                  <p className="font-display text-sm font-semibold text-indigo-900">{d.nome}</p>
-                  <p className="text-xs text-graphite-500">{d.cargo}</p>
-                  <p className="text-xs text-graphite-400">{d.empresa}</p>
+                <div className="mt-6 flex items-center gap-3 border-t border-mist-300 pt-5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-900 font-display text-sm font-semibold text-white">
+                    {d.nome.charAt(0)}
+                  </span>
+                  <div>
+                    <p className="font-display text-sm font-semibold text-indigo-900">{d.nome}</p>
+                    <p className="text-xs text-graphite-500">{d.cargo} · {d.empresa}</p>
+                  </div>
                 </div>
               </Reveal>
             ))}
@@ -452,34 +463,45 @@ export function Home() {
       </section>
 
       {/* Programa Fundadores — escuro */}
-      <section id="fundadores" className="bg-indigo-900 px-5 py-24 text-center sm:px-8 sm:py-28">
-        <Reveal className="mx-auto max-w-2xl">
-          <h2 className="font-display text-4xl font-medium text-white">
+      <section id="fundadores" className="relative overflow-hidden bg-indigo-900 px-5 py-24 text-center sm:px-8 sm:py-28">
+        <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-signal-500/10 blur-3xl" />
+        <Reveal className="relative mx-auto max-w-2xl">
+          <span className="inline-flex items-center gap-2 rounded-full border border-signal-400/30 bg-signal-500/10 px-4 py-1.5 text-xs font-semibold text-signal-300">
+            Programa Fundadores
+          </span>
+          <h2 className="mt-5 font-display text-4xl font-medium leading-tight text-white sm:text-5xl">
             Condições especiais para as primeiras empresas participantes.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-indigo-200">
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-indigo-200">
             O Programa Fundadores é a fase inicial de adoção da IncluiPro, com um número limitado
             de vagas. As empresas participantes contam com acompanhamento mais próximo da nossa
             equipe durante a implantação.
           </p>
 
-          <div className="mx-auto mt-8 max-w-xl rounded-xl border border-white/10 bg-white/[0.04] p-6 text-left">
-            <p className="text-sm font-semibold text-signal-300">
-              O que a empresa participante recebe
-            </p>
-            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-indigo-200">
-              <li>• Um Kit Personalizado sem custo adicional</li>
-              <li>• Onboarding acompanhado pela nossa equipe</li>
-              <li>• Prioridade no atendimento durante a fase inicial</li>
-            </ul>
+          <div className="mx-auto mt-9 grid max-w-xl gap-3 text-left sm:grid-cols-1">
+            {[
+              'Um Kit Personalizado sem custo adicional',
+              'Onboarding acompanhado pela nossa equipe',
+              'Prioridade no atendimento durante a fase inicial',
+            ].map((item) => (
+              <div
+                key={item}
+                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] px-5 py-4"
+              >
+                <svg viewBox="0 0 20 20" className="h-5 w-5 shrink-0 text-signal-400" fill="currentColor">
+                  <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                </svg>
+                <p className="text-[15px] font-medium text-white">{item}</p>
+              </div>
+            ))}
           </div>
 
-          <p className="mt-5 text-sm text-indigo-300">
+          <p className="mt-6 text-sm text-indigo-300">
             Vagas limitadas, condição especial válida enquanto durar a fase inicial. Envie sua
             solicitação e nossa equipe entra em contato.
           </p>
 
-          <Button href={LINK_PROGRAMA_FUNDADORES} className="mt-7">
+          <Button href={LINK_PROGRAMA_FUNDADORES} size="lg" className="mt-7">
             Solicitar participação no Programa Fundadores
           </Button>
         </Reveal>

@@ -4,7 +4,7 @@ export function FaqAccordion({ items }) {
   const [aberto, setAberto] = useState(0)
 
   return (
-    <div className="divide-y divide-mist-300 rounded-2xl border border-mist-300 bg-white shadow-card">
+    <div className="divide-y divide-mist-300 rounded-2xl border-2 border-signal-100 bg-white shadow-pop ring-1 ring-mist-300">
       {items.map((item, i) => {
         const isOpen = aberto === i
         return (
