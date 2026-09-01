@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { Button } from '../components/ui/Button.jsx'
-import { Mark } from '../components/ui/Logo.jsx'
 import { Reveal } from '../components/Reveal.jsx'
 import { SlideGallery } from '../components/SlideGallery.jsx'
 import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
 import { FaqAccordion } from '../components/FaqAccordion.jsx'
-import { AnimatedCounter } from '../components/AnimatedCounter.jsx'
 import { CalculadoraCota } from '../components/CalculadoraCota.jsx'
 
 const LINK_KIT_PERSONALIZADO =
@@ -173,79 +171,39 @@ export function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="grain relative overflow-hidden bg-indigo-800">
-        <div className="step-pattern absolute inset-0 opacity-40" />
-        <div className="glow-orb absolute -right-24 top-1/2 hidden h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-volt-500/20 blur-3xl md:block" />
-        <div className="glow-orb-alt absolute -left-16 bottom-0 hidden h-[320px] w-[320px] rounded-full bg-signal-500/15 blur-3xl md:block" />
-        <div className="relative mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-2 md:items-center md:py-28">
-          <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-signal-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal-400" style={{ animation: 'pulseGlow 2.2s ease-in-out infinite' }} />
-              Plataforma Especializada em Inclusão Corporativa
-            </span>
-            <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] text-white sm:text-5xl">
-              Estruture a inclusão de pessoas com deficiência <span className="text-gradient">em um só lugar.</span>
+      <section id="hero" className="bg-mist-100 px-5 py-20 sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="max-w-3xl">
+            <h1 className="font-display text-4xl font-medium leading-[1.08] text-indigo-900 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
+              Estruture a inclusão de pessoas com deficiência em um só lugar.
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-indigo-200">
+            <p className="mt-6 max-w-[62ch] text-lg leading-relaxed text-graphite-500">
               Relatórios técnicos, treinamentos para lideranças e ferramentas para apoiar o RH na
               construção de processos de inclusão mais organizados e consistentes.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Button to="/#solucoes" size="lg">Conhecer as soluções</Button>
-              <Button to="/#planos" variant="outlineLight" size="lg">
-                Ver planos
-              </Button>
+              <Button to="/#planos" variant="ghost" size="lg">Ver planos</Button>
             </div>
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-indigo-200">
-              <span className="inline-flex items-center gap-1.5">
-                ✅ Alinhado à LBI e à Lei de Cotas
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                ✅ Metodologia especializada
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                ✅ Atualizações constantes
-              </span>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-sm text-graphite-500">
+              <span>Alinhado à LBI e à Lei de Cotas</span>
+              <span aria-hidden="true">·</span>
+              <span>Metodologia especializada</span>
+              <span aria-hidden="true">·</span>
+              <span>Atualizações constantes</span>
             </div>
           </Reveal>
 
-          <Reveal direction="left" delay={100} className="relative mx-auto w-full max-w-md">
-            <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-signal-500/25 via-transparent to-volt-500/25 blur-2xl" />
-            <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-7 shadow-pop backdrop-blur transition-transform duration-500 hover:-translate-y-1 sm:pb-24">
-              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-300">
-                Nível de maturidade em inclusão
-              </p>
-              <div className="mt-5 flex items-end gap-3">
-                <div className="flex h-16 w-10 items-end rounded-md bg-white/10">
-                  <div className="h-6 w-full rounded-md bg-signal-400" />
-                </div>
-                <div className="flex h-24 w-10 items-end rounded-md bg-white/10">
-                  <div className="h-16 w-full rounded-md bg-signal-400" />
-                </div>
-                <div className="flex h-32 w-10 items-end rounded-md bg-white/10">
-                  <div className="h-28 w-full rounded-md bg-volt-400" />
-                </div>
-                <div className="ml-2 flex flex-col justify-end pb-1">
-                  <p className="font-display text-3xl font-semibold text-white">Avançado</p>
-                  <p className="text-sm text-indigo-300">baseado em 4 indicadores</p>
-                </div>
-              </div>
-              <div className="mt-6 space-y-2 border-t border-white/10 pt-5 text-sm text-indigo-200">
-                <p className="flex items-center gap-2">
-                  <Mark className="h-4 w-4" /> Processo de avaliação estruturado
-                </p>
-                <p className="flex items-center gap-2">
-                  <Mark className="h-4 w-4" /> Líderes treinados para gestão inclusiva
-                </p>
-              </div>
-            </div>
-            <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-mist-300 bg-white px-5 py-4 shadow-pop sm:block">
-              <p className="font-display text-2xl font-semibold text-signal-700">
-                <AnimatedCounter value={80} suffix="%" />
-              </p>
-              <p className="max-w-[9rem] text-xs leading-snug text-graphite-500">
-                de economia no tempo com processos estruturados
-              </p>
+          <Reveal delay={100} className="mt-16">
+            <p className="font-display text-xl font-medium text-indigo-900">
+              Qual é a cota de PCD da sua empresa?
+            </p>
+            <p className="mt-1.5 max-w-[60ch] text-[15px] text-graphite-500">
+              Sem cadastro. Informe alguns números do seu quadro e veja a cota devida, as vagas em
+              aberto e a exposição estimada.
+            </p>
+            <div className="mt-6">
+              <CalculadoraCota />
             </div>
           </Reveal>
         </div>
@@ -469,26 +427,6 @@ export function Home() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Calculadora de cota */}
-      <section id="calculadora" className="mx-auto max-w-4xl px-5 py-20 sm:px-8">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-            Calculadora gratuita
-          </p>
-          <h2 className="mt-3 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
-            Qual é a cota de PCD da sua empresa?
-          </h2>
-          <p className="mt-3 leading-relaxed text-graphite-500">
-            Sem cadastro. Informe alguns números do seu quadro e veja a cota devida, as vagas em
-            aberto e a exposição estimada.
-          </p>
-        </Reveal>
-
-        <Reveal delay={100} className="mt-10">
-          <CalculadoraCota />
-        </Reveal>
       </section>
 
       {/* Como funciona */}
