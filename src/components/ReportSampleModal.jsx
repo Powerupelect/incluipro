@@ -148,8 +148,8 @@ export function ReportSampleModal({ open, onClose }) {
               </ul>
             </div>
 
-            <div className="mt-4 rounded-xl border border-volt-200 bg-volt-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-volt-700">
+            <div className="mt-4 rounded-xl border border-mist-300 bg-mist-100 p-4">
+              <p className="text-xs font-semibold text-indigo-800">
                 Plano de ação sugerido
               </p>
               <ol className="mt-3 space-y-2 text-xs text-graphite-700">

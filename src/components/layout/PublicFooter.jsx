@@ -45,7 +45,11 @@ export function PublicFooter() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-indigo-300 sm:flex-row sm:items-center sm:justify-between">
+        <p className="mt-16 select-none font-display text-6xl font-medium leading-none text-white/10 sm:text-8xl">
+          IncluiPro
+        </p>
+
+        <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-indigo-300 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} IncluiPro Soluções. Todos os direitos reservados.</p>
         </div>
       </div>
