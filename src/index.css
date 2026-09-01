@@ -217,6 +217,45 @@
   .prose-report ul { margin: 0.6em 0; padding-left: 1.25em; list-style: disc; }
   .prose-report li { margin: 0.25em 0; color: var(--color-graphite-700); }
   .prose-report strong { color: var(--color-graphite-900); }
+
+  /* Momento: documentos dispersos → dossiê único, com o fundo escurecendo (Home.jsx) */
+  .momento-secao {
+    background-color: #0f1729;
+  }
+  .momento-doc {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  .momento-fallback {
+    background-color: #f7f8fa;
+  }
+  .momento-fallback .momento-doc {
+    transform: translate(var(--doc-tx), var(--doc-ty)) rotate(var(--doc-rot));
+    opacity: 0.55;
+  }
+  .momento-fallback.ativo {
+    background-color: #0f1729;
+    transition: background-color 700ms ease-out;
+  }
+  .momento-fallback.ativo .momento-doc {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+    transition:
+      transform 700ms ease-out,
+      opacity 700ms ease-out;
+  }
+  @supports (animation-timeline: view()) {
+    .momento-nativo {
+      animation: momento-fundo linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 50%;
+    }
+    .momento-nativo .momento-doc {
+      animation: momento-convergir linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 60%;
+    }
+  }
 }
 
 @keyframes fadeInUp {
@@ -232,6 +271,35 @@
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes momento-fundo {
+  from { background-color: #f7f8fa; }
+  to { background-color: #0f1729; }
+}
+
+@keyframes momento-convergir {
+  from { transform: translate(var(--doc-tx), var(--doc-ty)) rotate(var(--doc-rot)); opacity: 0.55; }
+  to { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+}
+
+/* Redução de movimento: mostra o estado final direto — dossiê montado, fundo escuro.
+   O conteúdo nunca desaparece, só a transição some. */
+@media (prefers-reduced-motion: reduce) {
+  .momento-secao {
+    animation: none !important;
+    background-color: #0f1729 !important;
+  }
+  .momento-doc {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .momento-texto-grupo {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
