@@ -32,7 +32,7 @@ export async function enviarEmailConfirmacao({ nome, email, plano, linkAcesso })
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: process.env.RESEND_FROM || 'IncluiPro <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM || `IncluiPro <${CONTACT_EMAIL}>`,
       to: [email],
       subject: 'Pagamento confirmado! Acesse seu IncluiPro 🎉',
       text: textoConfirmacao({ nome, plano, linkAcesso }),
@@ -60,7 +60,7 @@ export async function enviarEmailComAnexo({ email, assunto, texto, nomeArquivo, 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: process.env.RESEND_FROM || 'IncluiPro <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM || `IncluiPro <${CONTACT_EMAIL}>`,
       to: [email],
       subject: assunto,
       text: texto,
