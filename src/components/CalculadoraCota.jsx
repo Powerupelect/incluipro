@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button } from './ui/Button.jsx'
 import { calcularCota, corSemaforo } from '../lib/cota.js'
-import { saveLead } from '../lib/leads.js'
-import { enviarDiagnostico } from '../lib/api.js'
 
 const CAMPOS_INICIAIS = {
   totalFuncionarios: '',
@@ -21,15 +19,9 @@ const SEMAFORO_COR = {
 export function CalculadoraCota() {
   const [campos, setCampos] = useState(CAMPOS_INICIAIS)
   const [resultado, setResultado] = useState(null)
-  const [email, setEmail] = useState('')
-  const [empresa, setEmpresa] = useState('')
-  const [enviado, setEnviado] = useState(false)
-  const [enviando, setEnviando] = useState(false)
-  const [erroEnvio, setErroEnvio] = useState('')
 
   function handleChange(campo, valor) {
     setCampos((prev) => ({ ...prev, [campo]: valor }))
-    setEnviado(false)
   }
 
   // Calculadora "ao vivo" — o resultado atualiza a cada tecla, sem precisar de um botão.
@@ -45,27 +37,6 @@ export function CalculadoraCota() {
       }),
     )
   }, [campos.totalFuncionarios, campos.pcdAtuais])
-
-  async function handleEnviarLead(e) {
-    e.preventDefault()
-    setErroEnvio('')
-    setEnviando(true)
-    saveLead({ origem: 'calculadora-cota', email, empresa, ...campos, ...resultado })
-    try {
-      const resposta = await enviarDiagnostico({ email, empresa, ...campos })
-      if (resposta?.enviado) {
-        setEnviado(true)
-      } else {
-        setErroEnvio(
-          resposta?.motivo || 'Não foi possível enviar o e-mail agora. Tente novamente em instantes.',
-        )
-      }
-    } catch (err) {
-      setErroEnvio(err?.message || 'Não foi possível enviar o e-mail agora. Tente novamente em instantes.')
-    } finally {
-      setEnviando(false)
-    }
-  }
 
   const semaforo = resultado ? corSemaforo(resultado.percentualCumprimento) : null
 
@@ -142,39 +113,33 @@ export function CalculadoraCota() {
               critérios de gradação da fiscalização.
             </p>
 
-            {!enviado ? (
-              <div className="mt-5 flex flex-col gap-3 rounded-2xl bg-mist-100 p-5 sm:flex-row sm:items-end">
-                <label className="flex-1 text-sm">
-                  <span className="font-semibold text-graphite-700">E-mail corporativo</span>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@empresa.com.br"
-                    className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-                  />
-                </label>
-                <label className="flex-1 text-sm">
-                  <span className="font-semibold text-graphite-700">Empresa (opcional)</span>
-                  <input
-                    type="text"
-                    value={empresa}
-                    onChange={(e) => setEmpresa(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-                  />
-                </label>
-                <Button as="button" type="button" onClick={handleEnviarLead} disabled={enviando}>
-                  {enviando ? 'Enviando…' : 'Receber diagnóstico completo'}
+            <div className="mt-5 rounded-2xl border border-mist-300 bg-mist-100 p-6">
+              <p className="font-display text-lg font-semibold text-indigo-900">
+                Como a IncluiPro pode ajudar
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-mist-300 bg-white p-4">
+                  <p className="text-sm font-semibold text-signal-700">IncluiPro Avalia</p>
+                  <p className="mt-1 text-sm leading-relaxed text-graphite-600">
+                    Relatórios Técnicos de Inclusão prontos em minutos, para estruturar cada
+                    contratação e organizar a documentação da cota.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-mist-300 bg-white p-4">
+                  <p className="text-sm font-semibold text-signal-700">IncluiPro Lidera</p>
+                  <p className="mt-1 text-sm leading-relaxed text-graphite-600">
+                    Kits de treinamento prontos para preparar as lideranças a gerir equipes
+                    inclusivas no dia a dia.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button to="/produtos">Ver todos os produtos</Button>
+                <Button to="/diagnostico" variant="ghost">
+                  Fazer diagnóstico completo
                 </Button>
               </div>
-            ) : (
-              <div className="mt-5 rounded-2xl border border-signal-200 bg-signal-50 p-5 text-sm text-signal-800">
-                ✅ Diagnóstico completo enviado para {email} — confira sua caixa de entrada (e o
-                spam, por garantia).
-              </div>
-            )}
-            {erroEnvio && <p className="mt-3 text-sm text-red-600">{erroEnvio}</p>}
+            </div>
           </div>
         )}
       </div>
