@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '../components/ui/Button.jsx'
 import { calcularMaturidade, NIVEIS, CRITERIOS } from '../lib/diagnostico.js'
 import { saveLead } from '../lib/leads.js'
@@ -28,6 +28,21 @@ export function Diagnostico() {
   const [email, setEmail] = useState('')
   const [consentimento, setConsentimento] = useState(false)
   const [resultado, setResultado] = useState(null)
+  const topoRef = useRef(null)
+  const primeiraRenderRef = useRef(true)
+
+  // Cada etapa (form → e-mail → resultado) é mais curta que a anterior — sem isso,
+  // a rolagem fica parada onde o botão foi clicado, no rodapé da etapa anterior.
+  useEffect(() => {
+    if (primeiraRenderRef.current) {
+      primeiraRenderRef.current = false
+      return
+    }
+    const el = topoRef.current
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY - 110
+    window.scrollTo({ top, behavior: 'smooth' })
+  }, [step])
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -52,7 +67,7 @@ export function Diagnostico() {
   const percentual = resultado ? Math.round((resultado.score / resultado.max) * 100) : 0
 
   return (
-    <section className="mx-auto max-w-2xl px-5 py-16 sm:px-8">
+    <section ref={topoRef} className="mx-auto max-w-2xl px-5 py-16 sm:px-8">
       <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
         Diagnóstico gratuito
       </p>

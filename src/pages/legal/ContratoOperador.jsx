@@ -4,26 +4,19 @@ export function ContratoOperador() {
   return (
     <LegalDoc
       titulo="Contrato de Operador de Dados"
-      atualizadoEm="31 de agosto de 2026"
-      aviso={
-        <>
-          <strong>Minuta técnica — pendente de revisão jurídica.</strong> Este é um resumo do
-          relacionamento entre a empresa contratante (controladora dos dados de seus
-          colaboradores) e a IncluiPro (operadora), nos termos do art. 39 da LGPD. Ainda não foi
-          revisado por um advogado; para uso contratual formal, solicite a versão assinável em{' '}
-          <a href="mailto:contato@incluipro.com" className="font-semibold text-amber-900 underline">
-            contato@incluipro.com
-          </a>
-          .
-        </>
-      }
+      atualizadoEm="2 de setembro de 2026"
     >
       <Secao titulo="1. Papéis">
         <p>
           A empresa contratante é <strong>controladora</strong> dos dados pessoais e sensíveis de
           seus colaboradores inseridos na plataforma. A IncluiPro atua como{' '}
           <strong>operadora</strong>, tratando esses dados apenas conforme as instruções da
-          controladora e para as finalidades descritas na Política de Privacidade.
+          controladora e para as finalidades descritas na Política de Privacidade, nos termos do
+          art. 39 da LGPD. Para a versão assinável deste contrato, solicite em{' '}
+          <a href="mailto:contato@incluipro.com" className="font-semibold text-indigo-700 underline">
+            contato@incluipro.com
+          </a>
+          .
         </p>
       </Secao>
 

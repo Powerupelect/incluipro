@@ -102,8 +102,13 @@
     letter-spacing: -0.01em;
   }
 
-  /* Mosaico sutil e animado no fundo do hero — textura suave, não decoração chapada */
+  /* Mosaico sutil e animado no fundo do hero — textura suave, não decoração chapada.
+     Anima "transform" (composto pela GPU), nunca "background-position" (força repaint
+     a cada frame) — com 5 seções usando isso ao mesmo tempo, background-position
+     causava o scroll travar. O elemento é sobredimensionado (inset negativo) para
+     não revelar bordas ao deslizar. */
   .hero-mosaic {
+    inset: -64px !important;
     background-image:
       linear-gradient(45deg, color-mix(in srgb, var(--color-signal-500) 4%, transparent) 25%, transparent 25%, transparent 75%, color-mix(in srgb, var(--color-signal-500) 4%, transparent) 75%),
       linear-gradient(45deg, color-mix(in srgb, var(--color-signal-500) 4%, transparent) 25%, transparent 25%, transparent 75%, color-mix(in srgb, var(--color-signal-500) 4%, transparent) 75%);
@@ -111,6 +116,15 @@
     background-position: 0 0, 32px 32px;
     animation: mosaicDrift 60s linear infinite;
     mask-image: linear-gradient(to bottom, black, transparent);
+    will-change: transform;
+  }
+  @keyframes mosaicDrift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-64px, -64px, 0);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-mosaic {
@@ -122,6 +136,16 @@
      sem isso, o topo da seção fica escondido atrás do header. */
   section[id] {
     scroll-margin-top: 110px;
+  }
+
+  /* Esconde a barra de rolagem nativa da galeria horizontal — a rolagem por toque/mouse
+     continua funcionando, só a barra visual some (as setas cobrem a navegação por clique). */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   /* Indicador de foco visível para navegação por teclado (WCAG 2.1 AA, critério 2.4.7) —
@@ -325,11 +349,6 @@
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50% { opacity: 0.9; transform: scale(1.08); }
-}
-
-@keyframes mosaicDrift {
-  from { background-position: 0 0, 32px 32px; }
-  to { background-position: 640px 640px, 672px 672px; }
 }
 
 @keyframes orbitSpin {

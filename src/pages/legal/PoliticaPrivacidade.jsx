@@ -4,14 +4,7 @@ export function PoliticaPrivacidade() {
   return (
     <LegalDoc
       titulo="Política de Privacidade"
-      atualizadoEm="31 de agosto de 2026"
-      aviso={
-        <>
-          <strong>Minuta técnica — pendente de revisão jurídica.</strong> Este documento descreve
-          como a IncluiPro trata dados pessoais hoje, mas ainda não foi revisado por um advogado.
-          Não deve ser considerado uma declaração legal definitiva até essa revisão ser concluída.
-        </>
-      }
+      atualizadoEm="2 de setembro de 2026"
     >
       <Secao titulo="1. Quem somos">
         <p>

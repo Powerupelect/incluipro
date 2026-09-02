@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const SLIDES = [
   {
@@ -47,6 +47,9 @@ const SLIDES = [
 
 export function SlideGallery() {
   const [ativo, setAtivo] = useState(null)
+  const trilhoRef = useRef(null)
+  const [podeRolarEsquerda, setPodeRolarEsquerda] = useState(false)
+  const [podeRolarDireita, setPodeRolarDireita] = useState(false)
 
   useEffect(() => {
     if (ativo === null) return
@@ -59,30 +62,76 @@ export function SlideGallery() {
     return () => window.removeEventListener('keydown', onKey)
   }, [ativo])
 
+  useEffect(() => {
+    const el = trilhoRef.current
+    if (!el) return
+    function atualizarSetas() {
+      setPodeRolarEsquerda(el.scrollLeft > 4)
+      setPodeRolarDireita(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+    }
+    atualizarSetas()
+    el.addEventListener('scroll', atualizarSetas, { passive: true })
+    window.addEventListener('resize', atualizarSetas)
+    return () => {
+      el.removeEventListener('scroll', atualizarSetas)
+      window.removeEventListener('resize', atualizarSetas)
+    }
+  }, [])
+
+  function rolar(direcao) {
+    const el = trilhoRef.current
+    if (!el) return
+    el.scrollBy({ left: direcao * el.clientWidth * 0.8, behavior: 'smooth' })
+  }
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {SLIDES.map((slide, i) => (
+      <div className="relative">
+        <div
+          ref={trilhoRef}
+          className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2"
+        >
+          {SLIDES.map((slide, i) => (
+            <button
+              key={slide.src}
+              onClick={() => setAtivo(i)}
+              className="group relative w-56 shrink-0 snap-start overflow-hidden rounded-xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus:outline-none focus:ring-2 focus:ring-signal-400 sm:w-64"
+            >
+              <div className="aspect-[16/9] overflow-hidden bg-mist-200">
+                <img
+                  src={slide.src}
+                  alt={`Slide de exemplo — ${slide.categoria}: ${slide.titulo}`}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-indigo-900/85 to-transparent p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-signal-300">
+                  {slide.categoria}
+                </p>
+                <p className="truncate text-xs font-medium text-white">{slide.titulo}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {podeRolarEsquerda && (
           <button
-            key={slide.src}
-            onClick={() => setAtivo(i)}
-            className="group relative overflow-hidden rounded-xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus:outline-none focus:ring-2 focus:ring-signal-400"
+            onClick={() => rolar(-1)}
+            aria-label="Ver slides anteriores"
+            className="absolute -left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-mist-300 bg-white text-indigo-800 shadow-pop hover:bg-mist-100 sm:flex"
           >
-            <div className="aspect-[16/9] overflow-hidden bg-mist-200">
-              <img
-                src={slide.src}
-                alt={`Slide de exemplo — ${slide.categoria}: ${slide.titulo}`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-            </div>
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-indigo-900/85 to-transparent p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-signal-300">
-                {slide.categoria}
-              </p>
-              <p className="truncate text-xs font-medium text-white">{slide.titulo}</p>
-            </div>
+            ‹
           </button>
-        ))}
+        )}
+        {podeRolarDireita && (
+          <button
+            onClick={() => rolar(1)}
+            aria-label="Ver mais slides"
+            className="absolute -right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-mist-300 bg-white text-indigo-800 shadow-pop hover:bg-mist-100 sm:flex"
+          >
+            ›
+          </button>
+        )}
       </div>
 
       {ativo !== null && (

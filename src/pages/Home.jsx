@@ -34,17 +34,18 @@ const problemas = [
 ]
 
 const avaliaItens = [
-  'Relatórios padronizados',
-  'Organização das informações',
-  'Redução do trabalho operacional',
-  'Processo mais rápido e estruturado',
+  'Reduz o tempo do RH em cada avaliação — formulário guiado por blocos substitui anotações soltas e retrabalho.',
+  'Relatório técnico pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
+  'Recomendações certas na hora certa: Consulta Rápida sugere ajustes por tipo de deficiência (visual, física, auditiva, intelectual, cognitiva/neurodivergente, múltipla).',
+  'Edição livre do texto antes de finalizar — sua equipe mantém o controle editorial completo.',
+  'Histórico organizado e pronto para consulta — documentação rastreável para auditorias e fiscalizações da Lei de Cotas.',
 ]
 
 const lideraItens = [
-  'Conteúdo pronto para uso',
-  'Comunicação e inclusão',
-  'Orientações para lideranças',
-  'Atualizações de conteúdos',
+  'Reduz turnover e afastamentos evitáveis — líderes preparados para gerir equipes inclusivas desde o primeiro dia.',
+  'Pronto para usar hoje: kits organizados por tema (fundamentos, comunicação e postura, gestão do dia a dia, casos práticos), sem esperar cronograma de consultoria.',
+  'Conteúdo atualizado continuamente, sem custo adicional — sua assinatura sempre acompanha a metodologia mais recente.',
+  'Funciona para qualquer nível de liderança, sem exigir conhecimento prévio em diversidade e inclusão.',
 ]
 
 const comoFunciona = [
@@ -228,9 +229,9 @@ export function Home() {
               uma Consulta Rápida de recursos sugeridos por tipo de deficiência. O sistema monta o
               relatório automaticamente — editável, antes de exportar em PDF.
             </p>
-            <ul className="mt-7 grid gap-2.5 sm:grid-cols-2">
+            <ul className="mt-7 space-y-3">
               {avaliaItens.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-indigo-100">
+                <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-indigo-100">
                   <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-400" fill="currentColor">
                     <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                   </svg>
@@ -279,9 +280,9 @@ export function Home() {
                 comunicação e postura, gestão do dia a dia, casos práticos — prontos para baixar e
                 usar em reuniões e capacitações internas.
               </p>
-              <ul className="mt-7 grid gap-2.5 sm:grid-cols-2">
+              <ul className="mt-7 space-y-3">
                 {lideraItens.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
+                  <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-graphite-700">
                     <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
                       <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                     </svg>

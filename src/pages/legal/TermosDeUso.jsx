@@ -4,14 +4,7 @@ export function TermosDeUso() {
   return (
     <LegalDoc
       titulo="Termos de Uso"
-      atualizadoEm="31 de agosto de 2026"
-      aviso={
-        <>
-          <strong>Minuta técnica — pendente de revisão jurídica.</strong> Este documento ainda não
-          foi revisado por um advogado e não deve ser tratado como contrato definitivo até essa
-          revisão ser concluída.
-        </>
-      }
+      atualizadoEm="2 de setembro de 2026"
     >
       <Secao titulo="1. Aceite">
         <p>

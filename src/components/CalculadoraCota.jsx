@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from './ui/Button.jsx'
 import { calcularCota, corSemaforo } from '../lib/cota.js'
 import { saveLead } from '../lib/leads.js'
@@ -6,8 +6,6 @@ import { enviarDiagnostico } from '../lib/api.js'
 
 const CAMPOS_INICIAIS = {
   totalFuncionarios: '',
-  aprendizes: '',
-  aposentadosInvalidez: '',
   pcdAtuais: '',
 }
 
@@ -31,19 +29,22 @@ export function CalculadoraCota() {
 
   function handleChange(campo, valor) {
     setCampos((prev) => ({ ...prev, [campo]: valor }))
-  }
-
-  function handleCalcular(e) {
-    e.preventDefault()
-    const numeros = {
-      totalFuncionarios: Number(campos.totalFuncionarios) || 0,
-      aprendizes: Number(campos.aprendizes) || 0,
-      aposentadosInvalidez: Number(campos.aposentadosInvalidez) || 0,
-      pcdAtuais: Number(campos.pcdAtuais) || 0,
-    }
-    setResultado(calcularCota(numeros))
     setEnviado(false)
   }
+
+  // Calculadora "ao vivo" — o resultado atualiza a cada tecla, sem precisar de um botão.
+  useEffect(() => {
+    if (!campos.totalFuncionarios) {
+      setResultado(null)
+      return
+    }
+    setResultado(
+      calcularCota({
+        totalFuncionarios: Number(campos.totalFuncionarios) || 0,
+        pcdAtuais: Number(campos.pcdAtuais) || 0,
+      }),
+    )
+  }, [campos.totalFuncionarios, campos.pcdAtuais])
 
   async function handleEnviarLead(e) {
     e.preventDefault()
@@ -51,10 +52,16 @@ export function CalculadoraCota() {
     setEnviando(true)
     saveLead({ origem: 'calculadora-cota', email, empresa, ...campos, ...resultado })
     try {
-      await enviarDiagnostico({ email, empresa, ...campos })
-      setEnviado(true)
-    } catch {
-      setErroEnvio('Não foi possível enviar o e-mail agora. Tente novamente em instantes.')
+      const resposta = await enviarDiagnostico({ email, empresa, ...campos })
+      if (resposta?.enviado) {
+        setEnviado(true)
+      } else {
+        setErroEnvio(
+          resposta?.motivo || 'Não foi possível enviar o e-mail agora. Tente novamente em instantes.',
+        )
+      }
+    } catch (err) {
+      setErroEnvio(err?.message || 'Não foi possível enviar o e-mail agora. Tente novamente em instantes.')
     } finally {
       setEnviando(false)
     }
@@ -101,39 +108,17 @@ export function CalculadoraCota() {
         )}
       </div>
 
-      {/* "Teclado" */}
-      <form onSubmit={handleCalcular} className="grid gap-3 bg-white p-6 sm:grid-cols-2 sm:p-8">
+      {/* "Teclado" — dois campos, resultado ao vivo, sem botão de calcular */}
+      <div className="grid gap-3 bg-white p-6 sm:grid-cols-2 sm:p-8">
         <label className="text-sm">
           <span className="font-semibold text-graphite-700">Total de funcionários (CLT)</span>
           <input
             type="number"
             inputMode="numeric"
             min="0"
-            required
             value={campos.totalFuncionarios}
             onChange={(e) => handleChange('totalFuncionarios', e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-3 font-mono text-lg tabular-nums outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="font-semibold text-graphite-700">Aprendizes</span>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            value={campos.aprendizes}
-            onChange={(e) => handleChange('aprendizes', e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-3 font-mono text-lg tabular-nums outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="font-semibold text-graphite-700">Aposentados por invalidez</span>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            value={campos.aposentadosInvalidez}
-            onChange={(e) => handleChange('aposentadosInvalidez', e.target.value)}
+            placeholder="Ex: 340"
             className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-3 font-mono text-lg tabular-nums outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
           />
         </label>
@@ -145,15 +130,10 @@ export function CalculadoraCota() {
             min="0"
             value={campos.pcdAtuais}
             onChange={(e) => handleChange('pcdAtuais', e.target.value)}
+            placeholder="Ex: 4"
             className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-3 font-mono text-lg tabular-nums outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
           />
         </label>
-        <button
-          type="submit"
-          className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-signal-600 px-6 py-3.5 text-base font-semibold text-white transition-colors hover:bg-signal-700 sm:col-span-2"
-        >
-          <span className="font-mono text-lg">=</span> Calcular cota
-        </button>
 
         {resultado && (
           <div className="sm:col-span-2">
@@ -197,7 +177,7 @@ export function CalculadoraCota() {
             {erroEnvio && <p className="mt-3 text-sm text-red-600">{erroEnvio}</p>}
           </div>
         )}
-      </form>
+      </div>
     </div>
   )
 }

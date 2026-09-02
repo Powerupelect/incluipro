@@ -2,7 +2,7 @@ import { LegalDoc, Secao } from '../../components/legal/LegalDoc.jsx'
 
 export function Seguranca() {
   return (
-    <LegalDoc titulo="Segurança" atualizadoEm="31 de agosto de 2026">
+    <LegalDoc titulo="Segurança" atualizadoEm="2 de setembro de 2026">
       <p>
         Esta página descreve o que existe de fato na infraestrutura da IncluiPro hoje — sem selo,
         sem promessa genérica.
