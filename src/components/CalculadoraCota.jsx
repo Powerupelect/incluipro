@@ -113,29 +113,29 @@ export function CalculadoraCota() {
               critérios de gradação da fiscalização.
             </p>
 
-            <div className="mt-5 rounded-2xl border border-mist-300 bg-mist-100 p-6">
-              <p className="font-display text-lg font-semibold text-indigo-900">
+            <div className="mt-5 rounded-2xl border border-mist-300 bg-mist-100 p-7">
+              <p className="font-display text-xl font-semibold text-indigo-900">
                 Como a IncluiPro pode ajudar
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-mist-300 bg-white p-4">
-                  <p className="text-sm font-semibold text-signal-700">IncluiPro Avalia</p>
-                  <p className="mt-1 text-sm leading-relaxed text-graphite-600">
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-mist-300 bg-white p-5">
+                  <p className="text-base font-semibold text-signal-700">IncluiPro Avalia</p>
+                  <p className="mt-1.5 text-base leading-relaxed text-graphite-600">
                     Relatórios Técnicos de Inclusão prontos em minutos, para estruturar cada
                     contratação e organizar a documentação da cota.
                   </p>
                 </div>
-                <div className="rounded-xl border border-mist-300 bg-white p-4">
-                  <p className="text-sm font-semibold text-signal-700">IncluiPro Lidera</p>
-                  <p className="mt-1 text-sm leading-relaxed text-graphite-600">
+                <div className="rounded-xl border border-mist-300 bg-white p-5">
+                  <p className="text-base font-semibold text-signal-700">IncluiPro Lidera</p>
+                  <p className="mt-1.5 text-base leading-relaxed text-graphite-600">
                     Kits de treinamento prontos para preparar as lideranças a gerir equipes
                     inclusivas no dia a dia.
                   </p>
                 </div>
               </div>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Button to="/produtos">Ver todos os produtos</Button>
-                <Button to="/diagnostico" variant="ghost">
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button to="/produtos" size="lg">Ver todos os produtos</Button>
+                <Button to="/diagnostico" variant="ghost" size="lg">
                   Fazer diagnóstico completo
                 </Button>
               </div>

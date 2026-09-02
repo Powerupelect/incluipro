@@ -95,7 +95,7 @@ export function SlideGallery() {
             <button
               key={slide.src}
               onClick={() => setAtivo(i)}
-              className="group relative w-56 shrink-0 snap-start overflow-hidden rounded-xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus:outline-none focus:ring-2 focus:ring-signal-400 sm:w-64"
+              className="group relative w-72 shrink-0 snap-start overflow-hidden rounded-xl border border-mist-300 bg-white text-left shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus:outline-none focus:ring-2 focus:ring-signal-400 sm:w-80"
             >
               <div className="aspect-[16/9] overflow-hidden bg-mist-200">
                 <img
@@ -104,11 +104,11 @@ export function SlideGallery() {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-indigo-900/85 to-transparent p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-signal-300">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-indigo-900/85 to-transparent p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-signal-300">
                   {slide.categoria}
                 </p>
-                <p className="truncate text-xs font-medium text-white">{slide.titulo}</p>
+                <p className="truncate text-base font-medium text-white">{slide.titulo}</p>
               </div>
             </button>
           ))}
@@ -118,7 +118,7 @@ export function SlideGallery() {
           <button
             onClick={() => rolar(-1)}
             aria-label="Ver slides anteriores"
-            className="absolute -left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-mist-300 bg-white text-indigo-800 shadow-pop hover:bg-mist-100 sm:flex"
+            className="absolute -left-5 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-mist-300 bg-white text-xl text-indigo-800 shadow-pop hover:bg-mist-100 sm:flex"
           >
             ‹
           </button>
@@ -127,7 +127,7 @@ export function SlideGallery() {
           <button
             onClick={() => rolar(1)}
             aria-label="Ver mais slides"
-            className="absolute -right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-mist-300 bg-white text-indigo-800 shadow-pop hover:bg-mist-100 sm:flex"
+            className="absolute -right-5 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-mist-300 bg-white text-xl text-indigo-800 shadow-pop hover:bg-mist-100 sm:flex"
           >
             ›
           </button>
@@ -155,12 +155,12 @@ export function SlideGallery() {
             >
               ✕
             </button>
-            <div className="flex items-center gap-3 border-t border-mist-300 bg-white px-5 py-3">
+            <div className="flex items-center gap-3 border-t border-mist-300 bg-white px-6 py-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-signal-600">
+                <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
                   {SLIDES[ativo].categoria} · {SLIDES[ativo].kit}
                 </p>
-                <p className="text-sm font-medium text-graphite-900">{SLIDES[ativo].titulo}</p>
+                <p className="text-lg font-medium text-graphite-900">{SLIDES[ativo].titulo}</p>
               </div>
             </div>
             <button

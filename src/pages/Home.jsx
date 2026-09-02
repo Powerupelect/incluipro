@@ -222,17 +222,17 @@ export function Home() {
       <section id="avalia" className="bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[3fr_2fr] lg:items-center">
           <Reveal>
-            <h2 className="font-display text-4xl font-medium text-white">IncluiPro Avalia</h2>
-            <p className="mt-2 text-sm font-medium text-indigo-300">Relatórios Técnicos de Inclusão</p>
-            <p className="mt-5 max-w-[60ch] text-[15px] leading-relaxed text-indigo-200">
+            <h2 className="font-display text-5xl font-medium text-white">IncluiPro Avalia</h2>
+            <p className="mt-2 text-base font-medium text-indigo-300">Relatórios Técnicos de Inclusão</p>
+            <p className="mt-5 max-w-[60ch] text-lg leading-relaxed text-indigo-200">
               Você preenche as anotações da entrevista em um formulário organizado por blocos, com
               uma Consulta Rápida de recursos sugeridos por tipo de deficiência. O sistema monta o
               relatório automaticamente — editável, antes de exportar em PDF.
             </p>
-            <ul className="mt-7 space-y-3">
+            <ul className="mt-8 space-y-4">
               {avaliaItens.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-indigo-100">
-                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-400" fill="currentColor">
+                <li key={item} className="flex items-start gap-3 text-base leading-relaxed text-indigo-100">
+                  <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 shrink-0 text-signal-400" fill="currentColor">
                     <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                   </svg>
                   {item}
@@ -242,7 +242,7 @@ export function Home() {
             <div className="mt-8 flex flex-wrap items-center gap-5">
               <button
                 onClick={() => setAmostraAberta(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-signal-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-signal-400"
+                className="inline-flex items-center gap-2 rounded-full bg-signal-500 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:bg-signal-400"
               >
                 Ver amostra completa do relatório
               </button>
@@ -273,17 +273,17 @@ export function Home() {
         <div className="relative mx-auto max-w-6xl">
           <div className="grid gap-14 lg:grid-cols-[3fr_2fr] lg:items-center">
             <Reveal>
-              <h2 className="font-display text-4xl font-medium text-indigo-900">IncluiPro Lidera</h2>
-              <p className="mt-2 text-sm font-medium text-signal-700">Treinamentos para Lideranças</p>
-              <p className="mt-5 max-w-[60ch] text-[15px] leading-relaxed text-graphite-500">
+              <h2 className="font-display text-5xl font-medium text-indigo-900">IncluiPro Lidera</h2>
+              <p className="mt-2 text-base font-medium text-signal-700">Treinamentos para Lideranças</p>
+              <p className="mt-5 max-w-[60ch] text-lg leading-relaxed text-graphite-500">
                 Uma biblioteca de kits de treinamento em slides, organizados por tema — fundamentos,
                 comunicação e postura, gestão do dia a dia, casos práticos — prontos para baixar e
                 usar em reuniões e capacitações internas.
               </p>
-              <ul className="mt-7 space-y-3">
+              <ul className="mt-8 space-y-4">
                 {lideraItens.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-graphite-700">
-                    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+                  <li key={item} className="flex items-start gap-3 text-base leading-relaxed text-graphite-700">
+                    <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 shrink-0 text-signal-600" fill="currentColor">
                       <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                     </svg>
                     {item}
@@ -305,7 +305,7 @@ export function Home() {
           </div>
 
           <Reveal delay={150} className="mt-16">
-            <p className="text-sm font-medium text-graphite-700">
+            <p className="text-lg font-medium text-graphite-700">
               Todos os slides do IncluiPro Lidera — clique em qualquer miniatura para ampliar.
             </p>
             <div className="mt-6">
@@ -333,7 +333,7 @@ export function Home() {
       <section id="como-funciona" className="bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <Reveal className="max-w-2xl">
-            <h2 className="font-display text-4xl font-medium text-white">
+            <h2 className="font-display text-5xl font-medium text-white">
               Um fluxo simples, do cadastro à documentação organizada
             </h2>
           </Reveal>
@@ -341,17 +341,17 @@ export function Home() {
           <div className="relative mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
             <Reveal
               direction="scale"
-              className="absolute left-0 right-0 top-6 hidden h-px origin-left bg-signal-500/40 lg:block"
+              className="absolute left-0 right-0 top-7 hidden h-px origin-left bg-signal-500/40 lg:block"
             />
             {comoFunciona.map((p, i) => (
               <Reveal key={p.numero} delay={i * 100} className="relative">
-                <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-signal-500 font-display text-sm font-semibold text-white">
+                <span className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full bg-signal-500 font-display text-base font-semibold text-white">
                   {p.numero}
                 </span>
-                <h3 className="mt-4 font-display text-lg font-medium text-white">
+                <h3 className="mt-4 font-display text-xl font-medium text-white">
                   {p.titulo}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-indigo-200">{p.texto}</p>
+                <p className="mt-2 text-base leading-relaxed text-indigo-200">{p.texto}</p>
               </Reveal>
             ))}
           </div>
