@@ -36,7 +36,7 @@ export function PublicHeader() {
             <NavLink
               key={l.to}
               to={l.to}
-              className="rounded-full px-3.5 py-2 text-sm font-medium text-graphite-700 transition-colors hover:bg-mist-200"
+              className="rounded-full bg-mist-100 px-3.5 py-2 text-sm font-medium text-graphite-700 transition-colors hover:bg-signal-50 hover:text-signal-700"
             >
               {l.label}
             </NavLink>

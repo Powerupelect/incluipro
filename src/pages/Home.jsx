@@ -136,8 +136,9 @@ export function Home() {
   return (
     <div>
       {/* Hero — claro */}
-      <section id="hero" className="bg-mist-100 px-5 py-20 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-5xl">
+      <section id="hero" className="relative overflow-hidden bg-mist-100 px-5 py-20 sm:px-8 sm:py-28">
+        <div className="hero-mosaic absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-5xl">
           <Reveal className="max-w-3xl">
             <h1 className="font-display text-4xl font-medium leading-[1.08] text-indigo-900 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
               Estruture a inclusão de pessoas com deficiência em um só lugar.
@@ -150,11 +151,11 @@ export function Home() {
               <Button to="/#avalia" size="lg">Conhecer as soluções</Button>
               <Button to="/#planos" variant="ghost" size="lg">Ver planos</Button>
             </div>
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-sm text-graphite-500">
+            <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-1.5 rounded-2xl border border-mist-300 bg-white/80 px-6 py-4 text-sm font-medium text-graphite-700 shadow-card backdrop-blur">
               <span>Alinhado à LBI e à Lei de Cotas</span>
-              <span aria-hidden="true">·</span>
+              <span aria-hidden="true" className="text-signal-500">·</span>
               <span>Metodologia especializada</span>
-              <span aria-hidden="true">·</span>
+              <span aria-hidden="true" className="text-signal-500">·</span>
               <span>Atualizações constantes</span>
             </div>
           </Reveal>
@@ -174,22 +175,30 @@ export function Home() {
         </div>
       </section>
 
-      {/* Problema — claro, sem cartões */}
-      <section id="problema" className="bg-white px-5 py-24 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-4xl">
+      {/* Problema — claro */}
+      <section id="problema" className="relative overflow-hidden bg-white px-5 py-24 sm:px-8 sm:py-28">
+        <div className="hero-mosaic absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-4xl">
           <Reveal>
             <h2 className="max-w-2xl font-display text-4xl font-medium leading-tight text-indigo-900">
               Quando a inclusão depende de processos manuais, o RH perde tempo.
             </h2>
           </Reveal>
 
-          <div className="mt-14 grid gap-10 sm:grid-cols-3">
+          <div className="mt-14 grid gap-6 sm:grid-cols-3">
             {problemas.map((p, i) => (
-              <Reveal key={p.titulo} delay={i * 100}>
-                <svg viewBox="0 0 24 24" className="h-6 w-6 text-signal-600" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  {p.icon}
-                </svg>
-                <p className="mt-3 font-display text-base font-semibold text-indigo-900">
+              <Reveal
+                key={p.titulo}
+                delay={i * 100}
+                direction="scale"
+                className="group rounded-2xl border border-mist-300 bg-mist-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-signal-300 hover:bg-white hover:shadow-pop"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-signal-50 text-signal-700 transition-transform duration-300 group-hover:scale-110">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    {p.icon}
+                  </svg>
+                </span>
+                <p className="mt-4 font-display text-base font-semibold text-indigo-900">
                   {p.titulo}
                 </p>
                 <p className="mt-1.5 text-[15px] leading-relaxed text-graphite-500">{p.texto}</p>
@@ -258,8 +267,9 @@ export function Home() {
       <ReportSampleModal open={amostraAberta} onClose={() => setAmostraAberta(false)} />
 
       {/* IncluiPro Lidera — claro, com prévias grandes dos slides */}
-      <section id="lidera" className="bg-white px-5 py-24 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-6xl">
+      <section id="lidera" className="relative overflow-hidden bg-white px-5 py-24 sm:px-8 sm:py-28">
+        <div className="hero-mosaic absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-6xl">
           <div className="grid gap-14 lg:grid-cols-[3fr_2fr] lg:items-center">
             <Reveal>
               <h2 className="font-display text-4xl font-medium text-indigo-900">IncluiPro Lidera</h2>
@@ -302,16 +312,16 @@ export function Home() {
             </div>
           </Reveal>
 
-          <Reveal delay={200} className="mt-14 flex flex-wrap items-center justify-between gap-5 border-t border-mist-300 pt-10">
+          <Reveal delay={200} className="mt-16 flex flex-col items-center gap-5 border-t border-mist-300 pt-14 text-center">
             <div>
-              <p className="font-display text-lg font-medium text-indigo-900">
+              <p className="font-display text-2xl font-semibold text-indigo-900 sm:text-3xl">
                 Sua empresa precisa de algo específico?
               </p>
-              <p className="mt-1 text-sm text-graphite-500">
+              <p className="mt-2 text-base text-graphite-500">
                 Solicite um Kit Personalizado, sob consulta e orçamento.
               </p>
             </div>
-            <Button href={LINK_KIT_PERSONALIZADO} variant="ghost">
+            <Button href={LINK_KIT_PERSONALIZADO} size="lg">
               Solicitar personalização
             </Button>
           </Reveal>
@@ -348,8 +358,9 @@ export function Home() {
       </section>
 
       {/* Planos e valores — claro */}
-      <section id="planos" className="bg-white px-5 py-24 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-5xl">
+      <section id="planos" className="relative overflow-hidden bg-white px-5 py-24 sm:px-8 sm:py-28">
+        <div className="hero-mosaic absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-5xl">
           <Reveal className="max-w-2xl">
             <h2 className="font-display text-4xl font-medium text-indigo-900">
               Quanto custa NÃO ter a IncluiPro?
@@ -508,8 +519,9 @@ export function Home() {
       </section>
 
       {/* FAQ — claro */}
-      <section id="faq" className="bg-white px-5 py-24 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-3xl">
+      <section id="faq" className="relative overflow-hidden bg-white px-5 py-24 sm:px-8 sm:py-28">
+        <div className="hero-mosaic absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-3xl">
           <Reveal>
             <h2 className="font-display text-4xl font-medium text-indigo-900">
               Tudo o que você precisa saber antes de contratar
