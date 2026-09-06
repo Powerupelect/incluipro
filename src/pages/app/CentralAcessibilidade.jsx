@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
-import { EstadoVazio } from '../../components/ui/Table.jsx'
+import { EstadoVazio, StatusPonto } from '../../components/ui/Table.jsx'
 import {
   TIPOS_SOLICITACAO,
   STATUS_FLUXO,
   STATUS_LABEL,
-  STATUS_COR,
+  STATUS_PONTO_COR,
   getColaboradoresAtivos,
   getSolicitacoes,
   criarSolicitacao,
@@ -107,25 +107,25 @@ export function CentralAcessibilidade() {
             <Link to="/privacidade" className="underline hover:text-graphite-600">Política de Privacidade</Link>.
           </p>
         </div>
-        <Button as="button" onClick={() => setFormAberto((v) => !v)} size="lg">
+        <Button shape="crm" as="button" onClick={() => setFormAberto((v) => !v)} size="lg">
           + Nova solicitação
         </Button>
       </div>
 
       <div className="mb-8 grid gap-5 sm:grid-cols-3">
-        <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="rounded-lg border border-mist-300 bg-white p-5">
           <p className="font-display text-2xl font-semibold text-indigo-800">
             {metricas.tempoMedioDias ?? '—'}{metricas.tempoMedioDias !== null && ' dias'}
           </p>
           <p className="text-sm text-graphite-500">tempo médio de atendimento</p>
         </div>
-        <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="rounded-lg border border-mist-300 bg-white p-5">
           <p className="font-display text-2xl font-semibold text-signal-700">
             {metricas.taxaAtendida ?? '—'}{metricas.taxaAtendida !== null && '%'}
           </p>
           <p className="text-sm text-graphite-500">taxa de solicitações atendidas</p>
         </div>
-        <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="rounded-lg border border-mist-300 bg-white p-5">
           <p className="text-sm font-semibold text-graphite-700">Tipos mais pedidos</p>
           {metricas.tiposMaisPedidos.length === 0 ? (
             <p className="mt-1 text-sm text-graphite-300">Sem dados ainda</p>
@@ -142,7 +142,7 @@ export function CentralAcessibilidade() {
       </div>
 
       {formAberto && (
-        <form onSubmit={handleCriar} className="mb-8 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+        <form onSubmit={handleCriar} className="mb-8 rounded-lg border border-mist-300 bg-white p-6">
           <h2 className="font-display text-lg font-semibold text-indigo-800">Nova solicitação</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="text-sm">
@@ -151,7 +151,7 @@ export function CentralAcessibilidade() {
                 required
                 value={nova.colaboradorId}
                 onChange={(e) => setNova((n) => ({ ...n, colaboradorId: e.target.value }))}
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               >
                 <option value="">Selecione…</option>
                 {colaboradores.map((c) => (
@@ -164,7 +164,7 @@ export function CentralAcessibilidade() {
               <select
                 value={nova.tipo}
                 onChange={(e) => setNova((n) => ({ ...n, tipo: e.target.value }))}
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               >
                 {TIPOS_SOLICITACAO.map((t) => (
                   <option key={t.id} value={t.id}>{t.label}</option>
@@ -178,7 +178,7 @@ export function CentralAcessibilidade() {
                 rows={3}
                 value={nova.descricao}
                 onChange={(e) => setNova((n) => ({ ...n, descricao: e.target.value }))}
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
             <label className="text-sm">
@@ -187,7 +187,7 @@ export function CentralAcessibilidade() {
                 type="date"
                 value={nova.dataPedido}
                 onChange={(e) => setNova((n) => ({ ...n, dataPedido: e.target.value }))}
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
             <label className="text-sm">
@@ -196,15 +196,15 @@ export function CentralAcessibilidade() {
                 value={nova.solicitadoPor}
                 onChange={(e) => setNova((n) => ({ ...n, solicitadoPor: e.target.value }))}
                 placeholder="Nome de quem registrou o pedido"
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
           </div>
           <div className="mt-5 flex gap-2.5">
-            <Button as="button" type="submit" disabled={salvando}>
+            <Button shape="crm" as="button" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Registrar solicitação'}
             </Button>
-            <Button as="button" type="button" variant="ghost" onClick={() => setFormAberto(false)}>
+            <Button shape="crm" as="button" type="button" variant="ghost" onClick={() => setFormAberto(false)}>
               Cancelar
             </Button>
           </div>
@@ -216,7 +216,7 @@ export function CentralAcessibilidade() {
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar por colaborador, tipo ou status…"
-          className="mb-5 w-full max-w-md rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+          className="mb-5 w-full max-w-md rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
         />
       )}
 
@@ -226,7 +226,7 @@ export function CentralAcessibilidade() {
         <EstadoVazio
           titulo="Nenhuma solicitação registrada ainda"
           descricao="Registre aqui o pedido de adaptação feito pelo colaborador — conversa, e-mail ou mensagem — e acompanhe o fluxo até a conclusão."
-          acao={<Button as="button" onClick={() => setFormAberto(true)}>Registrar a primeira solicitação</Button>}
+          acao={<Button shape="crm" as="button" onClick={() => setFormAberto(true)}>Registrar a primeira solicitação</Button>}
         />
       ) : solicitacoesFiltradas.length === 0 ? (
         <p className="text-sm text-graphite-500">Nenhuma solicitação encontrada para essa busca.</p>
@@ -264,7 +264,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
   }
 
   return (
-    <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+    <div className="rounded-lg border border-mist-300 bg-white p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-graphite-900">{s.colaboradores?.nome || 'Colaborador'}</p>
@@ -276,9 +276,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
           <p className="mt-2 text-sm text-graphite-700">{s.descricao}</p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COR[s.status]}`}>
-            {STATUS_LABEL[s.status]}
-          </span>
+          <StatusPonto cor={STATUS_PONTO_COR[s.status]}>{STATUS_LABEL[s.status]}</StatusPonto>
           <button onClick={() => onExcluir(s.id)} className="text-xs font-semibold text-red-500 hover:text-red-700">
             Excluir
           </button>
@@ -296,7 +294,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
             <input
               value={responsavel}
               onChange={(e) => setResponsavel(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
           </label>
           <label className="text-sm">
@@ -305,7 +303,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
               type="date"
               value={prazo}
               onChange={(e) => setPrazo(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
           </label>
           <label className="text-sm sm:col-span-2">
@@ -320,7 +318,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
 
           <div className="flex flex-wrap gap-2 sm:col-span-2">
             {proximoStatus && (
-              <Button
+              <Button shape="crm"
                 as="button"
                 size="sm"
                 onClick={() => handleAvancar(proximoStatus, { responsavel, prazo })}
@@ -328,7 +326,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
                 Avançar para "{STATUS_LABEL[proximoStatus]}"
               </Button>
             )}
-            <Button
+            <Button shape="crm"
               as="button"
               size="sm"
               variant="ghost"

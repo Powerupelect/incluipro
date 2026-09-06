@@ -11,7 +11,7 @@ import {
   urlAssinadaDocumento,
 } from '../../lib/documentos.js'
 import { resumoTriagem } from '../../lib/triagemLaudos.js'
-import { EstadoVazio } from '../../components/ui/Table.jsx'
+import { EstadoVazio, StatusPonto } from '../../components/ui/Table.jsx'
 
 const NOVO_DOC_INICIAL = {
   tipo: 'laudo',
@@ -116,7 +116,7 @@ export function TriagemLaudos() {
         </p>
       </div>
 
-      <div className="mb-6 rounded-2xl border border-mist-300 bg-white p-5">
+      <div className="mb-6 rounded-lg border border-mist-300 bg-white p-5">
         <p className="text-sm font-semibold text-graphite-900">
           {resumo.total} cadastrado{resumo.total === 1 ? '' : 's'} · {resumo.consistentes} com
           documentação consistente · {resumo.emRisco} em risco
@@ -128,7 +128,7 @@ export function TriagemLaudos() {
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar por colaborador ou tipo de deficiência…"
-          className="mb-5 w-full max-w-md rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+          className="mb-5 w-full max-w-md rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
         />
       )}
 
@@ -147,7 +147,7 @@ export function TriagemLaudos() {
             const docsDoColaborador = documentos.filter((d) => d.colaborador_id === colaborador.id)
             const aberto = colaboradorAberto === colaborador.id
             return (
-              <div key={colaborador.id} className="rounded-2xl border border-mist-300 bg-white shadow-card">
+              <div key={colaborador.id} className="rounded-lg border border-mist-300 bg-white">
                 <button
                   onClick={() => setColaboradorAberto(aberto ? null : colaborador.id)}
                   className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left"
@@ -156,12 +156,10 @@ export function TriagemLaudos() {
                     <p className="font-semibold text-graphite-900">{colaborador.nome}</p>
                     <p className="text-sm text-graphite-500">{colaborador.tipo_deficiencia}</p>
                   </div>
-                  <span
-                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
-                      emRisco ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                    }`}
-                  >
-                    {emRisco ? 'Em risco' : 'Consistente'}
+                  <span className="shrink-0">
+                    <StatusPonto cor={emRisco ? 'amber' : 'signal'}>
+                      {emRisco ? 'Em risco' : 'Consistente'}
+                    </StatusPonto>
                   </span>
                 </button>
 
@@ -180,7 +178,7 @@ export function TriagemLaudos() {
                         {docsDoColaborador.map((doc) => (
                           <li
                             key={doc.id}
-                            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-mist-200 bg-mist-100 px-4 py-2.5 text-sm"
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-mist-200 bg-mist-100 px-4 py-2.5 text-sm"
                           >
                             <span>
                               <span className="font-semibold text-graphite-800">
@@ -213,14 +211,14 @@ export function TriagemLaudos() {
 
                     <form
                       onSubmit={(e) => handleUpload(e, colaborador.id)}
-                      className="grid gap-3 rounded-xl border border-dashed border-mist-400 p-4 sm:grid-cols-2"
+                      className="grid gap-3 rounded-md border border-dashed border-mist-400 p-4 sm:grid-cols-2"
                     >
                       <label className="text-sm">
                         <span className="font-semibold text-graphite-700">Tipo de documento</span>
                         <select
                           value={novoDoc.tipo}
                           onChange={(e) => setNovoDoc((d) => ({ ...d, tipo: e.target.value }))}
-                          className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                          className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                         >
                           {TIPOS_DOCUMENTO.map((t) => (
                             <option key={t.id} value={t.id}>{t.label}</option>
@@ -241,7 +239,7 @@ export function TriagemLaudos() {
                           type="date"
                           value={novoDoc.dataEmissao}
                           onChange={(e) => setNovoDoc((d) => ({ ...d, dataEmissao: e.target.value }))}
-                          className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                          className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                         />
                       </label>
                       <label className="text-sm">
@@ -250,7 +248,7 @@ export function TriagemLaudos() {
                           type="date"
                           value={novoDoc.dataValidade}
                           onChange={(e) => setNovoDoc((d) => ({ ...d, dataValidade: e.target.value }))}
-                          className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                          className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                         />
                       </label>
                       <label className="flex items-center gap-2 text-sm sm:col-span-2">
@@ -262,7 +260,7 @@ export function TriagemLaudos() {
                         <span className="text-graphite-700">O documento descreve a barreira funcional</span>
                       </label>
                       <div className="sm:col-span-2">
-                        <Button as="button" type="submit" disabled={enviando}>
+                        <Button shape="crm" as="button" type="submit" disabled={enviando}>
                           {enviando ? 'Salvando…' : 'Adicionar documento'}
                         </Button>
                       </div>

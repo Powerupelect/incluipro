@@ -30,13 +30,6 @@ const items = [
     ),
   },
   {
-    to: '/app/adaptacoes',
-    label: 'Adaptações',
-    hint: 'Ajustes em vigor',
-    restritoA: ['admin', 'rh', 'gestor'],
-    icon: <path d="M12 4a3 3 0 110 6 3 3 0 010-6zM5 20c1.2-3.6 3.8-6 7-6s5.8 2.4 7 6M9 13l1.5 2L14 11" />,
-  },
-  {
     to: '/app/lidera',
     label: 'Treinamentos',
     hint: 'Kits de capacitação',
@@ -47,7 +40,7 @@ const items = [
     label: 'Solicitações',
     hint: 'Pedidos de adaptação',
     restritoA: ['admin', 'rh', 'gestor'],
-    icon: <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />,
+    icon: <path d="M12 4a3 3 0 110 6 3 3 0 010-6zM5 20c1.2-3.6 3.8-6 7-6s5.8 2.4 7 6M9 13l1.5 2L14 11" />,
   },
   {
     to: '/app/documentos',
@@ -93,7 +86,7 @@ export function AppSidebar({ onNavigate }) {
             end={item.end}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${
+              `flex items-center gap-3 rounded-md px-3 py-3 text-sm transition-colors ${
                 isActive ? 'bg-white/10 text-white' : 'text-indigo-200 hover:bg-white/5 hover:text-white'
               }`
             }

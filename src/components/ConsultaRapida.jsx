@@ -48,7 +48,7 @@ export function ConsultaRapida({
             <button
               key={t.id}
               onClick={() => onSelectCategoria(t.id)}
-              className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+              className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors ${
                 t.id === categoriaAtiva
                   ? 'border-signal-600 bg-signal-600 text-white'
                   : 'border-mist-400 text-graphite-700 hover:border-signal-400'
@@ -69,14 +69,14 @@ export function ConsultaRapida({
               return (
                 <li
                   key={recurso}
-                  className={`flex items-start justify-between gap-3 rounded-xl border p-3.5 text-sm ${
+                  className={`flex items-start justify-between gap-3 rounded-md border p-3.5 text-sm ${
                     selecionado ? 'border-signal-300 bg-signal-50' : 'border-mist-300'
                   }`}
                 >
                   <span className="text-graphite-700">{recurso}</span>
                   <button
                     onClick={() => onToggleRecurso(recurso)}
-                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold ${
                       selecionado
                         ? 'bg-signal-600 text-white'
                         : 'border border-mist-400 text-indigo-700 hover:border-signal-400'

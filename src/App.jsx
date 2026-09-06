@@ -22,7 +22,6 @@ import { Dashboard } from './pages/app/Dashboard.jsx'
 import { Colaboradores } from './pages/app/Colaboradores.jsx'
 import { ColaboradorFicha } from './pages/app/ColaboradorFicha.jsx'
 import { Avalia } from './pages/app/Avalia.jsx'
-import { Adaptacoes } from './pages/app/Adaptacoes.jsx'
 import { Lidera } from './pages/app/Lidera.jsx'
 import { Conta } from './pages/app/Conta.jsx'
 import { TriagemLaudos } from './pages/app/TriagemLaudos.jsx'
@@ -72,7 +71,6 @@ export default function App() {
             <Route path="colaboradores" element={<Colaboradores />} />
             <Route path="colaboradores/:id" element={<ColaboradorFicha />} />
             <Route path="avalia" element={<Avalia />} />
-            <Route path="adaptacoes" element={<Adaptacoes />} />
             <Route path="lidera" element={<Lidera />} />
             <Route path="solicitacoes" element={<CentralAcessibilidade />} />
             <Route path="documentos" element={<TriagemLaudos />} />

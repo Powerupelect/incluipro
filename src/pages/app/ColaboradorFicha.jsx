@@ -123,15 +123,15 @@ export function ColaboradorFicha() {
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
-          <Button to="/app/avalia" variant="ghost" size="sm">Nova avaliação</Button>
-          <Button as="button" variant="danger" size="sm" onClick={handlePedirExclusao}>
+          <Button shape="crm" to="/app/avalia" variant="ghost" size="sm">Nova avaliação</Button>
+          <Button shape="crm" as="button" variant="danger" size="sm" onClick={handlePedirExclusao}>
             Excluir colaborador
           </Button>
         </div>
       </div>
 
       {colaborador.observacoes_condicao && (
-        <div className="mt-6 rounded-2xl border border-mist-300 bg-white p-5 text-sm text-graphite-700">
+        <div className="mt-6 rounded-lg border border-mist-300 bg-white p-5 text-sm text-graphite-700">
           <p className="font-semibold text-graphite-900">Observações sobre a condição</p>
           <p className="mt-1 leading-relaxed">{colaborador.observacoes_condicao}</p>
         </div>
@@ -149,7 +149,7 @@ export function ColaboradorFicha() {
             />
           </div>
         ) : (
-          <ul className="mt-3 divide-y divide-mist-200 rounded-2xl border border-mist-300 bg-white">
+          <ul className="mt-3 divide-y divide-mist-200 rounded-lg border border-mist-300 bg-white">
             {linhaDoTempo.map((item, i) => (
               <li key={i} className="flex items-center justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
@@ -167,7 +167,7 @@ export function ColaboradorFicha() {
 
       {confirmandoExclusao && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite-900/50 px-5">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-pop">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-pop">
             <h2 className="font-display text-lg font-semibold text-indigo-800">
               Excluir {colaborador.nome}?
             </h2>
@@ -181,10 +181,10 @@ export function ColaboradorFicha() {
               <li>• {vinculos?.solicitacoes ?? '—'} solicitação(ões) de adaptação</li>
             </ul>
             <div className="mt-6 flex gap-2.5">
-              <Button as="button" variant="danger" onClick={handleConfirmarExclusao}>
+              <Button shape="crm" as="button" variant="danger" onClick={handleConfirmarExclusao}>
                 Excluir definitivamente
               </Button>
-              <Button as="button" variant="ghost" onClick={() => setConfirmandoExclusao(false)}>
+              <Button shape="crm" as="button" variant="ghost" onClick={() => setConfirmandoExclusao(false)}>
                 Cancelar
               </Button>
             </div>

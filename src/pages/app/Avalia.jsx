@@ -517,7 +517,7 @@ export function Avalia() {
   return (
     <div>
       {sucesso && (
-        <div className="mb-6 flex items-center gap-3 rounded-2xl border border-signal-200 bg-signal-50 px-5 py-4 text-sm font-semibold text-signal-800">
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-signal-200 bg-signal-50 px-5 py-4 text-sm font-semibold text-signal-800">
           ✅ Relatório gerado com sucesso! Veja o resultado ao lado, edite se precisar e baixe o PDF.
         </div>
       )}
@@ -535,20 +535,20 @@ export function Avalia() {
         <div className="flex shrink-0 flex-wrap gap-2">
           <button
             onClick={() => setImportModalAberto(true)}
-            className="rounded-full border border-mist-400 bg-white px-4 py-2.5 text-sm font-semibold text-graphite-700 hover:border-signal-400"
+            className="rounded-md border border-mist-400 bg-white px-4 py-2.5 text-sm font-semibold text-graphite-700 hover:border-signal-400"
           >
             📤 Importar colaboradores (CSV)
           </button>
           <button
             onClick={() => setPainelAberto(true)}
-            className="rounded-full border border-volt-400 bg-volt-50 px-4 py-2.5 text-sm font-semibold text-volt-700 hover:border-volt-500 hover:bg-volt-100"
+            className="rounded-md border border-volt-400 bg-volt-50 px-4 py-2.5 text-sm font-semibold text-volt-700 hover:border-volt-500 hover:bg-volt-100"
           >
             🔎 Consulta Rápida de Recursos
           </button>
         </div>
       </div>
 
-      <div className="mb-8 rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+      <div className="mb-8 rounded-lg border border-mist-300 bg-white p-5">
         <div className="flex items-center justify-between gap-3 text-sm">
           <p className="font-semibold text-graphite-900">Progresso do preenchimento</p>
           <p className="text-graphite-500">
@@ -568,10 +568,10 @@ export function Avalia() {
           {blocos.map((bloco, i) => {
             const completo = bloco.campos.every((c) => form[c.key]?.trim())
             return (
-            <div key={bloco.titulo} className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+            <div key={bloco.titulo} className="rounded-lg border border-mist-300 bg-white p-6">
               <div className="flex items-center gap-3">
                 <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${
                     completo ? 'bg-signal-600 text-white' : 'bg-signal-50 text-signal-700'
                   }`}
                 >
@@ -619,20 +619,20 @@ export function Avalia() {
                         rows={3}
                         value={form[campo.key]}
                         onChange={(e) => update(campo.key, e.target.value)}
-                        className="mt-2 w-full rounded-xl border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                        className="mt-2 w-full rounded-md border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                       />
                     ) : (
                       <input
                         value={form[campo.key]}
                         onChange={(e) => update(campo.key, e.target.value)}
-                        className="mt-2 w-full rounded-xl border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                        className="mt-2 w-full rounded-md border border-mist-400 px-4 py-3 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                       />
                     )}
                   </div>
                 ))}
               </div>
               {bloco.titulo === 'Deficiência' && recursosSugeridos.length > 0 && (
-                <div className="mt-4 rounded-xl border border-signal-200 bg-signal-50 p-4">
+                <div className="mt-4 rounded-md border border-signal-200 bg-signal-50 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-signal-700">
                     Recursos selecionados na Consulta Rápida
                   </p>
@@ -648,16 +648,16 @@ export function Avalia() {
           })}
 
           {error && (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+            <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
 
-          <Button as="button" onClick={handleGerar} className="w-full justify-center" size="lg">
+          <Button shape="crm" as="button" onClick={handleGerar} className="w-full justify-center" size="lg">
             Gerar Relatório
           </Button>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+          <div className="rounded-lg border border-mist-300 bg-white p-6">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
                 Relatório gerado
@@ -666,25 +666,25 @@ export function Avalia() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleCopiar}
-                    className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
+                    className="rounded-md border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
                   >
                     {copiado ? 'Copiado!' : 'Copiar'}
                   </button>
                   <button
                     onClick={handleEditar}
-                    className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
+                    className="rounded-md border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
                   >
                     ✏️ Editar Relatório
                   </button>
                   <button
                     onClick={handleBaixarPdf}
-                    className="rounded-full bg-signal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-signal-700"
+                    className="rounded-md bg-signal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-signal-700"
                   >
                     📄 Baixar Relatório em PDF
                   </button>
                   <button
                     onClick={handleNovoRelatorio}
-                    className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-signal-400"
+                    className="rounded-md border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-signal-400"
                   >
                     🆕 Gerar Novo Relatório
                   </button>
@@ -694,13 +694,13 @@ export function Avalia() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setEditMode(false)}
-                    className="rounded-full border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-mist-500"
+                    className="rounded-md border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-mist-500"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleSalvarEdicao}
-                    className="rounded-full bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-800"
+                    className="rounded-md bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-800"
                   >
                     {salvo ? 'Salvo!' : '💾 Salvar Alterações'}
                   </button>
@@ -710,7 +710,7 @@ export function Avalia() {
 
             <div className="mt-4">
               {!relatorio && (
-                <p className="rounded-xl bg-mist-200 p-5 text-sm text-graphite-500">
+                <p className="rounded-md bg-mist-200 p-5 text-sm text-graphite-500">
                   Preencha o formulário e clique em "Gerar Relatório" para ver o resultado aqui.
                 </p>
               )}
@@ -725,7 +725,7 @@ export function Avalia() {
                     value={editDraft}
                     onChange={(e) => setEditDraft(e.target.value)}
                     rows={20}
-                    className="w-full rounded-xl border border-signal-400 bg-mist-50 p-4 font-mono text-xs leading-relaxed outline-none focus:ring-2 focus:ring-signal-100"
+                    className="w-full rounded-md border border-signal-400 bg-mist-50 p-4 font-mono text-xs leading-relaxed outline-none focus:ring-2 focus:ring-signal-100"
                   />
                   <p className="mt-2 text-xs text-graphite-300">
                     Edição livre em Markdown (## define o título de cada seção). Clique em
@@ -736,7 +736,7 @@ export function Avalia() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+          <div className="rounded-lg border border-mist-300 bg-white p-6">
             <h2 className="font-display text-lg font-semibold text-indigo-800">
               ✅ O que não pode faltar
             </h2>
@@ -763,7 +763,7 @@ export function Avalia() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+          <div className="rounded-lg border border-mist-300 bg-white p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
                 📂 Meus Relatórios
@@ -773,7 +773,7 @@ export function Avalia() {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar por candidato ou cargo…"
-              className="mt-3 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="mt-3 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
 
             {historicoCarregando ? (
@@ -795,7 +795,7 @@ export function Avalia() {
                       <p className="truncate text-sm font-medium text-graphite-900">
                         {item.candidato} {item.editado && <span className="text-graphite-300">· editado</span>}
                         {item.tipo === 'revisao_confirmada' && (
-                          <span className="ml-1.5 rounded-full bg-mist-300 px-2 py-0.5 text-[10px] font-semibold text-graphite-700">
+                          <span className="ml-1.5 rounded bg-mist-300 px-2 py-0.5 text-[10px] font-semibold text-graphite-700">
                             revisão confirmada
                           </span>
                         )}
@@ -853,16 +853,16 @@ export function Avalia() {
 
       {revisaoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite-900/50 px-5">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-pop">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-pop">
             <h2 className="font-display text-lg font-semibold text-indigo-800">Revisão anual</h2>
             <p className="mt-2 text-sm text-graphite-700">
               Algo mudou desde a última avaliação de <strong>{revisaoModal.nome}</strong>?
             </p>
             <div className="mt-6 flex flex-col gap-2.5">
-              <Button as="button" onClick={handleRevisaoComAlteracao} className="w-full justify-center">
+              <Button shape="crm" as="button" onClick={handleRevisaoComAlteracao} className="w-full justify-center">
                 Sim, algo mudou — abrir avaliação completa
               </Button>
-              <Button
+              <Button shape="crm"
                 as="button"
                 variant="ghost"
                 disabled={revisaoSalvando}
@@ -884,7 +884,7 @@ export function Avalia() {
 
       {importModalAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite-900/50 px-5">
-          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-pop">
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-pop">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
                 Importar colaboradores por CSV
@@ -924,7 +924,7 @@ export function Avalia() {
                 </p>
 
                 {previaImportacao.validas.length > 0 && (
-                  <div className="mt-3 max-h-64 overflow-y-auto rounded-xl border border-mist-300">
+                  <div className="mt-3 max-h-64 overflow-y-auto rounded-md border border-mist-300">
                     <table className="w-full text-left text-xs">
                       <thead className="bg-mist-100 text-graphite-500">
                         <tr>
@@ -951,7 +951,7 @@ export function Avalia() {
                 )}
 
                 {previaImportacao.erros.length > 0 && (
-                  <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                  <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700">
                     {previaImportacao.erros.map((e, i) => (
                       <p key={i}>Linha {e.linha}: {e.motivo}</p>
                     ))}
@@ -959,14 +959,14 @@ export function Avalia() {
                 )}
 
                 <div className="mt-4 flex gap-2.5">
-                  <Button
+                  <Button shape="crm"
                     as="button"
                     onClick={handleConfirmarImportacaoCsv}
                     disabled={importandoCsv || previaImportacao.validas.length === 0}
                   >
                     {importandoCsv ? 'Importando…' : `Importar ${previaImportacao.validas.length} colaborador(es)`}
                   </Button>
-                  <Button as="button" variant="ghost" onClick={handleFecharImportModal}>
+                  <Button shape="crm" as="button" variant="ghost" onClick={handleFecharImportModal}>
                     Cancelar
                   </Button>
                 </div>
@@ -979,13 +979,13 @@ export function Avalia() {
                   ✅ {resultadoImportacao.importados} colaborador(es) importado(s).
                 </p>
                 {resultadoImportacao.falhas.length > 0 && (
-                  <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                  <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700">
                     {resultadoImportacao.falhas.map((f, i) => (
                       <p key={i}>Linha {f.linha}: {f.motivo}</p>
                     ))}
                   </div>
                 )}
-                <Button as="button" className="mt-4" onClick={handleFecharImportModal}>
+                <Button shape="crm" as="button" className="mt-4" onClick={handleFecharImportModal}>
                   Fechar
                 </Button>
               </div>

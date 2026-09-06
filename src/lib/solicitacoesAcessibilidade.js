@@ -19,13 +19,15 @@ export const STATUS_LABEL = {
   recusado: 'Recusado',
 }
 
-export const STATUS_COR = {
-  solicitado: 'bg-mist-200 text-graphite-700',
-  em_analise: 'bg-amber-100 text-amber-800',
-  aprovado: 'bg-signal-100 text-signal-700',
-  executado: 'bg-signal-100 text-signal-700',
-  concluido: 'bg-emerald-100 text-emerald-800',
-  recusado: 'bg-red-100 text-red-700',
+/** Cor do ponto de status (ver componente StatusPonto) — nunca comunicado só por cor,
+ * sempre junto com STATUS_LABEL. */
+export const STATUS_PONTO_COR = {
+  solicitado: 'neutro',
+  em_analise: 'amber',
+  aprovado: 'signal',
+  executado: 'signal',
+  concluido: 'signal',
+  recusado: 'red',
 }
 
 export async function getColaboradoresAtivos(empresaId) {

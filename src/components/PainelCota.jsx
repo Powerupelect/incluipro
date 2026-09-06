@@ -16,7 +16,7 @@ export function PainelCota({ empresa, pcdAtivos }) {
 
   if (totalFuncionarios === 0) {
     return (
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="text-base font-semibold text-indigo-900">Cota de PCD</h2>
         <p className="mt-2 text-sm text-graphite-500">
           Informe o quadro de funcionários da empresa para ver sua cota calculada aqui.
@@ -41,19 +41,19 @@ export function PainelCota({ empresa, pcdAtivos }) {
   const semaforo = corSemaforo(resultado.percentualCumprimento)
 
   return (
-    <div className="rounded-2xl border border-mist-300 bg-white p-6 sm:p-8">
+    <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
       <p className="text-sm text-graphite-500">
         {empresa.nome || 'Sua empresa'} · {MES_ANO}
       </p>
 
-      <p className="mt-3 font-display text-5xl font-semibold leading-none text-indigo-900 sm:text-6xl">
+      <p className="mt-3 font-display text-4xl font-semibold leading-none text-indigo-900 sm:text-5xl">
         {pcdAtivos} <span className="text-graphite-300">/</span> {resultado.cotaDevida}
       </p>
       <p className="mt-2 text-graphite-600">colaboradores com deficiência na cota legal</p>
 
       <div className="mt-4">
         {resultado.vagasEmAberto > 0 ? (
-          <StatusPonto cor={semaforo.cor === 'red' ? 'red' : 'amber'}>
+          <StatusPonto cor={semaforo.cor}>
             {resultado.vagasEmAberto} vaga{resultado.vagasEmAberto !== 1 ? 's' : ''} em aberto
           </StatusPonto>
         ) : (

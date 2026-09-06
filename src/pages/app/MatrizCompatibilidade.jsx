@@ -107,28 +107,28 @@ export function MatrizCompatibilidade() {
             avaliação técnica com a pessoa candidata.
           </p>
         </div>
-        <Button as="button" onClick={() => setFormAberto((v) => !v)} size="lg">
+        <Button shape="crm" as="button" onClick={() => setFormAberto((v) => !v)} size="lg">
           + Novo cargo
         </Button>
       </div>
 
       <div className="mb-8 grid gap-5 sm:grid-cols-3">
-        <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="rounded-lg border border-mist-300 bg-white p-5">
           <p className="font-display text-2xl font-semibold text-signal-700">{indicadores.compativeis}</p>
           <p className="text-sm text-graphite-500">combinações compatíveis sem ajuste</p>
         </div>
-        <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="rounded-lg border border-mist-300 bg-white p-5">
           <p className="font-display text-2xl font-semibold text-amber-700">{indicadores.comAdaptacao}</p>
           <p className="text-sm text-graphite-500">combinações que requerem adaptação</p>
         </div>
-        <div className="rounded-2xl border border-mist-300 bg-white p-5 shadow-card">
+        <div className="rounded-lg border border-mist-300 bg-white p-5">
           <p className="font-display text-2xl font-semibold text-indigo-800">{indicadores.vagasEmCargosCompativeis}</p>
           <p className="text-sm text-graphite-500">vagas abertas em cargos compatíveis</p>
         </div>
       </div>
 
       {formAberto && (
-        <form onSubmit={handleCriarCargo} className="mb-8 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+        <form onSubmit={handleCriarCargo} className="mb-8 rounded-lg border border-mist-300 bg-white p-6">
           <h2 className="font-display text-lg font-semibold text-indigo-800">Novo cargo</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="text-sm sm:col-span-2">
@@ -137,7 +137,7 @@ export function MatrizCompatibilidade() {
                 required
                 value={novoCargo.nome}
                 onChange={(e) => setNovoCargo((c) => ({ ...c, nome: e.target.value }))}
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
             <label className="text-sm">
@@ -147,7 +147,7 @@ export function MatrizCompatibilidade() {
                 min="0"
                 value={novoCargo.vagasAbertas}
                 onChange={(e) => setNovoCargo((c) => ({ ...c, vagasAbertas: Number(e.target.value) }))}
-                className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
           </div>
@@ -164,7 +164,7 @@ export function MatrizCompatibilidade() {
                   <select
                     value={novoCargo[campo]}
                     onChange={(e) => setNovoCargo((c) => ({ ...c, [campo]: Number(e.target.value) }))}
-                    className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                    className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                   >
                     {NIVEIS_EXIGENCIA.map((n) => (
                       <option key={n.valor} value={n.valor}>{n.label}</option>
@@ -176,17 +176,17 @@ export function MatrizCompatibilidade() {
           </div>
 
           <div className="mt-5 flex gap-2.5">
-            <Button as="button" type="submit" disabled={salvando}>
+            <Button shape="crm" as="button" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Salvar cargo'}
             </Button>
-            <Button as="button" type="button" variant="ghost" onClick={() => setFormAberto(false)}>
+            <Button shape="crm" as="button" type="button" variant="ghost" onClick={() => setFormAberto(false)}>
               Cancelar
             </Button>
           </div>
         </form>
       )}
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
+      <div className="rounded-lg border border-mist-300 bg-white p-6">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Matriz</h2>
         {carregando ? (
           <p className="mt-4 text-sm text-graphite-500">Carregando…</p>

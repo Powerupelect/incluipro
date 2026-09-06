@@ -11,6 +11,7 @@ import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacao
 import { montarDadosDossie } from '../../lib/dossie.js'
 import { gerarDossieTecnicoPDF, gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
 import { excluirEmpresaDefinitivamente } from '../../lib/exclusaoConta.js'
+import { StatusPonto } from '../../components/ui/Table.jsx'
 
 export function Conta() {
   const { user, logout } = useAuth()
@@ -198,7 +199,7 @@ export function Conta() {
         <p className="mt-2 text-sm text-graphite-500">Dados da empresa e assinatura.</p>
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Empresa</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
@@ -216,7 +217,7 @@ export function Conta() {
         </dl>
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Quadro de funcionários</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Usado para calcular a cota de PCD da empresa (Lei 8.213/1991). A cota é global — some
@@ -230,7 +231,7 @@ export function Conta() {
               min="0"
               value={dadosCota.totalFuncionarios}
               onChange={(e) => setDadosCota((d) => ({ ...d, totalFuncionarios: e.target.value }))}
-              className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
           </label>
           <label className="text-sm">
@@ -240,7 +241,7 @@ export function Conta() {
               min="0"
               value={dadosCota.aprendizes}
               onChange={(e) => setDadosCota((d) => ({ ...d, aprendizes: e.target.value }))}
-              className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
           </label>
           <label className="text-sm">
@@ -250,11 +251,11 @@ export function Conta() {
               min="0"
               value={dadosCota.aposentadosInvalidez}
               onChange={(e) => setDadosCota((d) => ({ ...d, aposentadosInvalidez: e.target.value }))}
-              className="mt-1.5 w-full rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
           </label>
           <div className="flex items-center gap-3 sm:col-span-3">
-            <Button as="button" type="submit" size="sm" disabled={salvandoCota}>
+            <Button shape="crm" as="button" type="submit" size="sm" disabled={salvandoCota}>
               {salvandoCota ? 'Salvando…' : 'Salvar'}
             </Button>
             {cotaSalva && <span className="text-sm font-semibold text-signal-700">✅ Salvo</span>}
@@ -263,7 +264,7 @@ export function Conta() {
         </form>
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Unidades</h2>
         <p className="mt-1 text-sm text-graphite-500">
           A cota é global (matriz + filiais) — unidades servem para organizar e filtrar, não
@@ -292,16 +293,16 @@ export function Conta() {
               value={novaUnidade}
               onChange={(e) => setNovaUnidade(e.target.value)}
               placeholder="Nome da unidade (ex: Filial São Paulo)"
-              className="flex-1 rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="flex-1 rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
-            <Button as="button" type="submit" size="sm" disabled={salvandoUnidade}>
+            <Button shape="crm" as="button" type="submit" size="sm" disabled={salvandoUnidade}>
               {salvandoUnidade ? 'Salvando…' : 'Adicionar'}
             </Button>
           </form>
         )}
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Equipe</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Papéis de acesso: admin (tudo, inclusive convidar), RH (cria e edita tudo), gestor
@@ -337,12 +338,12 @@ export function Conta() {
               value={convite.email}
               onChange={(e) => setConvite((c) => ({ ...c, email: e.target.value }))}
               placeholder="e-mail@empresa.com.br"
-              className="flex-1 rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="flex-1 rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             />
             <select
               value={convite.papel}
               onChange={(e) => setConvite((c) => ({ ...c, papel: e.target.value }))}
-              className="rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              className="rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
             >
               <option value="admin">Admin</option>
               <option value="rh">RH</option>
@@ -353,7 +354,7 @@ export function Conta() {
               <select
                 value={convite.unidadeId}
                 onChange={(e) => setConvite((c) => ({ ...c, unidadeId: e.target.value }))}
-                className="rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                className="rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               >
                 <option value="">Selecione a unidade</option>
                 {unidades.map((u) => (
@@ -361,7 +362,7 @@ export function Conta() {
                 ))}
               </select>
             )}
-            <Button as="button" type="submit" size="sm" disabled={convidando}>
+            <Button shape="crm" as="button" type="submit" size="sm" disabled={convidando}>
               {convidando ? 'Convidando…' : 'Convidar'}
             </Button>
           </form>
@@ -369,7 +370,7 @@ export function Conta() {
         {erroConvite && <p className="mt-2 hidden text-sm text-red-600 sm:block">{erroConvite}</p>}
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Documentos de saída</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Dois documentos para públicos distintos: o dossiê técnico traz evidência verificável
@@ -377,7 +378,7 @@ export function Conta() {
           Seções sem dado registrado no sistema aparecem marcadas para preenchimento manual.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Button
+          <Button shape="crm"
             as="button"
             type="button"
             variant="ghost"
@@ -398,7 +399,7 @@ export function Conta() {
           >
             {gerandoDossie ? 'Gerando…' : 'Baixar dossiê técnico'}
           </Button>
-          <Button
+          <Button shape="crm"
             as="button"
             type="button"
             variant="ghost"
@@ -423,13 +424,13 @@ export function Conta() {
         {erroDossie && <p className="mt-3 text-sm text-red-600">{erroDossie}</p>}
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Exportação total</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Exporte todos os dados da empresa a qualquer momento — sem aprisionamento.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Button
+          <Button shape="crm"
             as="button"
             type="button"
             variant="ghost"
@@ -446,7 +447,7 @@ export function Conta() {
           >
             Exportar tudo (JSON)
           </Button>
-          <Button
+          <Button shape="crm"
             as="button"
             type="button"
             variant="ghost"
@@ -466,7 +467,7 @@ export function Conta() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="font-display text-lg font-semibold text-indigo-800">Plano atual</h2>
@@ -479,32 +480,28 @@ export function Conta() {
             </p>
           </div>
           {acesso?.liberado ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-signal-50 px-4 py-2 text-xs font-semibold text-signal-700">
-              ✅ Acesso ativo
-            </span>
+            <StatusPonto cor="signal">Acesso ativo</StatusPonto>
           ) : (
-            <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-700">
-              Verificando assinatura…
-            </span>
+            <StatusPonto cor="amber">Verificando assinatura…</StatusPonto>
           )}
         </div>
         {erro && <p className="mt-4 text-xs text-red-600">{erro}</p>}
         <p className="mt-4 text-xs text-graphite-300">
           Pagamento processado com segurança pela Hotmart. Precisa trocar de plano ou renovar?
         </p>
-        <Button to="/assinatura" variant="ghost" size="sm" className="mt-3">
+        <Button shape="crm" to="/assinatura" variant="ghost" size="sm" className="mt-3">
           Ver plano
         </Button>
       </div>
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Backup de dados</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Seus relatórios já ficam salvos com segurança na IncluiPro. Este backup é uma cópia
           extra em JSON — útil para levar seus dados para outro lugar, se precisar.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Button
+          <Button shape="crm"
             as="button"
             type="button"
             variant="ghost"
@@ -513,7 +510,7 @@ export function Conta() {
           >
             Exportar backup
           </Button>
-          <Button
+          <Button shape="crm"
             as="button"
             type="button"
             variant="ghost"
@@ -532,16 +529,16 @@ export function Conta() {
         </div>
 
         {importState === 'confirm' && (
-          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
             <p className="font-semibold">
               Isso vai adicionar os relatórios do arquivo importado aos que você já tem (pode
               gerar duplicados se importar o mesmo arquivo mais de uma vez). Confirma?
             </p>
             <div className="mt-3 flex gap-2">
-              <Button as="button" type="button" size="sm" onClick={handleConfirmarImport}>
+              <Button shape="crm" as="button" type="button" size="sm" onClick={handleConfirmarImport}>
                 Confirmar importação
               </Button>
-              <Button as="button" type="button" variant="ghost" size="sm" onClick={handleCancelarImport}>
+              <Button shape="crm" as="button" type="button" variant="ghost" size="sm" onClick={handleCancelarImport}>
                 Cancelar
               </Button>
             </div>
@@ -558,7 +555,7 @@ export function Conta() {
       </div>
 
       {ehAdmin && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-card sm:p-8">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 sm:p-8">
           <h2 className="font-display text-lg font-semibold text-red-800">Excluir conta e todos os dados</h2>
           <p className="mt-1 text-sm text-red-700">
             Apaga definitivamente colaboradores, relatórios, laudos, solicitações de
@@ -570,9 +567,9 @@ export function Conta() {
               value={confirmacaoExclusao}
               onChange={(e) => setConfirmacaoExclusao(e.target.value)}
               placeholder={user?.companyName}
-              className="flex-1 rounded-xl border border-red-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"
+              className="flex-1 rounded-md border border-red-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"
             />
-            <Button
+            <Button shape="crm"
               as="button"
               type="button"
               variant="danger"
@@ -587,7 +584,7 @@ export function Conta() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Suporte</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Dúvidas sobre sua conta, relatórios ou kits de treinamento? Fale com a gente em{' '}

@@ -134,7 +134,7 @@ export function Colaboradores() {
             Cadastro da empresa — é a partir daqui que se cria uma avaliação, uma adaptação ou um documento.
           </p>
         </div>
-        <Button as="button" onClick={abrirNovo}>
+        <Button shape="crm" as="button" onClick={abrirNovo}>
           + Novo colaborador
         </Button>
       </div>
@@ -143,7 +143,7 @@ export function Colaboradores() {
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
         placeholder="Buscar por nome, cargo ou tipo de deficiência…"
-        className="mb-4 w-full max-w-md rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+        className="mb-4 w-full max-w-md rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
       />
 
       {carregando ? (
@@ -153,7 +153,7 @@ export function Colaboradores() {
           titulo="Nenhum colaborador cadastrado ainda"
           descricao="Cadastre os colaboradores da empresa aqui — é o ponto de partida para gerar avaliações, registrar adaptações e organizar documentos."
           acao={
-            <Button as="button" onClick={abrirNovo}>
+            <Button shape="crm" as="button" onClick={abrirNovo}>
               Cadastrar o primeiro colaborador
             </Button>
           }
@@ -211,7 +211,7 @@ export function Colaboradores() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite-900/50 px-5">
           <form
             onSubmit={handleSalvar}
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-pop"
+            className="w-full max-w-md rounded-lg bg-white p-6 shadow-pop"
           >
             <h2 className="font-display text-lg font-semibold text-indigo-800">
               {editando ? 'Editar colaborador' : 'Novo colaborador'}
@@ -223,7 +223,7 @@ export function Colaboradores() {
                   autoFocus
                   value={form.nome}
                   onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
-                  className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                 />
               </label>
               <label className="block text-sm">
@@ -231,7 +231,7 @@ export function Colaboradores() {
                 <input
                   value={form.cargo}
                   onChange={(e) => setForm((f) => ({ ...f, cargo: e.target.value }))}
-                  className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                 />
               </label>
               <label className="block text-sm">
@@ -239,7 +239,7 @@ export function Colaboradores() {
                 <input
                   value={form.tipoDeficiencia}
                   onChange={(e) => setForm((f) => ({ ...f, tipoDeficiencia: e.target.value }))}
-                  className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                 />
               </label>
               <label className="block text-sm">
@@ -248,16 +248,16 @@ export function Colaboradores() {
                   type="date"
                   value={form.dataAdmissao}
                   onChange={(e) => setForm((f) => ({ ...f, dataAdmissao: e.target.value }))}
-                  className="mt-1.5 w-full rounded-xl border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                 />
               </label>
             </div>
             {erro && <p className="mt-3 text-sm text-red-600">{erro}</p>}
             <div className="mt-5 flex gap-2.5">
-              <Button as="button" type="submit" disabled={salvando}>
+              <Button shape="crm" as="button" type="submit" disabled={salvando}>
                 {salvando ? 'Salvando…' : 'Salvar'}
               </Button>
-              <Button as="button" type="button" variant="ghost" onClick={() => setModalAberto(false)}>
+              <Button shape="crm" as="button" type="button" variant="ghost" onClick={() => setModalAberto(false)}>
                 Cancelar
               </Button>
             </div>
@@ -267,7 +267,7 @@ export function Colaboradores() {
 
       {confirmandoExclusao && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite-900/50 px-5">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-pop">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-pop">
             <h2 className="font-display text-lg font-semibold text-indigo-800">
               Excluir {confirmandoExclusao.colaborador.nome}?
             </h2>
@@ -283,10 +283,10 @@ export function Colaboradores() {
               <li>• {confirmandoExclusao.vinculos?.solicitacoes ?? '—'} solicitação(ões) de adaptação</li>
             </ul>
             <div className="mt-6 flex gap-2.5">
-              <Button as="button" variant="danger" onClick={handleConfirmarExclusao}>
+              <Button shape="crm" as="button" variant="danger" onClick={handleConfirmarExclusao}>
                 Excluir definitivamente
               </Button>
-              <Button as="button" variant="ghost" onClick={() => setConfirmandoExclusao(null)}>
+              <Button shape="crm" as="button" variant="ghost" onClick={() => setConfirmandoExclusao(null)}>
                 Cancelar
               </Button>
             </div>

@@ -37,7 +37,7 @@ export function useOrdenacao(dados, colunaInicial, direcaoInicial = 'asc') {
 
 export function TabelaContainer({ children }) {
   return (
-    <div className="max-h-[70vh] overflow-auto rounded-2xl border border-mist-300 bg-white">
+    <div className="max-h-[70vh] overflow-auto rounded-lg border border-mist-300 bg-white">
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>
   )
@@ -89,7 +89,7 @@ export function StatusPonto({ cor = 'neutro', children }) {
 
 export function EstadoVazio({ titulo, descricao, acao }) {
   return (
-    <div className="rounded-2xl border border-dashed border-mist-400 bg-mist-100 px-6 py-12 text-center">
+    <div className="rounded-lg border border-dashed border-mist-400 bg-mist-100 px-6 py-12 text-center">
       <p className="font-display text-base font-semibold text-graphite-900">{titulo}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-graphite-500">{descricao}</p>
       {acao && <div className="mt-5">{acao}</div>}
