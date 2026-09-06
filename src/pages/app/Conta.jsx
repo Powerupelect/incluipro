@@ -5,7 +5,15 @@ import { checkAccess } from '../../lib/api.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PLANO_LABEL } from '../../lib/plano.js'
 import { exportBackup, importBackup } from '../../lib/backup.js'
-import { getEmpresa, atualizarDadosCota, atualizarCnpj, getUnidades, criarUnidade, removerUnidade } from '../../lib/empresa.js'
+import {
+  getEmpresa,
+  atualizarDadosCota,
+  atualizarCnpj,
+  atualizarNomeEmpresa,
+  getUnidades,
+  criarUnidade,
+  removerUnidade,
+} from '../../lib/empresa.js'
 import { getMembros, convidarMembro, removerMembro, PAPEL_LABEL } from '../../lib/membros.js'
 import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacaoTotal.js'
 import { montarDadosDossie } from '../../lib/dossie.js'
@@ -15,7 +23,7 @@ import { excluirEmpresaDefinitivamente } from '../../lib/exclusaoConta.js'
 import { StatusPonto } from '../../components/ui/Table.jsx'
 
 export function Conta() {
-  const { user, logout } = useAuth()
+  const { user, logout, atualizarNomeEmpresaLocal } = useAuth()
   const navigate = useNavigate()
   const [acesso, setAcesso] = useState(null)
   const [erro, setErro] = useState('')
@@ -32,6 +40,11 @@ export function Conta() {
   const [cnpj, setCnpj] = useState('')
   const [salvandoCnpj, setSalvandoCnpj] = useState(false)
   const [cnpjSalvo, setCnpjSalvo] = useState(false)
+
+  const [nomeEmpresa, setNomeEmpresa] = useState('')
+  const [editandoNome, setEditandoNome] = useState(false)
+  const [salvandoNome, setSalvandoNome] = useState(false)
+  const [erroNome, setErroNome] = useState('')
 
   const [unidades, setUnidades] = useState([])
   const [novaUnidade, setNovaUnidade] = useState('')
@@ -147,9 +160,26 @@ export function Conta() {
           aposentadosInvalidez: empresa.aposentados_invalidez || '',
         })
         setCnpj(empresa.cnpj || '')
+        setNomeEmpresa(empresa.nome || '')
       })
       .catch(() => {})
   }, [user?.empresaId])
+
+  async function handleSalvarNome(e) {
+    e.preventDefault()
+    setErroNome('')
+    setSalvandoNome(true)
+    try {
+      const atualizada = await atualizarNomeEmpresa(user.empresaId, nomeEmpresa)
+      setNomeEmpresa(atualizada.nome)
+      atualizarNomeEmpresaLocal(atualizada.nome)
+      setEditandoNome(false)
+    } catch (err) {
+      setErroNome(err.message || 'Não foi possível salvar agora. Tente novamente.')
+    } finally {
+      setSalvandoNome(false)
+    }
+  }
 
   async function handleSalvarCnpj(e) {
     e.preventDefault()
@@ -233,7 +263,49 @@ export function Conta() {
             <dt className="text-xs font-medium text-graphite-400">
               Nome da empresa
             </dt>
-            <dd className="mt-1 text-sm text-graphite-900">{user?.companyName}</dd>
+            {editandoNome ? (
+              <form onSubmit={handleSalvarNome} className="mt-1.5 flex flex-wrap items-center gap-2">
+                <input
+                  autoFocus
+                  value={nomeEmpresa}
+                  onChange={(e) => setNomeEmpresa(e.target.value)}
+                  className="min-w-0 flex-1 rounded-md border border-mist-400 px-3 py-1.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                />
+                <Button shape="crm" as="button" type="submit" size="sm" disabled={salvandoNome}>
+                  {salvandoNome ? 'Salvando…' : 'Salvar'}
+                </Button>
+                <Button
+                  shape="crm"
+                  as="button"
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setEditandoNome(false)
+                    setErroNome('')
+                    setNomeEmpresa(user?.companyName || '')
+                  }}
+                >
+                  Cancelar
+                </Button>
+                {erroNome && <p className="w-full text-sm text-red-600">{erroNome}</p>}
+              </form>
+            ) : (
+              <dd className="mt-1 flex items-center gap-2.5 text-sm text-graphite-900">
+                {user?.companyName}
+                <button
+                  type="button"
+                  onClick={() => setEditandoNome(true)}
+                  className="text-xs font-semibold text-indigo-700 hover:text-indigo-900"
+                >
+                  Editar
+                </button>
+              </dd>
+            )}
+            <p className="mt-1 text-xs text-graphite-400">
+              Aparece no menu e é o que o colaborador vê no topo do Canal do Colaborador — mantenha
+              o nome real da empresa, não um e-mail ou apelido interno.
+            </p>
           </div>
           <div>
             <dt className="text-xs font-medium text-graphite-400">

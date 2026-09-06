@@ -696,15 +696,7 @@ export function Avalia() {
                 const preenchido = Boolean(form[campo.key]?.trim())
                 return (
                   <li key={campo.key} className="flex items-center gap-2.5 text-sm">
-                    <span
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                        preenchido ? 'bg-signal-600 text-white' : 'border border-mist-400 text-transparent'
-                      }`}
-                    >
-                      <svg viewBox="0 0 20 20" className="h-3 w-3" fill="currentColor">
-                        <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
-                      </svg>
-                    </span>
+                    <span aria-hidden="true">{preenchido ? '✅' : '⬜'}</span>
                     <span className={preenchido ? 'text-graphite-500 line-through' : 'text-graphite-900'}>
                       {campo.label}
                     </span>

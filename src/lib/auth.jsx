@@ -198,6 +198,11 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+  /** Reflete no menu/contexto o nome da empresa salvo em Configurações, sem precisar recarregar. */
+  function atualizarNomeEmpresaLocal(novoNome) {
+    setUser((u) => (u ? { ...u, companyName: novoNome } : u))
+  }
+
   async function solicitarRecuperacaoSenha(email) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/redefinir-senha`,
@@ -212,7 +217,16 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, register, login, logout, solicitarRecuperacaoSenha, definirNovaSenha }}
+      value={{
+        user,
+        loading,
+        register,
+        login,
+        logout,
+        solicitarRecuperacaoSenha,
+        definirNovaSenha,
+        atualizarNomeEmpresaLocal,
+      }}
     >
       {children}
     </AuthContext.Provider>

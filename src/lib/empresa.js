@@ -69,6 +69,21 @@ export async function atualizarDadosCota(empresaId, { totalFuncionarios, aprendi
   return data
 }
 
+/** Nome da empresa — aparece no menu, no Dossiê Técnico e no topo do Canal do Colaborador
+ * (é a primeira coisa que o colaborador vê no formulário público, sem login). */
+export async function atualizarNomeEmpresa(empresaId, nome) {
+  const nomeLimpo = (nome || '').trim()
+  if (!nomeLimpo) throw new Error('Informe o nome da empresa.')
+  const { data, error } = await supabase
+    .from('empresas')
+    .update({ nome: nomeLimpo })
+    .eq('id', empresaId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 /** CNPJ da matriz — usado no Dossiê Técnico (identificação da empresa perante a fiscalização). */
 export async function atualizarCnpj(empresaId, cnpj) {
   const { data, error } = await supabase
