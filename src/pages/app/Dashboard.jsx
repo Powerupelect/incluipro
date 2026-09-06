@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { getReports } from '../../lib/reports.js'
@@ -8,16 +8,24 @@ import { Button } from '../../components/ui/Button.jsx'
 import { PainelCota } from '../../components/PainelCota.jsx'
 import { getDocumentos } from '../../lib/documentos.js'
 import { getSolicitacoes } from '../../lib/solicitacoesAcessibilidade.js'
+import { getSolicitacoesCanal } from '../../lib/canalColaborador.js'
 import { calcularPendencias } from '../../lib/pendencias.js'
+import { calcularCota, corSemaforo } from '../../lib/cota.js'
+import { tendenciaMensal, contagemPorMes } from '../../lib/painelMetricas.js'
 import { montarDadosDossie } from '../../lib/dossie.js'
 import { gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
 import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
+
+const STATUS_INTERNO_ABERTO = (s) => !['concluido', 'recusado'].includes(s.status)
+const STATUS_CANAL_ABERTO = (s) => !['concluida', 'recusada', 'descartada'].includes(s.status)
 
 export function Dashboard() {
   const { user } = useAuth()
   const [historico, setHistorico] = useState([])
   const [empresa, setEmpresa] = useState(null)
   const [pcdAtivos, setPcdAtivos] = useState(0)
+  const [solicitacoesInternas, setSolicitacoesInternas] = useState([])
+  const [solicitacoesCanal, setSolicitacoesCanal] = useState([])
   const [pendencias, setPendencias] = useState(null)
   const [carregando, setCarregando] = useState(true)
   const [gerandoResumo, setGerandoResumo] = useState(false)
@@ -32,12 +40,15 @@ export function Dashboard() {
       contarPcdAtivos(user.empresaId),
       getDocumentos(user.empresaId),
       getSolicitacoes(user.empresaId),
+      getSolicitacoesCanal(user.empresaId),
     ])
-      .then(([relatorios, empresaData, count, docs, sols]) => {
+      .then(([relatorios, empresaData, count, docs, sols, canal]) => {
         if (!ativo) return
         setHistorico(relatorios)
         setEmpresa(empresaData)
         setPcdAtivos(count)
+        setSolicitacoesInternas(sols)
+        setSolicitacoesCanal(canal)
         setPendencias(calcularPendencias(docs, sols))
       })
       .catch(() => {})
@@ -51,6 +62,45 @@ export function Dashboard() {
 
   const recentes = historico.slice(0, 5)
   const novosKits = kits.filter((k) => k.novo)
+
+  const resultadoCota = useMemo(() => {
+    if (!empresa?.total_funcionarios) return null
+    return calcularCota({
+      totalFuncionarios: empresa.total_funcionarios || 0,
+      aprendizes: empresa.aprendizes || 0,
+      aposentadosInvalidez: empresa.aposentados_invalidez || 0,
+      pcdAtuais: pcdAtivos,
+    })
+  }, [empresa, pcdAtivos])
+
+  const solicitacoesAbertas = useMemo(
+    () =>
+      solicitacoesInternas.filter(STATUS_INTERNO_ABERTO).length +
+      solicitacoesCanal.filter(STATUS_CANAL_ABERTO).length,
+    [solicitacoesInternas, solicitacoesCanal],
+  )
+
+  const tendenciaAvaliacoes = useMemo(
+    () => tendenciaMensal(historico.map((h) => h.createdAt)),
+    [historico],
+  )
+
+  const evolucao = useMemo(() => {
+    const datasAvaliacoes = historico.map((h) => h.createdAt)
+    const datasSolicitacoes = [
+      ...solicitacoesInternas.map((s) => s.criado_em),
+      ...solicitacoesCanal.map((s) => s.criada_em),
+    ]
+    const porMesAvaliacoes = contagemPorMes(datasAvaliacoes)
+    const porMesSolicitacoes = contagemPorMes(datasSolicitacoes)
+    const buckets = porMesAvaliacoes.map((b, i) => ({
+      label: b.label,
+      avaliacoes: b.quantidade,
+      solicitacoes: porMesSolicitacoes[i].quantidade,
+    }))
+    const mesesAtivos = buckets.filter((b) => b.avaliacoes > 0 || b.solicitacoes > 0).length
+    return { buckets, mostrar: mesesAtivos >= 2 }
+  }, [historico, solicitacoesInternas, solicitacoesCanal])
 
   async function handleBaixarResumo() {
     if (!empresa || gerandoResumo) return
@@ -79,7 +129,47 @@ export function Dashboard() {
         <p className="text-sm text-graphite-500">Carregando…</p>
       ) : (
         <>
-          <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <CartaoKpi
+              titulo="Colaboradores PCD ativos"
+              valor={pcdAtivos}
+              subtitulo={resultadoCota ? `sobre uma cota de ${resultadoCota.cotaDevida}` : 'informe o quadro de funcionários'}
+            />
+            <CartaoKpi
+              titulo="Cota atingida"
+              valor={resultadoCota ? `${Math.round(resultadoCota.percentualCumprimento)}%` : '—'}
+              subtitulo={
+                resultadoCota
+                  ? resultadoCota.vagasEmAberto > 0
+                    ? `faltam ${resultadoCota.vagasEmAberto} vaga${resultadoCota.vagasEmAberto !== 1 ? 's' : ''}`
+                    : 'cota cumprida'
+                  : 'sem dados ainda'
+              }
+              corSubtitulo={resultadoCota ? corSemaforo(resultadoCota.percentualCumprimento).cor : 'neutro'}
+            />
+            <CartaoKpi
+              titulo="Avaliações este mês"
+              valor={tendenciaAvaliacoes.esteMes}
+              variacao={tendenciaAvaliacoes.variacao}
+            />
+            <CartaoKpi
+              titulo="Solicitações abertas"
+              valor={solicitacoesAbertas}
+              subtitulo="aguardando retorno do RH"
+            />
+          </div>
+
+          {evolucao.mostrar && (
+            <div className="mt-6 rounded-lg border border-mist-300 bg-white p-6">
+              <h2 className="text-base font-semibold text-graphite-900">Evolução mensal</h2>
+              <p className="mt-1 text-xs text-graphite-400">Avaliações e solicitações registradas por mês, últimos 6 meses.</p>
+              <GraficoEvolucao buckets={evolucao.buckets} />
+            </div>
+          )}
+
+          <div className="mt-6">
+            <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
+          </div>
 
           <div className="mt-6 rounded-lg border border-mist-300 bg-white p-6">
             <h2 className="text-base font-semibold text-graphite-900">Pendências</h2>
@@ -176,6 +266,72 @@ export function Dashboard() {
           </div>
         </>
       )}
+    </div>
+  )
+}
+
+const COR_TEXTO_SUBTITULO = {
+  signal: 'text-signal-700',
+  amber: 'text-amber-700',
+  red: 'text-red-600',
+  neutro: 'text-graphite-400',
+}
+
+function CartaoKpi({ titulo, valor, subtitulo, corSubtitulo = 'neutro', variacao }) {
+  return (
+    <div className="rounded-lg border border-mist-300 bg-white p-5">
+      <p className="text-xs font-medium text-graphite-400">{titulo}</p>
+      <div className="mt-1.5 flex items-baseline gap-2">
+        <p className="font-display text-3xl font-semibold text-indigo-900">{valor}</p>
+        {variacao !== undefined && variacao !== null && (
+          <span className={`text-xs font-semibold ${variacao >= 0 ? 'text-signal-700' : 'text-red-600'}`}>
+            {variacao >= 0 ? '↑' : '↓'} {Math.abs(variacao)}%
+          </span>
+        )}
+      </div>
+      {subtitulo && <p className={`mt-1 text-xs ${COR_TEXTO_SUBTITULO[corSubtitulo]}`}>{subtitulo}</p>}
+    </div>
+  )
+}
+
+function GraficoEvolucao({ buckets }) {
+  const max = Math.max(1, ...buckets.flatMap((b) => [b.avaliacoes, b.solicitacoes]))
+  const alturaMax = 130
+  const larguraGrupo = 60
+
+  return (
+    <div className="mt-4">
+      <div className="flex items-center gap-4 text-xs text-graphite-500">
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-sm bg-signal-500" /> Avaliações
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-sm bg-indigo-300" /> Solicitações
+        </span>
+      </div>
+      <svg
+        viewBox={`0 0 ${buckets.length * larguraGrupo} 160`}
+        className="mt-3 w-full"
+        style={{ height: 170 }}
+        role="img"
+        aria-label={`Evolução mensal: ${buckets.map((b) => `${b.label}, ${b.avaliacoes} avaliações e ${b.solicitacoes} solicitações`).join('; ')}`}
+      >
+        <line x1="0" y1={alturaMax + 10} x2={buckets.length * larguraGrupo} y2={alturaMax + 10} className="stroke-mist-300" strokeWidth="1" />
+        {buckets.map((b, i) => {
+          const x = i * larguraGrupo
+          const alturaAval = (b.avaliacoes / max) * alturaMax
+          const alturaSol = (b.solicitacoes / max) * alturaMax
+          return (
+            <g key={`${b.label}-${i}`}>
+              <rect x={x + 10} y={alturaMax + 10 - alturaAval} width="16" height={alturaAval} rx="2" className="fill-signal-500" />
+              <rect x={x + 30} y={alturaMax + 10 - alturaSol} width="16" height={alturaSol} rx="2" className="fill-indigo-300" />
+              <text x={x + 30} y={alturaMax + 28} textAnchor="middle" className="fill-graphite-400 text-[9px]">
+                {b.label}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
     </div>
   )
 }
