@@ -71,7 +71,7 @@ export async function excluirSolicitacao(id) {
   if (error) throw error
 }
 
-export async function criarSolicitacao({ empresaId, colaboradorId, tipo, descricao, dataPedido, solicitadoPor }) {
+export async function criarSolicitacao({ empresaId, colaboradorId, tipo, descricao, dataPedido, solicitadoPor, valorRecurso }) {
   const { data, error } = await supabase
     .from('solicitacoes_acessibilidade')
     .insert({
@@ -81,7 +81,26 @@ export async function criarSolicitacao({ empresaId, colaboradorId, tipo, descric
       descricao,
       data_pedido: dataPedido || new Date().toISOString().slice(0, 10),
       solicitado_por: solicitadoPor || null,
+      valor_recurso: valorRecurso || null,
     })
+    .select('*, colaboradores(nome)')
+    .single()
+  if (error) throw error
+  return data
+}
+
+/** Edita os dados originais do pedido (não é o avanço de status/fluxo, ver avancarStatus). */
+export async function atualizarSolicitacao(id, { tipo, descricao, dataPedido, solicitadoPor, valorRecurso }) {
+  const { data, error } = await supabase
+    .from('solicitacoes_acessibilidade')
+    .update({
+      tipo,
+      descricao,
+      data_pedido: dataPedido,
+      solicitado_por: solicitadoPor || null,
+      valor_recurso: valorRecurso || null,
+    })
+    .eq('id', id)
     .select('*, colaboradores(nome)')
     .single()
   if (error) throw error

@@ -55,6 +55,18 @@ export async function atualizarDadosCota(empresaId, { totalFuncionarios, aprendi
   return data
 }
 
+/** CNPJ da matriz — usado no Dossiê Técnico (identificação da empresa perante a fiscalização). */
+export async function atualizarCnpj(empresaId, cnpj) {
+  const { data, error } = await supabase
+    .from('empresas')
+    .update({ cnpj: cnpj || null })
+    .eq('id', empresaId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 /** Conta colaboradores ativos (sem data de desligamento) que contam para o cumprimento da cota. */
 export async function contarPcdAtivos(empresaId) {
   const { count, error } = await supabase

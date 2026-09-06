@@ -5,11 +5,12 @@ import { checkAccess } from '../../lib/api.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PLANO_LABEL } from '../../lib/plano.js'
 import { exportBackup, importBackup } from '../../lib/backup.js'
-import { getEmpresa, atualizarDadosCota, getUnidades, criarUnidade, removerUnidade } from '../../lib/empresa.js'
+import { getEmpresa, atualizarDadosCota, atualizarCnpj, getUnidades, criarUnidade, removerUnidade } from '../../lib/empresa.js'
 import { getMembros, convidarMembro, removerMembro, PAPEL_LABEL } from '../../lib/membros.js'
 import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacaoTotal.js'
 import { montarDadosDossie } from '../../lib/dossie.js'
 import { gerarDossieTecnicoPDF, gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
+import { SUGESTAO_ESFORCOS_RECRUTAMENTO, SUGESTAO_PLANO_DE_ACAO, EXEMPLO_CAPACITACAO } from '../../lib/sugestoesDossie.js'
 import { excluirEmpresaDefinitivamente } from '../../lib/exclusaoConta.js'
 import { StatusPonto } from '../../components/ui/Table.jsx'
 
@@ -28,6 +29,10 @@ export function Conta() {
   const [cotaSalva, setCotaSalva] = useState(false)
   const [erroCota, setErroCota] = useState('')
 
+  const [cnpj, setCnpj] = useState('')
+  const [salvandoCnpj, setSalvandoCnpj] = useState(false)
+  const [cnpjSalvo, setCnpjSalvo] = useState(false)
+
   const [unidades, setUnidades] = useState([])
   const [novaUnidade, setNovaUnidade] = useState('')
   const [salvandoUnidade, setSalvandoUnidade] = useState(false)
@@ -41,6 +46,13 @@ export function Conta() {
   const [gerandoDossie, setGerandoDossie] = useState(false)
   const [gerandoResumo, setGerandoResumo] = useState(false)
   const [erroDossie, setErroDossie] = useState('')
+  const [personalizarDossieAberto, setPersonalizarDossieAberto] = useState(false)
+  const [dossieManual, setDossieManual] = useState({
+    esforcosRecrutamento: '',
+    capacitacoes: '',
+    planoDeAcao: '',
+    documentosExternos: false,
+  })
 
   const [confirmacaoExclusao, setConfirmacaoExclusao] = useState('')
   const [excluindo, setExcluindo] = useState(false)
@@ -134,9 +146,24 @@ export function Conta() {
           aprendizes: empresa.aprendizes || '',
           aposentadosInvalidez: empresa.aposentados_invalidez || '',
         })
+        setCnpj(empresa.cnpj || '')
       })
       .catch(() => {})
   }, [user?.empresaId])
+
+  async function handleSalvarCnpj(e) {
+    e.preventDefault()
+    setSalvandoCnpj(true)
+    try {
+      await atualizarCnpj(user.empresaId, cnpj.trim())
+      setCnpjSalvo(true)
+      setTimeout(() => setCnpjSalvo(false), 2500)
+    } catch {
+      // silencioso — campo opcional
+    } finally {
+      setSalvandoCnpj(false)
+    }
+  }
 
   async function handleSalvarCota(e) {
     e.preventDefault()
@@ -215,6 +242,21 @@ export function Conta() {
             <dd className="mt-1 text-sm text-graphite-900">{user?.email}</dd>
           </div>
         </dl>
+
+        <form onSubmit={handleSalvarCnpj} className="mt-4 max-w-xs">
+          <label className="text-sm">
+            <span className="font-medium text-graphite-700">CNPJ (usado no Dossiê Técnico)</span>
+            <input
+              value={cnpj}
+              onChange={(e) => setCnpj(e.target.value)}
+              placeholder="00.000.000/0000-00"
+              className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+            />
+          </label>
+          <Button shape="crm" as="button" type="submit" size="sm" className="mt-2" disabled={salvandoCnpj}>
+            {salvandoCnpj ? 'Salvando…' : cnpjSalvo ? 'Salvo!' : 'Salvar CNPJ'}
+          </Button>
+        </form>
       </div>
 
       <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
@@ -374,9 +416,96 @@ export function Conta() {
         <h2 className="font-display text-lg font-semibold text-indigo-800">Documentos de saída</h2>
         <p className="mt-1 text-sm text-graphite-500">
           Dois documentos para públicos distintos: o dossiê técnico traz evidência verificável
-          para a fiscalização (sem enfeite), e o resumo executivo é uma página para a diretoria.
-          Seções sem dado registrado no sistema aparecem marcadas para preenchimento manual.
+          para a fiscalização, e o resumo executivo é uma página para a diretoria. Seções sem
+          nenhum dado registrado ficam de fora do dossiê — para completá-las, use "Personalizar
+          antes de gerar" abaixo.
         </p>
+
+        <button
+          type="button"
+          onClick={() => setPersonalizarDossieAberto((v) => !v)}
+          className="mt-4 text-sm font-semibold text-indigo-700 hover:text-signal-700"
+        >
+          {personalizarDossieAberto ? 'Ocultar personalização' : 'Personalizar seções antes de gerar (opcional)'}
+        </button>
+
+        {personalizarDossieAberto && (
+          <div className="mt-4 space-y-4 rounded-md border border-mist-300 bg-mist-100 p-4">
+            <label className="block text-sm">
+              <span className="flex items-center justify-between gap-2 font-semibold text-graphite-700">
+                Esforços de recrutamento
+                <button
+                  type="button"
+                  onClick={() => setDossieManual((d) => ({ ...d, esforcosRecrutamento: SUGESTAO_ESFORCOS_RECRUTAMENTO }))}
+                  className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
+                >
+                  Usar sugestão
+                </button>
+              </span>
+              <textarea
+                rows={2}
+                value={dossieManual.esforcosRecrutamento}
+                onChange={(e) => setDossieManual((d) => ({ ...d, esforcosRecrutamento: e.target.value }))}
+                placeholder="Como a empresa busca candidatos PCD para as vagas em aberto."
+                className="mt-1.5 w-full rounded-md border border-mist-400 bg-white px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
+
+            <label className="block text-sm">
+              <span className="flex items-center justify-between gap-2 font-semibold text-graphite-700">
+                Treinamentos e capacitações realizados
+                <button
+                  type="button"
+                  onClick={() => setDossieManual((d) => ({ ...d, capacitacoes: EXEMPLO_CAPACITACAO }))}
+                  className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
+                >
+                  Usar exemplo
+                </button>
+              </span>
+              <textarea
+                rows={3}
+                value={dossieManual.capacitacoes}
+                onChange={(e) => setDossieManual((d) => ({ ...d, capacitacoes: e.target.value }))}
+                placeholder="Um por linha: data — tema — quantidade de participantes (opcional)."
+                className="mt-1.5 w-full rounded-md border border-mist-400 bg-white px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
+
+            <label className="block text-sm">
+              <span className="flex items-center justify-between gap-2 font-semibold text-graphite-700">
+                Plano de ação vigente
+                <button
+                  type="button"
+                  onClick={() => setDossieManual((d) => ({ ...d, planoDeAcao: SUGESTAO_PLANO_DE_ACAO }))}
+                  className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
+                >
+                  Usar sugestão
+                </button>
+              </span>
+              <textarea
+                rows={2}
+                value={dossieManual.planoDeAcao}
+                onChange={(e) => setDossieManual((d) => ({ ...d, planoDeAcao: e.target.value }))}
+                placeholder="Metas e prazos da empresa para cumprir a cota de PCD."
+                className="mt-1.5 w-full rounded-md border border-mist-400 bg-white px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
+
+            <label className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={dossieManual.documentosExternos}
+                onChange={(e) => setDossieManual((d) => ({ ...d, documentosExternos: e.target.checked }))}
+                className="mt-0.5"
+              />
+              <span className="text-graphite-700">
+                Os laudos, CID e comprovantes de reabilitação estão guardados em outro sistema ou
+                pasta, fora da plataforma
+              </span>
+            </label>
+          </div>
+        )}
+
         <div className="mt-4 flex flex-wrap gap-3">
           <Button shape="crm"
             as="button"
@@ -389,7 +518,13 @@ export function Conta() {
               setGerandoDossie(true)
               try {
                 const dados = await montarDadosDossie(user.empresaId)
-                await gerarDossieTecnicoPDF(dados)
+                await gerarDossieTecnicoPDF({
+                  ...dados,
+                  esforcosRecrutamento: dossieManual.esforcosRecrutamento.trim() || null,
+                  capacitacoes: dossieManual.capacitacoes.trim() || null,
+                  planoDeAcao: dossieManual.planoDeAcao.trim() || null,
+                  documentosExternos: dossieManual.documentosExternos,
+                })
               } catch {
                 setErroDossie('Não foi possível gerar o dossiê agora. Tente novamente.')
               } finally {
@@ -397,7 +532,7 @@ export function Conta() {
               }
             }}
           >
-            {gerandoDossie ? 'Gerando…' : 'Baixar dossiê técnico'}
+            {gerandoDossie ? 'Gerando…' : 'Gerar dossiê técnico'}
           </Button>
           <Button shape="crm"
             as="button"

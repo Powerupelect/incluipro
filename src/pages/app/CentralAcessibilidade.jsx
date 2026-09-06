@@ -11,6 +11,7 @@ import {
   getColaboradoresAtivos,
   getSolicitacoes,
   criarSolicitacao,
+  atualizarSolicitacao,
   avancarStatus,
   anexarComprovacao,
   urlAssinadaAnexo,
@@ -18,12 +19,15 @@ import {
   excluirSolicitacao,
 } from '../../lib/solicitacoesAcessibilidade.js'
 
+const formatBRL = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+
 const NOVA_INICIAL = {
   colaboradorId: '',
   tipo: TIPOS_SOLICITACAO[0].id,
   descricao: '',
   dataPedido: new Date().toISOString().slice(0, 10),
   solicitadoPor: '',
+  valorRecurso: '',
 }
 
 export function CentralAcessibilidade() {
@@ -75,7 +79,11 @@ export function CentralAcessibilidade() {
     if (!nova.colaboradorId || !nova.descricao.trim()) return
     setSalvando(true)
     try {
-      const criada = await criarSolicitacao({ empresaId: user.empresaId, ...nova })
+      const criada = await criarSolicitacao({
+        empresaId: user.empresaId,
+        ...nova,
+        valorRecurso: nova.valorRecurso ? Number(nova.valorRecurso) : null,
+      })
       setSolicitacoes((s) => [criada, ...s])
       setNova(NOVA_INICIAL)
       setFormAberto(false)
@@ -199,6 +207,19 @@ export function CentralAcessibilidade() {
                 className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
+            <label className="text-sm">
+              <span className="font-semibold text-graphite-700">Valor do recurso (opcional)</span>
+              <input
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                value={nova.valorRecurso}
+                onChange={(e) => setNova((n) => ({ ...n, valorRecurso: e.target.value }))}
+                placeholder="Ex: 850,00"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
           </div>
           <div className="mt-5 flex gap-2.5">
             <Button shape="crm" as="button" type="submit" disabled={salvando}>
@@ -245,6 +266,15 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
   const [responsavel, setResponsavel] = useState(s.responsavel || '')
   const [prazo, setPrazo] = useState(s.prazo || '')
   const [motivoRecusa, setMotivoRecusa] = useState(s.motivo_recusa || '')
+  const [editando, setEditando] = useState(false)
+  const [edicao, setEdicao] = useState({
+    tipo: s.tipo,
+    descricao: s.descricao,
+    dataPedido: s.data_pedido,
+    solicitadoPor: s.solicitado_por || '',
+    valorRecurso: s.valor_recurso ?? '',
+  })
+  const [salvandoEdicao, setSalvandoEdicao] = useState(false)
   const proximoIndex = STATUS_FLUXO.indexOf(s.status)
   const proximoStatus = proximoIndex >= 0 && proximoIndex < STATUS_FLUXO.length - 1 ? STATUS_FLUXO[proximoIndex + 1] : null
 
@@ -263,23 +293,113 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
     if (url) window.open(url, '_blank', 'noopener')
   }
 
+  async function handleSalvarEdicao(e) {
+    e.preventDefault()
+    setSalvandoEdicao(true)
+    try {
+      await onAtualizar(s.id, () =>
+        atualizarSolicitacao(s.id, {
+          ...edicao,
+          valorRecurso: edicao.valorRecurso ? Number(edicao.valorRecurso) : null,
+        }),
+      )
+      setEditando(false)
+    } finally {
+      setSalvandoEdicao(false)
+    }
+  }
+
   return (
     <div className="rounded-lg border border-mist-300 bg-white p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="font-semibold text-graphite-900">{s.colaboradores?.nome || 'Colaborador'}</p>
-          <p className="text-sm text-graphite-500">
-            {TIPOS_SOLICITACAO.find((t) => t.id === s.tipo)?.label || s.tipo} · pedido em{' '}
-            {new Date(s.data_pedido).toLocaleDateString('pt-BR')}
-            {s.solicitado_por && ` · registrado por ${s.solicitado_por}`}
-          </p>
-          <p className="mt-2 text-sm text-graphite-700">{s.descricao}</p>
+          {editando ? (
+            <form onSubmit={handleSalvarEdicao} className="mt-3 grid gap-3 sm:grid-cols-2">
+              <label className="text-sm">
+                <span className="font-semibold text-graphite-700">Tipo de pedido</span>
+                <select
+                  value={edicao.tipo}
+                  onChange={(e) => setEdicao((d) => ({ ...d, tipo: e.target.value }))}
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                >
+                  {TIPOS_SOLICITACAO.map((t) => (
+                    <option key={t.id} value={t.id}>{t.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm">
+                <span className="font-semibold text-graphite-700">Data do pedido</span>
+                <input
+                  type="date"
+                  value={edicao.dataPedido}
+                  onChange={(e) => setEdicao((d) => ({ ...d, dataPedido: e.target.value }))}
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                />
+              </label>
+              <label className="text-sm sm:col-span-2">
+                <span className="font-semibold text-graphite-700">Descrição do pedido</span>
+                <textarea
+                  required
+                  rows={3}
+                  value={edicao.descricao}
+                  onChange={(e) => setEdicao((d) => ({ ...d, descricao: e.target.value }))}
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="font-semibold text-graphite-700">Quem solicitou</span>
+                <input
+                  value={edicao.solicitadoPor}
+                  onChange={(e) => setEdicao((d) => ({ ...d, solicitadoPor: e.target.value }))}
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="font-semibold text-graphite-700">Valor do recurso (opcional)</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="0.01"
+                  value={edicao.valorRecurso}
+                  onChange={(e) => setEdicao((d) => ({ ...d, valorRecurso: e.target.value }))}
+                  className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                />
+              </label>
+              <div className="flex gap-2.5 sm:col-span-2">
+                <Button shape="crm" as="button" type="submit" size="sm" disabled={salvandoEdicao}>
+                  {salvandoEdicao ? 'Salvando…' : 'Salvar alterações'}
+                </Button>
+                <Button shape="crm" as="button" type="button" variant="ghost" size="sm" onClick={() => setEditando(false)}>
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <p className="text-sm text-graphite-500">
+                {TIPOS_SOLICITACAO.find((t) => t.id === s.tipo)?.label || s.tipo} · pedido em{' '}
+                {new Date(s.data_pedido).toLocaleDateString('pt-BR')}
+                {s.solicitado_por && ` · registrado por ${s.solicitado_por}`}
+                {s.valor_recurso != null && ` · ${formatBRL(Number(s.valor_recurso))}`}
+              </p>
+              <p className="mt-2 text-sm text-graphite-700">{s.descricao}</p>
+            </>
+          )}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <StatusPonto cor={STATUS_PONTO_COR[s.status]}>{STATUS_LABEL[s.status]}</StatusPonto>
-          <button onClick={() => onExcluir(s.id)} className="text-xs font-semibold text-red-500 hover:text-red-700">
-            Excluir
-          </button>
+          {!editando && (
+            <span className="flex gap-3 text-xs font-semibold">
+              <button onClick={() => setEditando(true)} className="text-indigo-700 hover:text-indigo-900">
+                Editar
+              </button>
+              <button onClick={() => onExcluir(s.id)} className="text-red-500 hover:text-red-700">
+                Excluir
+              </button>
+            </span>
+          )}
         </div>
       </div>
 
@@ -287,61 +407,64 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
         <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">Motivo da recusa: {s.motivo_recusa}</p>
       )}
 
-      {s.status !== 'concluido' && s.status !== 'recusado' && (
-        <div className="mt-4 grid gap-3 border-t border-mist-200 pt-4 sm:grid-cols-2">
-          <label className="text-sm">
-            <span className="font-semibold text-graphite-700">Responsável</span>
-            <input
-              value={responsavel}
-              onChange={(e) => setResponsavel(e.target.value)}
-              className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-            />
-          </label>
-          <label className="text-sm">
-            <span className="font-semibold text-graphite-700">Prazo</span>
-            <input
-              type="date"
-              value={prazo}
-              onChange={(e) => setPrazo(e.target.value)}
-              className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-            />
-          </label>
-          <label className="text-sm sm:col-span-2">
-            <span className="font-semibold text-graphite-700">Anexo de comprovação</span>
-            <input type="file" onChange={handleAnexo} className="mt-1.5 w-full text-sm" />
-          </label>
-          {s.anexo_path && (
-            <button onClick={handleAbrirAnexo} className="text-left text-sm font-semibold text-signal-600 hover:text-signal-700 sm:col-span-2">
-              Abrir anexo enviado
-            </button>
-          )}
+      <div className="mt-4 grid gap-3 border-t border-mist-200 pt-4 sm:grid-cols-2">
+        <label className="text-sm sm:col-span-2">
+          <span className="font-semibold text-graphite-700">Anexo de comprovação</span>
+          <input type="file" onChange={handleAnexo} className="mt-1.5 w-full text-sm" />
+        </label>
+        {s.anexo_path && (
+          <button onClick={handleAbrirAnexo} className="text-left text-sm font-semibold text-signal-600 hover:text-signal-700 sm:col-span-2">
+            Abrir anexo enviado
+          </button>
+        )}
 
-          <div className="flex flex-wrap gap-2 sm:col-span-2">
-            {proximoStatus && (
+        {s.status !== 'concluido' && s.status !== 'recusado' && (
+          <>
+            <label className="text-sm">
+              <span className="font-semibold text-graphite-700">Responsável</span>
+              <input
+                value={responsavel}
+                onChange={(e) => setResponsavel(e.target.value)}
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="font-semibold text-graphite-700">Prazo</span>
+              <input
+                type="date"
+                value={prazo}
+                onChange={(e) => setPrazo(e.target.value)}
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
+
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
+              {proximoStatus && (
+                <Button shape="crm"
+                  as="button"
+                  size="sm"
+                  onClick={() => handleAvancar(proximoStatus, { responsavel, prazo })}
+                >
+                  Avançar para "{STATUS_LABEL[proximoStatus]}"
+                </Button>
+              )}
               <Button shape="crm"
                 as="button"
                 size="sm"
-                onClick={() => handleAvancar(proximoStatus, { responsavel, prazo })}
+                variant="ghost"
+                onClick={() => {
+                  const motivo = prompt('Motivo da recusa:', motivoRecusa)
+                  if (motivo === null) return
+                  setMotivoRecusa(motivo)
+                  handleAvancar('recusado', { motivoRecusa: motivo })
+                }}
               >
-                Avançar para "{STATUS_LABEL[proximoStatus]}"
+                Recusar
               </Button>
-            )}
-            <Button shape="crm"
-              as="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                const motivo = prompt('Motivo da recusa:', motivoRecusa)
-                if (motivo === null) return
-                setMotivoRecusa(motivo)
-                handleAvancar('recusado', { motivoRecusa: motivo })
-              }}
-            >
-              Recusar
-            </Button>
-          </div>
-        </div>
-      )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

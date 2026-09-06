@@ -7,9 +7,6 @@ import { getCargos } from './cargos.js'
 import { classificarCompatibilidade } from './matrizCompatibilidade.js'
 import { TIPOS_DEFICIENCIA } from './accessibilityResources.js'
 
-export const SEM_REGISTRO =
-  'Sem registro estruturado nesta versão do sistema — completar manualmente antes do envio à fiscalização.'
-
 export function gerarNumeroProtocolo(empresaId) {
   const data = new Date().toISOString().slice(0, 10).replace(/-/g, '')
   const sufixo = (empresaId || '').replace(/-/g, '').slice(0, 8).toUpperCase()
@@ -85,19 +82,28 @@ export async function montarDadosDossie(empresaId) {
     (c) => c.data_desligamento && new Date(c.data_desligamento).getFullYear() === anoAtual,
   ).length
 
+  const solicitacoesConcluidas = solicitacoes.filter((s) => s.status === 'concluido')
+  const somaValorRecurso = solicitacoesConcluidas.reduce((soma, s) => soma + (Number(s.valor_recurso) || 0), 0)
+  const investimentoAcessibilidade =
+    somaValorRecurso > 0
+      ? `${somaValorRecurso.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} investidos em ${solicitacoesConcluidas.length} adaptação(ões) de acessibilidade concluída(s).`
+      : null
+
   return {
     empresa,
     periodo: { inicio: `01/01/${anoAtual}`, fim: new Date().toLocaleDateString('pt-BR') },
     cota,
     pcdAtivos,
     relatorios,
+    avaliacoesRealizadasTotal: relatorios.length,
+    adaptacoesConcluidasTotal: solicitacoesConcluidas.length,
     documentacaoPorPessoa,
     adaptacoesExecutadas,
-    capacitacoes: null, // sem fonte de dados — ver SEM_REGISTRO
+    capacitacoes: null, // preenchido manualmente em Configurações antes de gerar o dossiê
     mapeamentoCargos,
-    investimentoAcessibilidade: null, // sem fonte de dados — ver SEM_REGISTRO
-    planoDeAcao: null, // sem fonte de dados — ver SEM_REGISTRO
-    esforcosRecrutamento: null, // sem fonte de dados — ver SEM_REGISTRO
+    investimentoAcessibilidade,
+    planoDeAcao: null, // preenchido manualmente em Configurações antes de gerar o dossiê
+    esforcosRecrutamento: null, // preenchido manualmente em Configurações antes de gerar o dossiê
     evolucaoNoAno: { admitidosNoAno, desligadosNoAno },
     semaforo: cota ? corSemaforo(cota.percentualCumprimento) : null,
   }

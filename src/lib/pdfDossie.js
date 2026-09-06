@@ -3,7 +3,7 @@
 // Resumo executivo: uma página, visualmente trabalhada — para a diretoria.
 
 import { jsPDF } from 'jspdf'
-import { SEM_REGISTRO, gerarNumeroProtocolo, gerarHashIntegridade } from './dossie.js'
+import { gerarNumeroProtocolo, gerarHashIntegridade } from './dossie.js'
 
 const MARGIN = 45
 const PAGE_W = 595.28
@@ -60,6 +60,8 @@ export async function gerarDossieTecnicoPDF(dados) {
   const footerTop = PAGE_H - MARGIN - 24
 
   let y = MARGIN
+  let numeroSecao = 1
+  const proximoTitulo = (texto) => `${numeroSecao++}. ${texto}`
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(15)
@@ -70,19 +72,19 @@ export async function gerarDossieTecnicoPDF(dados) {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(...CINZA)
-  doc.text('Documento gerado para fins de acompanhamento e fiscalização. Evidência verificável, sem elementos ilustrativos.', MARGIN, y)
+  doc.text('Documento gerado para fins de acompanhamento e fiscalização.', MARGIN, y)
   y += 24
 
-  // 1. Identificação e período
-  y = drawTitulo(doc, y, '1. Identificação e período')
+  // Identificação e período
+  y = drawTitulo(doc, y, proximoTitulo('Identificação e período'))
   y = drawLinhaChaveValor(doc, y, 'Empresa', dados.empresa?.nome)
   y = drawLinhaChaveValor(doc, y, 'CNPJ', dados.empresa?.cnpj)
   y = drawLinhaChaveValor(doc, y, 'Período de referência', `${dados.periodo.inicio} a ${dados.periodo.fim}`)
   y += 10
 
-  // 2. Situação de cota
+  // Situação de cota
   y = ensureSpace(doc, y, 100, footerTop)
-  y = drawTitulo(doc, y, '2. Situação de cota')
+  y = drawTitulo(doc, y, proximoTitulo('Situação de cota'))
   if (dados.cota) {
     y = drawLinhaChaveValor(doc, y, 'Base de cálculo', dados.cota.base)
     y = drawLinhaChaveValor(doc, y, 'Percentual legal aplicável', `${Math.round(dados.cota.percentual * 100)}%`)
@@ -91,13 +93,13 @@ export async function gerarDossieTecnicoPDF(dados) {
     y = drawLinhaChaveValor(doc, y, 'Vagas em aberto', dados.cota.vagasEmAberto)
     y = drawLinhaChaveValor(doc, y, '% da cota cumprido', `${Math.round(dados.cota.percentualCumprimento)}%`)
   } else {
-    y = drawParagrafo(doc, y, 'Quadro de funcionários não informado — preencher em Minha conta.', footerTop)
+    y = drawParagrafo(doc, y, 'Quadro de funcionários não informado — preencher em Configurações.', footerTop)
   }
   y += 10
 
-  // 3. Quadro de colaboradores
+  // Quadro de colaboradores
   y = ensureSpace(doc, y, 60, footerTop)
-  y = drawTitulo(doc, y, '3. Quadro de colaboradores com deficiência')
+  y = drawTitulo(doc, y, proximoTitulo('Quadro de colaboradores com deficiência'))
   if (dados.documentacaoPorPessoa.length === 0) {
     y = drawParagrafo(doc, y, 'Nenhum colaborador com deficiência cadastrado.', footerTop)
   } else {
@@ -108,11 +110,18 @@ export async function gerarDossieTecnicoPDF(dados) {
   }
   y += 10
 
-  // 4. Documentação por pessoa
+  // Documentação por pessoa
   y = ensureSpace(doc, y, 60, footerTop)
-  y = drawTitulo(doc, y, '4. Documentação por pessoa')
+  y = drawTitulo(doc, y, proximoTitulo('Documentação por pessoa'))
   if (dados.documentacaoPorPessoa.length === 0) {
     y = drawParagrafo(doc, y, 'Sem colaboradores cadastrados para checagem documental.', footerTop)
+  } else if (dados.documentosExternos) {
+    y = drawParagrafo(
+      doc,
+      y,
+      'Os laudos, CID e comprovantes de reabilitação desta empresa são mantidos em repositório externo à plataforma.',
+      footerTop,
+    )
   } else {
     for (const item of dados.documentacaoPorPessoa) {
       y = ensureSpace(doc, y, 30, footerTop)
@@ -129,15 +138,17 @@ export async function gerarDossieTecnicoPDF(dados) {
   }
   y += 10
 
-  // 5. Esforços de recrutamento
-  y = ensureSpace(doc, y, 40, footerTop)
-  y = drawTitulo(doc, y, '5. Esforços de recrutamento')
-  y = drawParagrafo(doc, y, dados.esforcosRecrutamento || SEM_REGISTRO, footerTop)
-  y += 10
+  // Esforços de recrutamento — só entra no documento se foi preenchido
+  if (dados.esforcosRecrutamento) {
+    y = ensureSpace(doc, y, 40, footerTop)
+    y = drawTitulo(doc, y, proximoTitulo('Esforços de recrutamento'))
+    y = drawParagrafo(doc, y, dados.esforcosRecrutamento, footerTop)
+    y += 10
+  }
 
-  // 6. Adaptações executadas com comprovantes
+  // Adaptações executadas com comprovantes
   y = ensureSpace(doc, y, 60, footerTop)
-  y = drawTitulo(doc, y, '6. Adaptações executadas com comprovantes')
+  y = drawTitulo(doc, y, proximoTitulo('Adaptações executadas com comprovantes'))
   if (dados.adaptacoesExecutadas.length === 0) {
     y = drawParagrafo(doc, y, 'Nenhuma adaptação executada registrada no período.', footerTop)
   } else {
@@ -153,15 +164,17 @@ export async function gerarDossieTecnicoPDF(dados) {
   }
   y += 10
 
-  // 7. Capacitações com listas de presença
-  y = ensureSpace(doc, y, 40, footerTop)
-  y = drawTitulo(doc, y, '7. Capacitações com listas de presença')
-  y = drawParagrafo(doc, y, dados.capacitacoes || SEM_REGISTRO, footerTop)
-  y += 10
+  // Treinamentos e capacitações — só entra se foi preenchido
+  if (dados.capacitacoes) {
+    y = ensureSpace(doc, y, 40, footerTop)
+    y = drawTitulo(doc, y, proximoTitulo('Treinamentos e capacitações realizados'))
+    y = drawParagrafo(doc, y, dados.capacitacoes, footerTop)
+    y += 10
+  }
 
-  // 8. Mapeamento de cargos compatíveis
+  // Mapeamento de cargos compatíveis
   y = ensureSpace(doc, y, 60, footerTop)
-  y = drawTitulo(doc, y, '8. Mapeamento de cargos compatíveis')
+  y = drawTitulo(doc, y, proximoTitulo('Mapeamento de cargos compatíveis'))
   if (dados.mapeamentoCargos.length === 0) {
     y = drawParagrafo(doc, y, 'Nenhum cargo cadastrado na matriz de compatibilidade.', footerTop)
   } else {
@@ -173,16 +186,20 @@ export async function gerarDossieTecnicoPDF(dados) {
   }
   y += 10
 
-  // 9. Investimento em acessibilidade
-  y = ensureSpace(doc, y, 40, footerTop)
-  y = drawTitulo(doc, y, '9. Investimento em acessibilidade')
-  y = drawParagrafo(doc, y, dados.investimentoAcessibilidade || SEM_REGISTRO, footerTop)
-  y += 10
+  // Investimento em acessibilidade — só entra se houver valor registrado
+  if (dados.investimentoAcessibilidade) {
+    y = ensureSpace(doc, y, 40, footerTop)
+    y = drawTitulo(doc, y, proximoTitulo('Investimento em acessibilidade'))
+    y = drawParagrafo(doc, y, dados.investimentoAcessibilidade, footerTop)
+    y += 10
+  }
 
-  // 10. Plano de ação vigente
-  y = ensureSpace(doc, y, 40, footerTop)
-  y = drawTitulo(doc, y, '10. Plano de ação vigente')
-  y = drawParagrafo(doc, y, dados.planoDeAcao || SEM_REGISTRO, footerTop)
+  // Plano de ação vigente — só entra se foi preenchido
+  if (dados.planoDeAcao) {
+    y = ensureSpace(doc, y, 40, footerTop)
+    y = drawTitulo(doc, y, proximoTitulo('Plano de ação vigente'))
+    y = drawParagrafo(doc, y, dados.planoDeAcao, footerTop)
+  }
 
   // Rodapé com protocolo e hash em todas as páginas
   const totalPaginas = doc.getNumberOfPages()
@@ -263,13 +280,19 @@ export function gerarResumoExecutivoPDF(dados) {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(10)
   doc.setTextColor(...VIOLET)
-  doc.text('Evolução no ano', MARGIN, y)
+  doc.text('Evolução e atividade', MARGIN, y)
   y += 14
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(...PRETO)
   doc.text(
     `${dados.evolucaoNoAno.admitidosNoAno} admissão(ões) e ${dados.evolucaoNoAno.desligadosNoAno} desligamento(s) de colaboradores com deficiência no ano corrente.`,
+    MARGIN,
+    y,
+  )
+  y += 13
+  doc.text(
+    `Desde o início: ${dados.avaliacoesRealizadasTotal} avaliação(ões) realizada(s) e ${dados.adaptacoesConcluidasTotal} adaptação(ões) de acessibilidade concluída(s).`,
     MARGIN,
     y,
   )
@@ -298,7 +321,11 @@ export function gerarResumoExecutivoPDF(dados) {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(...CINZA)
-  doc.text(dados.investimentoAcessibilidade || SEM_REGISTRO, MARGIN, y)
+  doc.text(
+    dados.investimentoAcessibilidade || 'Nenhum valor de recurso registrado nas solicitações concluídas até o momento.',
+    MARGIN,
+    y,
+  )
 
   doc.setFont('helvetica', 'italic')
   doc.setFontSize(7)
