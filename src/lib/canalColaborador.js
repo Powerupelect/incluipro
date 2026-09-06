@@ -140,7 +140,7 @@ export async function atualizarStatusCanal(id, { status, motivoRecusa, observaca
 
 /** Promove um pedido aprovado do canal para um registro rastreado em Solicitações
  * (solicitacoes_acessibilidade), mantendo o vínculo com o protocolo de origem. */
-export async function promoverParaSolicitacao(canalId, { empresaId, colaboradorId, tipo, descricao }) {
+export async function promoverParaSolicitacao(canalId, { empresaId, colaboradorId, tipo, descricao, protocolo }) {
   const { data: nova, error: erroNova } = await supabase
     .from('solicitacoes_acessibilidade')
     .insert({
@@ -148,6 +148,7 @@ export async function promoverParaSolicitacao(canalId, { empresaId, colaboradorI
       colaborador_id: colaboradorId,
       tipo,
       descricao,
+      canal_protocolo: protocolo || null,
     })
     .select('*, colaboradores(nome)')
     .single()

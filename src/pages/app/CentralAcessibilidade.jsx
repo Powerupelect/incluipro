@@ -18,6 +18,19 @@ import {
   calcularMetricas,
   excluirSolicitacao,
 } from '../../lib/solicitacoesAcessibilidade.js'
+import { getEmpresa } from '../../lib/empresa.js'
+import {
+  TIPOS_CANAL,
+  STATUS_CANAL_FLUXO,
+  STATUS_CANAL_LABEL,
+  STATUS_CANAL_PONTO_COR,
+  getSolicitacoesCanal,
+  atualizarStatusCanal,
+  promoverParaSolicitacao,
+  gerarESalvarIdentificadorPublico,
+} from '../../lib/canalColaborador.js'
+
+const tipoCanalLabel = (id) => TIPOS_CANAL.find((t) => t.id === id)?.label || id
 
 const formatBRL = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -32,26 +45,44 @@ const NOVA_INICIAL = {
 
 export function CentralAcessibilidade() {
   const { user } = useAuth()
+  const [empresa, setEmpresa] = useState(null)
   const [colaboradores, setColaboradores] = useState([])
   const [solicitacoes, setSolicitacoes] = useState([])
+  const [solicitacoesCanal, setSolicitacoesCanal] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [formAberto, setFormAberto] = useState(false)
   const [nova, setNova] = useState(NOVA_INICIAL)
   const [salvando, setSalvando] = useState(false)
   const [busca, setBusca] = useState('')
+  const [linkCopiado, setLinkCopiado] = useState(false)
+  const [gerandoLink, setGerandoLink] = useState(false)
 
   useEffect(() => {
     if (!user?.empresaId) return
     setCarregando(true)
-    Promise.all([getColaboradoresAtivos(user.empresaId), getSolicitacoes(user.empresaId)])
-      .then(([cols, sols]) => {
+    Promise.all([
+      getColaboradoresAtivos(user.empresaId),
+      getSolicitacoes(user.empresaId),
+      getEmpresa(user.empresaId),
+      getSolicitacoesCanal(user.empresaId),
+    ])
+      .then(([cols, sols, emp, canal]) => {
         setColaboradores(cols)
         setSolicitacoes(sols)
+        setEmpresa(emp)
+        setSolicitacoesCanal(canal)
       })
       .finally(() => setCarregando(false))
   }, [user?.empresaId])
 
   const metricas = useMemo(() => calcularMetricas(solicitacoes), [solicitacoes])
+
+  // Pedidos do canal ainda não vinculados a um colaborador — os já vinculados
+  // seguem vivendo só como o registro interno (com o protocolo de origem visível nele).
+  const canalPendentes = useMemo(
+    () => solicitacoesCanal.filter((s) => !s.solicitacao_acessibilidade_id),
+    [solicitacoesCanal],
+  )
 
   const solicitacoesFiltradas = useMemo(() => {
     const q = busca.trim().toLowerCase()
@@ -64,6 +95,48 @@ export function CentralAcessibilidade() {
     )
   }, [solicitacoes, busca])
 
+  const canalFiltrados = useMemo(() => {
+    const q = busca.trim().toLowerCase()
+    if (!q) return canalPendentes
+    return canalPendentes.filter(
+      (s) =>
+        (s.nome_informado || '').toLowerCase().includes(q) ||
+        tipoCanalLabel(s.tipo).toLowerCase().includes(q) ||
+        (STATUS_CANAL_LABEL[s.status] || '').toLowerCase().includes(q) ||
+        s.protocolo.toLowerCase().includes(q),
+    )
+  }, [canalPendentes, busca])
+
+  const itensMesclados = useMemo(() => {
+    const internos = solicitacoesFiltradas.map((s) => ({ origem: 'interna', data: s, quando: s.criado_em }))
+    const canal = canalFiltrados.map((s) => ({ origem: 'canal', data: s, quando: s.criada_em }))
+    return [...internos, ...canal].sort((a, b) => new Date(b.quando) - new Date(a.quando))
+  }, [solicitacoesFiltradas, canalFiltrados])
+
+  const linkPublico = empresa?.identificador_publico
+    ? `${window.location.origin}/solicitar/${empresa.identificador_publico}`
+    : ''
+
+  async function handleCopiarLink() {
+    try {
+      await navigator.clipboard.writeText(linkPublico)
+      setLinkCopiado(true)
+      setTimeout(() => setLinkCopiado(false), 2000)
+    } catch {
+      // silencioso — usuário pode selecionar e copiar manualmente
+    }
+  }
+
+  async function handleGerarLink() {
+    setGerandoLink(true)
+    try {
+      const atualizada = await gerarESalvarIdentificadorPublico(user.empresaId, empresa?.nome)
+      setEmpresa(atualizada)
+    } finally {
+      setGerandoLink(false)
+    }
+  }
+
   async function handleExcluir(id) {
     if (!confirm('Excluir esta solicitação? Esta ação não pode ser desfeita.')) return
     try {
@@ -72,6 +145,25 @@ export function CentralAcessibilidade() {
     } catch {
       // silencioso
     }
+  }
+
+  async function atualizarCanal(id, patchFn) {
+    const atualizada = await patchFn()
+    setSolicitacoesCanal((s) => s.map((x) => (x.id === id ? atualizada : x)))
+  }
+
+  async function handlePromoverCanal(canalItem, colaboradorId) {
+    const novaSolicitacao = await promoverParaSolicitacao(canalItem.id, {
+      empresaId: user.empresaId,
+      colaboradorId,
+      tipo: canalItem.tipo,
+      descricao: canalItem.descricao,
+      protocolo: canalItem.protocolo,
+    })
+    setSolicitacoes((s) => [novaSolicitacao, ...s])
+    setSolicitacoesCanal((s) =>
+      s.map((x) => (x.id === canalItem.id ? { ...x, solicitacao_acessibilidade_id: novaSolicitacao.id } : x)),
+    )
   }
 
   async function handleCriar(e) {
@@ -107,8 +199,9 @@ export function CentralAcessibilidade() {
         <div>
           <h1 className="font-display text-2xl font-semibold text-indigo-900">Solicitações</h1>
           <p className="mt-2 max-w-2xl text-sm text-graphite-500">
-            O RH registra o pedido feito pelo colaborador — conversa, e-mail, mensagem — e
-            acompanha o fluxo até a conclusão. Visível apenas para admin, RH e gestores.
+            O RH registra aqui o pedido feito diretamente pelo colaborador — conversa, e-mail,
+            mensagem — e também recebe os pedidos enviados pelo Canal do Colaborador, tudo em um
+            só lugar. Visível apenas para admin, RH e gestores.
           </p>
           <p className="mt-1 text-xs text-graphite-400">
             Estas solicitações contêm dado sensível de saúde (LGPD art. 11) — ver{' '}
@@ -118,6 +211,35 @@ export function CentralAcessibilidade() {
         <Button shape="crm" as="button" onClick={() => setFormAberto((v) => !v)} size="lg">
           + Nova solicitação
         </Button>
+      </div>
+
+      <div className="mb-8 rounded-lg border border-mist-300 bg-white p-5">
+        <p className="text-sm font-semibold text-graphite-700">Canal do Colaborador</p>
+        <p className="mt-1 text-sm text-graphite-500">
+          Link público, sem login, para o colaborador registrar um pedido diretamente. Divulgue
+          por e-mail interno, mural ou intranet — a plataforma não envia nada automaticamente. Se
+          o colaborador preferir não usar o link, o pedido pode continuar sendo registrado aqui
+          manualmente pelo RH.
+        </p>
+        {linkPublico ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2.5">
+            <input
+              readOnly
+              value={linkPublico}
+              onFocus={(e) => e.target.select()}
+              className="min-w-0 flex-1 rounded-md border border-mist-400 bg-mist-50 px-3 py-2 text-sm text-graphite-700"
+            />
+            <Button shape="crm" as="button" size="sm" onClick={handleCopiarLink}>
+              {linkCopiado ? 'Copiado!' : 'Copiar link'}
+            </Button>
+          </div>
+        ) : (
+          !carregando && (
+            <Button shape="crm" as="button" size="sm" className="mt-3" disabled={gerandoLink} onClick={handleGerarLink}>
+              {gerandoLink ? 'Gerando…' : 'Gerar link do canal'}
+            </Button>
+          )
+        )}
       </div>
 
       <div className="mb-8 grid gap-5 sm:grid-cols-3">
@@ -232,30 +354,150 @@ export function CentralAcessibilidade() {
         </form>
       )}
 
-      {!carregando && solicitacoes.length > 0 && (
+      {!carregando && (solicitacoes.length > 0 || solicitacoesCanal.length > 0) && (
         <input
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          placeholder="Buscar por colaborador, tipo ou status…"
+          placeholder="Buscar por colaborador, nome, protocolo, tipo ou status…"
           className="mb-5 w-full max-w-md rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
         />
       )}
 
       {carregando ? (
         <p className="text-sm text-graphite-500">Carregando…</p>
-      ) : solicitacoes.length === 0 ? (
+      ) : solicitacoes.length === 0 && solicitacoesCanal.length === 0 ? (
         <EstadoVazio
           titulo="Nenhuma solicitação registrada ainda"
-          descricao="Registre aqui o pedido de adaptação feito pelo colaborador — conversa, e-mail ou mensagem — e acompanhe o fluxo até a conclusão."
+          descricao="Registre aqui o pedido de adaptação feito pelo colaborador — conversa, e-mail ou mensagem — ou aguarde os pedidos enviados pelo link do Canal do Colaborador."
           acao={<Button shape="crm" as="button" onClick={() => setFormAberto(true)}>Registrar a primeira solicitação</Button>}
         />
-      ) : solicitacoesFiltradas.length === 0 ? (
+      ) : itensMesclados.length === 0 ? (
         <p className="text-sm text-graphite-500">Nenhuma solicitação encontrada para essa busca.</p>
       ) : (
         <div className="space-y-4">
-          {solicitacoesFiltradas.map((s) => (
-            <SolicitacaoCard key={s.id} solicitacao={s} empresaId={user.empresaId} onAtualizar={atualizar} onExcluir={handleExcluir} />
-          ))}
+          {itensMesclados.map((item) =>
+            item.origem === 'interna' ? (
+              <SolicitacaoCard
+                key={`interna-${item.data.id}`}
+                solicitacao={item.data}
+                empresaId={user.empresaId}
+                onAtualizar={atualizar}
+                onExcluir={handleExcluir}
+              />
+            ) : (
+              <CanalCard
+                key={`canal-${item.data.id}`}
+                solicitacao={item.data}
+                colaboradores={colaboradores}
+                onAtualizar={atualizarCanal}
+                onPromover={handlePromoverCanal}
+              />
+            ),
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CanalCard({ solicitacao: s, colaboradores, onAtualizar, onPromover }) {
+  const [colaboradorId, setColaboradorId] = useState('')
+  const [promovendo, setPromovendo] = useState(false)
+  const emFluxo = !['recusada', 'descartada'].includes(s.status)
+  const proximoIndex = STATUS_CANAL_FLUXO.indexOf(s.status)
+  const proximoStatus =
+    proximoIndex >= 0 && proximoIndex < STATUS_CANAL_FLUXO.length - 1 ? STATUS_CANAL_FLUXO[proximoIndex + 1] : null
+  const podeVincular = ['aprovada', 'concluida'].includes(s.status)
+
+  async function handleAvancar(novoStatus, extra) {
+    await onAtualizar(s.id, () => atualizarStatusCanal(s.id, { status: novoStatus, ...extra }))
+  }
+
+  async function handleVincular() {
+    if (!colaboradorId) return
+    setPromovendo(true)
+    try {
+      await onPromover(s, colaboradorId)
+    } finally {
+      setPromovendo(false)
+    }
+  }
+
+  function handleDescartar() {
+    if (!confirm('Descartar esta solicitação? Ela deixa de contar nas estatísticas do canal.')) return
+    onAtualizar(s.id, () => atualizarStatusCanal(s.id, { status: 'descartada' }))
+  }
+
+  return (
+    <div className="rounded-lg border border-mist-300 bg-white p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-graphite-900">
+            {s.nome_informado}
+            <span className="ml-2 font-normal text-graphite-400">· {s.protocolo}</span>
+          </p>
+          <p className="text-sm text-graphite-500">
+            {tipoCanalLabel(s.tipo)} · recebida em {new Date(s.criada_em).toLocaleDateString('pt-BR')} · enviada pelo Canal do Colaborador
+          </p>
+          <p className="mt-2 text-sm text-graphite-700">{s.descricao}</p>
+        </div>
+        <StatusPonto cor={STATUS_CANAL_PONTO_COR[s.status]}>{STATUS_CANAL_LABEL[s.status]}</StatusPonto>
+      </div>
+
+      {s.status === 'recusada' && s.motivo_recusa && (
+        <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">Motivo da recusa: {s.motivo_recusa}</p>
+      )}
+
+      {s.observacao_interna && (
+        <p className="mt-3 rounded-md bg-mist-100 px-3 py-2 text-sm text-graphite-600">
+          Observação interna: {s.observacao_interna}
+        </p>
+      )}
+
+      {emFluxo && (
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-mist-200 pt-4">
+          {proximoStatus && (
+            <Button shape="crm" as="button" size="sm" onClick={() => handleAvancar(proximoStatus)}>
+              Avançar para "{STATUS_CANAL_LABEL[proximoStatus]}"
+            </Button>
+          )}
+          <Button
+            shape="crm"
+            as="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              const motivo = prompt('Motivo da recusa (obrigatório):')
+              if (!motivo || !motivo.trim()) return
+              handleAvancar('recusada', { motivoRecusa: motivo.trim() })
+            }}
+          >
+            Recusar
+          </Button>
+          <Button shape="crm" as="button" size="sm" variant="ghost" onClick={handleDescartar}>
+            Descartar
+          </Button>
+        </div>
+      )}
+
+      {podeVincular && (
+        <div className="mt-4 flex flex-wrap items-center gap-2.5 border-t border-mist-200 pt-4">
+          <label className="text-sm">
+            <span className="font-semibold text-graphite-700">Vincular a um colaborador cadastrado</span>
+            <select
+              value={colaboradorId}
+              onChange={(e) => setColaboradorId(e.target.value)}
+              className="mt-1.5 w-full min-w-[220px] rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+            >
+              <option value="">Selecione…</option>
+              {colaboradores.map((c) => (
+                <option key={c.id} value={c.id}>{c.nome}</option>
+              ))}
+            </select>
+          </label>
+          <Button shape="crm" as="button" size="sm" disabled={!colaboradorId || promovendo} onClick={handleVincular} className="mt-6">
+            {promovendo ? 'Vinculando…' : 'Vincular'}
+          </Button>
         </div>
       )}
     </div>
@@ -313,7 +555,14 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
     <div className="rounded-lg border border-mist-300 bg-white p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-graphite-900">{s.colaboradores?.nome || 'Colaborador'}</p>
+          <p className="font-semibold text-graphite-900">
+            {s.colaboradores?.nome || 'Colaborador'}
+            {s.canal_protocolo && (
+              <span className="ml-2 text-xs font-normal text-graphite-400">
+                · originado do Canal do Colaborador ({s.canal_protocolo})
+              </span>
+            )}
+          </p>
           {editando ? (
             <form onSubmit={handleSalvarEdicao} className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="text-sm">
