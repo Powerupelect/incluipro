@@ -8,51 +8,21 @@ import { Button } from '../../components/ui/Button.jsx'
 import { PainelCota } from '../../components/PainelCota.jsx'
 import { getDocumentos } from '../../lib/documentos.js'
 import { getSolicitacoes } from '../../lib/solicitacoesAcessibilidade.js'
+import { getColaboradores } from '../../lib/colaboradores.js'
+import { calcularPendencias } from '../../lib/pendencias.js'
+import { gerarResumoExecutivoPdf } from '../../lib/resumoExecutivo.js'
+import { calcularCota } from '../../lib/cota.js'
 import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
-
-function calcularPendencias(documentos, solicitacoes) {
-  const hoje = new Date().toISOString().slice(0, 10)
-  const pendencias = []
-
-  const laudosSemBarreira = documentos.filter((d) => d.tipo === 'laudo' && !d.descreve_barreira_funcional)
-  if (laudosSemBarreira.length > 0) {
-    pendencias.push({
-      cor: 'amber',
-      texto: `${laudosSemBarreira.length} laudo${laudosSemBarreira.length !== 1 ? 's' : ''} sem descrição de barreira funcional`,
-      link: '/app/documentos',
-    })
-  }
-
-  const adaptacoesVencidas = solicitacoes.filter(
-    (s) => s.prazo && s.prazo < hoje && s.status !== 'concluido' && s.status !== 'recusado',
-  )
-  if (adaptacoesVencidas.length > 0) {
-    pendencias.push({
-      cor: 'red',
-      texto: `${adaptacoesVencidas.length} solicitação${adaptacoesVencidas.length !== 1 ? 'ões' : ''} de adaptação com prazo vencido`,
-      link: '/app/solicitacoes',
-    })
-  }
-
-  const documentosVencidos = documentos.filter((d) => d.data_validade && d.data_validade < hoje)
-  if (documentosVencidos.length > 0) {
-    pendencias.push({
-      cor: 'amber',
-      texto: `${documentosVencidos.length} documento${documentosVencidos.length !== 1 ? 's' : ''} vencido${documentosVencidos.length !== 1 ? 's' : ''}`,
-      link: '/app/documentos',
-    })
-  }
-
-  return pendencias
-}
 
 export function Dashboard() {
   const { user } = useAuth()
   const [historico, setHistorico] = useState([])
   const [empresa, setEmpresa] = useState(null)
   const [pcdAtivos, setPcdAtivos] = useState(0)
+  const [solicitacoes, setSolicitacoes] = useState([])
   const [pendencias, setPendencias] = useState(null)
   const [carregando, setCarregando] = useState(true)
+  const [gerandoResumo, setGerandoResumo] = useState(false)
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -65,12 +35,13 @@ export function Dashboard() {
       getDocumentos(user.empresaId),
       getSolicitacoes(user.empresaId),
     ])
-      .then(([relatorios, empresaData, count, documentos, solicitacoes]) => {
+      .then(([relatorios, empresaData, count, docs, sols]) => {
         if (!ativo) return
         setHistorico(relatorios)
         setEmpresa(empresaData)
         setPcdAtivos(count)
-        setPendencias(calcularPendencias(documentos, solicitacoes))
+        setSolicitacoes(sols)
+        setPendencias(calcularPendencias(docs, sols))
       })
       .catch(() => {})
       .finally(() => {
@@ -84,11 +55,48 @@ export function Dashboard() {
   const recentes = historico.slice(0, 5)
   const novosKits = kits.filter((k) => k.novo)
 
+  async function handleBaixarResumo() {
+    if (!empresa || gerandoResumo) return
+    setGerandoResumo(true)
+    try {
+      const colaboradores = await getColaboradores(user.empresaId)
+      const agora = new Date()
+      const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1)
+      const noMes = (dataStr) => dataStr && new Date(dataStr) >= inicioMes
+
+      const resultado = calcularCota({
+        totalFuncionarios: empresa.total_funcionarios || 0,
+        aprendizes: empresa.aprendizes || 0,
+        aposentadosInvalidez: empresa.aposentados_invalidez || 0,
+        pcdAtuais: pcdAtivos,
+      })
+
+      gerarResumoExecutivoPdf({
+        empresaNome: empresa.nome || user.companyName,
+        mesReferencia: agora.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+        resultado,
+        pcdAtivos,
+        colaboradoresNovosNoMes: colaboradores.filter((c) => noMes(c.criado_em)).length,
+        avaliacoesNoMes: historico.filter((r) => noMes(r.createdAt)).length,
+        adaptacoesConcluidasNoMes: solicitacoes.filter((s) => s.status === 'concluido' && noMes(s.atualizado_em)).length,
+        adaptacoesConcluidasTotal: solicitacoes.filter((s) => s.status === 'concluido').length,
+        pendencias: pendencias || [],
+      })
+    } finally {
+      setGerandoResumo(false)
+    }
+  }
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <h1 className="font-display text-2xl font-semibold text-indigo-900">Painel</h1>
-        <Button to="/app/avalia" size="lg">+ Nova avaliação</Button>
+        <div className="flex flex-wrap gap-2">
+          <Button as="button" variant="ghost" onClick={handleBaixarResumo} disabled={!empresa || gerandoResumo}>
+            {gerandoResumo ? 'Gerando…' : 'Baixar resumo executivo'}
+          </Button>
+          <Button to="/app/avalia" size="lg">+ Nova avaliação</Button>
+        </div>
       </div>
 
       {carregando ? (
