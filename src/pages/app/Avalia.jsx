@@ -522,13 +522,10 @@ export function Avalia() {
       )}
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-            IncluiPro Avalia
-          </p>
-          <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
-            Novo Relatório Técnico de Inclusão
+          <h1 className="font-display text-2xl font-semibold text-indigo-900">
+            Avaliações
           </h1>
-          <p className="mt-2 max-w-2xl text-graphite-500">
+          <p className="mt-2 max-w-2xl text-sm text-graphite-500">
             Preencha as anotações da entrevista por blocos e monte o relatório estruturado com a
             metodologia IncluiPro — consulte recursos e ajustes sugeridos por tipo de deficiência e
             edite o texto livremente antes de baixar o PDF.

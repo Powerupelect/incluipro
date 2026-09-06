@@ -42,6 +42,18 @@ export async function getReports(empresaId) {
   return (data || []).map(mapAvaliacaoToReport)
 }
 
+/** Avaliações de um único colaborador — usado na Ficha do colaborador. */
+export async function getReportsByColaborador(colaboradorId) {
+  if (!colaboradorId) return []
+  const { data, error } = await supabase
+    .from('avaliacoes')
+    .select(SELECT_COM_COLABORADOR)
+    .eq('colaborador_id', colaboradorId)
+    .order('criado_em', { ascending: false })
+  if (error) throw error
+  return (data || []).map(mapAvaliacaoToReport)
+}
+
 /**
  * Salva uma avaliação completa. Se `colaboradorIdExistente` for informado, atualiza esse
  * colaborador e cria uma NOVA avaliação para ele (reaproveitamento/revisão anual alterada) —

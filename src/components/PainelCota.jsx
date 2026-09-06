@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { calcularCota, corSemaforo } from '../lib/cota.js'
+import { calcularCota, corSemaforo, faixaCota } from '../lib/cota.js'
+import { StatusPonto } from './ui/Table.jsx'
 
-const CORES = {
-  signal: { bg: 'bg-signal-50', text: 'text-signal-700', dot: 'bg-signal-500' },
-  amber: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
-  red: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
-}
+const MES_ANO = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
 export function PainelCota({ empresa, pcdAtivos }) {
   const [simulando, setSimulando] = useState(0)
@@ -19,8 +16,8 @@ export function PainelCota({ empresa, pcdAtivos }) {
 
   if (totalFuncionarios === 0) {
     return (
-      <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
-        <h2 className="font-display text-lg font-semibold text-indigo-800">Cota de PCD</h2>
+      <div className="rounded-2xl border border-mist-300 bg-white p-6 sm:p-8">
+        <h2 className="text-base font-semibold text-indigo-900">Cota de PCD</h2>
         <p className="mt-2 text-sm text-graphite-500">
           Informe o quadro de funcionários da empresa para ver sua cota calculada aqui.
         </p>
@@ -34,67 +31,69 @@ export function PainelCota({ empresa, pcdAtivos }) {
     )
   }
 
-  const resultado = calcularCota({
-    totalFuncionarios,
-    aprendizes,
-    aposentadosInvalidez,
-    pcdAtuais: pcdAtivos,
-  })
-
+  const resultado = calcularCota({ totalFuncionarios, aprendizes, aposentadosInvalidez, pcdAtuais: pcdAtivos })
   const resultadoSimulado = calcularCota({
     totalFuncionarios,
     aprendizes,
     aposentadosInvalidez,
     pcdAtuais: pcdAtivos + simulando,
   })
-
   const semaforo = corSemaforo(resultado.percentualCumprimento)
-  const cores = CORES[semaforo.cor]
 
   return (
-    <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-lg font-semibold text-indigo-800">Cota de PCD</h2>
-        <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold ${cores.bg} ${cores.text}`}>
-          <span className={`h-2 w-2 rounded-full ${cores.dot}`} />
-          {semaforo.label}
-        </span>
-      </div>
+    <div className="rounded-2xl border border-mist-300 bg-white p-6 sm:p-8">
+      <p className="text-sm text-graphite-500">
+        {empresa.nome || 'Sua empresa'} · {MES_ANO}
+      </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded-xl bg-mist-100 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-graphite-500">Base de cálculo</p>
-          <p className="mt-1 font-display text-xl font-semibold text-indigo-800">{resultado.base}</p>
-        </div>
-        <div className="rounded-xl bg-mist-100 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-graphite-500">Percentual</p>
-          <p className="mt-1 font-display text-xl font-semibold text-indigo-800">
-            {Math.round(resultado.percentual * 100)}%
-          </p>
-        </div>
-        <div className="rounded-xl bg-mist-100 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-graphite-500">Cota devida</p>
-          <p className="mt-1 font-display text-xl font-semibold text-indigo-800">{resultado.cotaDevida}</p>
-        </div>
-        <div className="rounded-xl bg-mist-100 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-graphite-500">Cota cumprida</p>
-          <p className="mt-1 font-display text-xl font-semibold text-indigo-800">{pcdAtivos}</p>
-        </div>
-        <div className={`rounded-xl p-4 ${resultado.vagasEmAberto > 0 ? 'bg-red-50' : 'bg-signal-50'}`}>
-          <p className="text-xs font-semibold uppercase tracking-wide text-graphite-500">Vagas em aberto</p>
-          <p className={`mt-1 font-display text-xl font-semibold ${resultado.vagasEmAberto > 0 ? 'text-red-700' : 'text-signal-700'}`}>
-            {resultado.vagasEmAberto}
-          </p>
-        </div>
-        <div className="rounded-xl bg-mist-100 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-graphite-500">% cumprido</p>
-          <p className="mt-1 font-display text-xl font-semibold text-indigo-800">
-            {Math.round(resultado.percentualCumprimento)}%
-          </p>
-        </div>
+      <p className="mt-3 font-display text-5xl font-semibold leading-none text-indigo-900 sm:text-6xl">
+        {pcdAtivos} <span className="text-graphite-300">/</span> {resultado.cotaDevida}
+      </p>
+      <p className="mt-2 text-graphite-600">colaboradores com deficiência na cota legal</p>
+
+      <div className="mt-4">
+        {resultado.vagasEmAberto > 0 ? (
+          <StatusPonto cor={semaforo.cor === 'red' ? 'red' : 'amber'}>
+            {resultado.vagasEmAberto} vaga{resultado.vagasEmAberto !== 1 ? 's' : ''} em aberto
+          </StatusPonto>
+        ) : (
+          <StatusPonto cor="signal">Cota cumprida</StatusPonto>
+        )}
       </div>
 
       <div className="mt-8 border-t border-mist-300 pt-6">
+        <p className="text-sm font-semibold text-graphite-900">Como esse número foi calculado</p>
+        <dl className="mt-3 space-y-1.5 text-sm">
+          <div className="flex items-center justify-between">
+            <dt className="text-graphite-500">Empregados CLT (matriz e filiais)</dt>
+            <dd className="tabular-nums text-graphite-900">{totalFuncionarios}</dd>
+          </div>
+          {aprendizes > 0 && (
+            <div className="flex items-center justify-between">
+              <dt className="text-graphite-500">− aprendizes</dt>
+              <dd className="tabular-nums text-graphite-900">{aprendizes}</dd>
+            </div>
+          )}
+          {aposentadosInvalidez > 0 && (
+            <div className="flex items-center justify-between">
+              <dt className="text-graphite-500">− aposentados por invalidez</dt>
+              <dd className="tabular-nums text-graphite-900">{aposentadosInvalidez}</dd>
+            </div>
+          )}
+          <div className="flex items-center justify-between border-t border-mist-200 pt-1.5 font-semibold">
+            <dt className="text-graphite-900">Base de cálculo</dt>
+            <dd className="tabular-nums text-graphite-900">{resultado.base}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-graphite-500">
+              × {Math.round(resultado.percentual * 100)}% ({faixaCota(resultado.base)})
+            </dt>
+            <dd className="tabular-nums font-semibold text-indigo-900">{resultado.cotaDevida}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div className="mt-6 border-t border-mist-300 pt-6">
         <p className="text-sm font-semibold text-graphite-900">
           Simulador: se eu contratar mais pessoas, como fico?
         </p>
@@ -107,7 +106,7 @@ export function PainelCota({ empresa, pcdAtivos }) {
             onChange={(e) => setSimulando(Number(e.target.value))}
             className="flex-1 accent-signal-600"
           />
-          <span className="w-16 shrink-0 text-right text-sm font-semibold text-graphite-900">
+          <span className="w-16 shrink-0 text-right text-sm font-semibold tabular-nums text-graphite-900">
             +{simulando}
           </span>
         </div>

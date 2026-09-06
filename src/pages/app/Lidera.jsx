@@ -3,14 +3,11 @@ import { kits, accentStyles } from '../../lib/kits.js'
 export function Lidera() {
   return (
     <div>
-      <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-wide text-volt-600">
-          IncluiPro Lidera
-        </p>
-        <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
-          Kits de treinamento para lideranças
+      <div className="mb-6">
+        <h1 className="font-display text-2xl font-semibold text-indigo-900">
+          Treinamentos
         </h1>
-        <p className="mt-2 max-w-2xl text-graphite-500">
+        <p className="mt-2 max-w-2xl text-sm text-graphite-500">
           Baixe os kits em slides, organizados por tema, e use nas suas reuniões e capacitações
           internas.
         </p>

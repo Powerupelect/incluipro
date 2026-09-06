@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
+import { EstadoVazio } from '../../components/ui/Table.jsx'
 import {
   TIPOS_SOLICITACAO,
   STATUS_FLUXO,
@@ -14,6 +15,7 @@ import {
   anexarComprovacao,
   urlAssinadaAnexo,
   calcularMetricas,
+  excluirSolicitacao,
 } from '../../lib/solicitacoesAcessibilidade.js'
 
 const NOVA_INICIAL = {
@@ -32,6 +34,7 @@ export function CentralAcessibilidade() {
   const [formAberto, setFormAberto] = useState(false)
   const [nova, setNova] = useState(NOVA_INICIAL)
   const [salvando, setSalvando] = useState(false)
+  const [busca, setBusca] = useState('')
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -45,6 +48,27 @@ export function CentralAcessibilidade() {
   }, [user?.empresaId])
 
   const metricas = useMemo(() => calcularMetricas(solicitacoes), [solicitacoes])
+
+  const solicitacoesFiltradas = useMemo(() => {
+    const q = busca.trim().toLowerCase()
+    if (!q) return solicitacoes
+    return solicitacoes.filter(
+      (s) =>
+        (s.colaboradores?.nome || '').toLowerCase().includes(q) ||
+        (TIPOS_SOLICITACAO.find((t) => t.id === s.tipo)?.label || '').toLowerCase().includes(q) ||
+        (STATUS_LABEL[s.status] || '').toLowerCase().includes(q),
+    )
+  }, [solicitacoes, busca])
+
+  async function handleExcluir(id) {
+    if (!confirm('Excluir esta solicitação? Esta ação não pode ser desfeita.')) return
+    try {
+      await excluirSolicitacao(id)
+      setSolicitacoes((s) => s.filter((x) => x.id !== id))
+    } catch {
+      // silencioso
+    }
+  }
 
   async function handleCriar(e) {
     e.preventDefault()
@@ -73,9 +97,8 @@ export function CentralAcessibilidade() {
     <div>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">Central de acessibilidade</p>
-          <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">Solicitações de adaptação</h1>
-          <p className="mt-2 max-w-2xl text-graphite-500">
+          <h1 className="font-display text-2xl font-semibold text-indigo-900">Solicitações</h1>
+          <p className="mt-2 max-w-2xl text-sm text-graphite-500">
             O RH registra o pedido feito pelo colaborador — conversa, e-mail, mensagem — e
             acompanha o fluxo até a conclusão. Visível apenas para admin, RH e gestores.
           </p>
@@ -188,14 +211,29 @@ export function CentralAcessibilidade() {
         </form>
       )}
 
+      {!carregando && solicitacoes.length > 0 && (
+        <input
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Buscar por colaborador, tipo ou status…"
+          className="mb-5 w-full max-w-md rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+        />
+      )}
+
       {carregando ? (
         <p className="text-sm text-graphite-500">Carregando…</p>
       ) : solicitacoes.length === 0 ? (
-        <p className="text-sm text-graphite-500">Nenhuma solicitação registrada ainda.</p>
+        <EstadoVazio
+          titulo="Nenhuma solicitação registrada ainda"
+          descricao="Registre aqui o pedido de adaptação feito pelo colaborador — conversa, e-mail ou mensagem — e acompanhe o fluxo até a conclusão."
+          acao={<Button as="button" onClick={() => setFormAberto(true)}>Registrar a primeira solicitação</Button>}
+        />
+      ) : solicitacoesFiltradas.length === 0 ? (
+        <p className="text-sm text-graphite-500">Nenhuma solicitação encontrada para essa busca.</p>
       ) : (
         <div className="space-y-4">
-          {solicitacoes.map((s) => (
-            <SolicitacaoCard key={s.id} solicitacao={s} empresaId={user.empresaId} onAtualizar={atualizar} />
+          {solicitacoesFiltradas.map((s) => (
+            <SolicitacaoCard key={s.id} solicitacao={s} empresaId={user.empresaId} onAtualizar={atualizar} onExcluir={handleExcluir} />
           ))}
         </div>
       )}
@@ -203,7 +241,7 @@ export function CentralAcessibilidade() {
   )
 }
 
-function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar }) {
+function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) {
   const [responsavel, setResponsavel] = useState(s.responsavel || '')
   const [prazo, setPrazo] = useState(s.prazo || '')
   const [motivoRecusa, setMotivoRecusa] = useState(s.motivo_recusa || '')
@@ -237,9 +275,14 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar }) {
           </p>
           <p className="mt-2 text-sm text-graphite-700">{s.descricao}</p>
         </div>
-        <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COR[s.status]}`}>
-          {STATUS_LABEL[s.status]}
-        </span>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COR[s.status]}`}>
+            {STATUS_LABEL[s.status]}
+          </span>
+          <button onClick={() => onExcluir(s.id)} className="text-xs font-semibold text-red-500 hover:text-red-700">
+            Excluir
+          </button>
+        </div>
       </div>
 
       {s.status === 'recusado' && s.motivo_recusa && (

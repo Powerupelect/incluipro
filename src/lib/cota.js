@@ -12,6 +12,15 @@ function percentualCota(base) {
   return 0.05
 }
 
+/** Rótulo da faixa de empregados usada no cálculo — exibido na "conta aberta" do painel. */
+export function faixaCota(base) {
+  if (base < 100) return 'menos de 100 empregados'
+  if (base <= 200) return '100 a 200 empregados'
+  if (base <= 500) return '201 a 500 empregados'
+  if (base <= 1000) return '501 a 1000 empregados'
+  return 'mais de 1000 empregados'
+}
+
 export function corSemaforo(percentualCumprimento) {
   if (percentualCumprimento >= 100) return { cor: 'signal', label: 'Cota cumprida' }
   if (percentualCumprimento >= 80) return { cor: 'amber', label: 'Falta pouco' }

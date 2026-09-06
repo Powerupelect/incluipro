@@ -192,25 +192,23 @@ export function Conta() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-          Minha conta
-        </p>
-        <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
-          Dados da empresa e assinatura
+        <h1 className="font-display text-2xl font-semibold text-indigo-900">
+          Configurações
         </h1>
+        <p className="mt-2 text-sm text-graphite-500">Dados da empresa e assinatura.</p>
       </div>
 
       <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Empresa</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-graphite-300">
+            <dt className="text-xs font-medium text-graphite-400">
               Nome da empresa
             </dt>
             <dd className="mt-1 text-sm text-graphite-900">{user?.companyName}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-graphite-300">
+            <dt className="text-xs font-medium text-graphite-400">
               E-mail responsável
             </dt>
             <dd className="mt-1 text-sm text-graphite-900">{user?.email}</dd>

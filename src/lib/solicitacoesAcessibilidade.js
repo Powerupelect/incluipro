@@ -51,6 +51,24 @@ export async function getSolicitacoes(empresaId) {
   return data || []
 }
 
+/** Solicitações de um único colaborador — usado na Ficha do colaborador. */
+export async function getSolicitacoesPorColaborador(colaboradorId) {
+  if (!colaboradorId) return []
+  const { data, error } = await supabase
+    .from('solicitacoes_acessibilidade')
+    .select('*, colaboradores(nome)')
+    .eq('colaborador_id', colaboradorId)
+    .order('criado_em', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
+/** Exclui uma solicitação individualmente (registro isolado, sem cascata de outras entidades). */
+export async function excluirSolicitacao(id) {
+  const { error } = await supabase.from('solicitacoes_acessibilidade').delete().eq('id', id)
+  if (error) throw error
+}
+
 export async function criarSolicitacao({ empresaId, colaboradorId, tipo, descricao, dataPedido, solicitadoPor }) {
   const { data, error } = await supabase
     .from('solicitacoes_acessibilidade')

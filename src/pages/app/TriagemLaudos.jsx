@@ -11,6 +11,7 @@ import {
   urlAssinadaDocumento,
 } from '../../lib/documentos.js'
 import { resumoTriagem } from '../../lib/triagemLaudos.js'
+import { EstadoVazio } from '../../components/ui/Table.jsx'
 
 const NOVO_DOC_INICIAL = {
   tipo: 'laudo',
@@ -29,6 +30,7 @@ export function TriagemLaudos() {
   const [novoDoc, setNovoDoc] = useState(NOVO_DOC_INICIAL)
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState('')
+  const [busca, setBusca] = useState('')
 
   async function carregar() {
     if (!user?.empresaId) return
@@ -47,9 +49,20 @@ export function TriagemLaudos() {
 
   useEffect(() => {
     carregar()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.empresaId])
 
   const resumo = useMemo(() => resumoTriagem(colaboradores, documentos), [colaboradores, documentos])
+
+  const analisadosFiltrados = useMemo(() => {
+    const q = busca.trim().toLowerCase()
+    if (!q) return resumo.analisados
+    return resumo.analisados.filter(
+      ({ colaborador }) =>
+        (colaborador.nome || '').toLowerCase().includes(q) ||
+        (colaborador.tipo_deficiencia || '').toLowerCase().includes(q),
+    )
+  }, [resumo.analisados, busca])
 
   async function handleUpload(e, colaboradorId) {
     e.preventDefault()
@@ -91,10 +104,9 @@ export function TriagemLaudos() {
 
   return (
     <div>
-      <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">Triagem documental</p>
-        <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">Laudos e comprovantes</h1>
-        <p className="mt-2 max-w-2xl text-graphite-500">
+      <div className="mb-6">
+        <h1 className="font-display text-2xl font-semibold text-indigo-900">Documentos</h1>
+        <p className="mt-2 max-w-2xl text-sm text-graphite-500">
           Repositório e checagem de consistência dos documentos que fundamentam o enquadramento na
           cota. Sinalização de indicativo de risco documental — não é parecer jurídico ou médico.
         </p>
@@ -104,26 +116,34 @@ export function TriagemLaudos() {
         </p>
       </div>
 
-      <div className="mb-8 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-        <p className="font-display text-lg font-semibold text-indigo-800">
+      <div className="mb-6 rounded-2xl border border-mist-300 bg-white p-5">
+        <p className="text-sm font-semibold text-graphite-900">
           {resumo.total} cadastrado{resumo.total === 1 ? '' : 's'} · {resumo.consistentes} com
           documentação consistente · {resumo.emRisco} em risco
         </p>
-        <p className="mt-1 text-sm text-graphite-500">
-          Indicativo de risco documental calculado a partir dos documentos cadastrados abaixo.
-        </p>
       </div>
+
+      {!carregando && colaboradores.length > 0 && (
+        <input
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Buscar por colaborador ou tipo de deficiência…"
+          className="mb-5 w-full max-w-md rounded-xl border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+        />
+      )}
 
       {carregando ? (
         <p className="text-sm text-graphite-500">Carregando…</p>
       ) : colaboradores.length === 0 ? (
-        <p className="text-sm text-graphite-500">
-          Nenhum colaborador com deficiência cadastrado ainda. Cadastre relatórios em IncluiPro
-          Avalia para que apareçam aqui.
-        </p>
+        <EstadoVazio
+          titulo="Nenhum colaborador com deficiência cadastrado ainda"
+          descricao="Cadastre um colaborador em Colaboradores ou gere uma avaliação em Avaliações para que ele apareça aqui."
+        />
+      ) : analisadosFiltrados.length === 0 ? (
+        <p className="text-sm text-graphite-500">Nenhum colaborador encontrado para essa busca.</p>
       ) : (
         <div className="space-y-4">
-          {resumo.analisados.map(({ colaborador, emRisco, motivos }) => {
+          {analisadosFiltrados.map(({ colaborador, emRisco, motivos }) => {
             const docsDoColaborador = documentos.filter((d) => d.colaborador_id === colaborador.id)
             const aberto = colaboradorAberto === colaborador.id
             return (

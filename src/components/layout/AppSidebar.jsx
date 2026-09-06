@@ -6,48 +6,65 @@ const items = [
   {
     to: '/app',
     end: true,
-    label: 'Início',
-    hint: 'Painel geral',
+    label: 'Painel',
+    hint: 'Situação e pendências',
     icon: <path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h4v-6h2v6h4a1 1 0 001-1v-9" />,
   },
   {
+    to: '/app/colaboradores',
+    label: 'Colaboradores',
+    hint: 'Cadastro e histórico',
+    icon: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 20c.9-3 3-5 6-5s5.1 2 6 5M16 5.5a3 3 0 010 5.8M20.5 20c-.5-2.3-1.7-4-3.5-5" />
+      </>
+    ),
+  },
+  {
     to: '/app/avalia',
-    label: 'IncluiPro Avalia',
+    label: 'Avaliações',
     hint: 'Relatórios técnicos de inclusão',
     icon: (
       <path d="M6 4h9l3 3v13a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1zM8 12h8M8 16h5M8 8h4" />
     ),
   },
   {
-    to: '/app/matriz',
-    label: 'Matriz de Compatibilidade',
-    hint: 'Cargo × tipo de deficiência',
-    icon: <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />,
-  },
-  {
-    to: '/app/laudos',
-    label: 'Triagem de Laudos',
-    hint: 'Documentos e consistência',
-    icon: <path d="M7 4h7l4 4v12a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1zM14 4v4h4M9 13l2 2 4-4" />,
-  },
-  {
-    to: '/app/acessibilidade',
-    label: 'Central de Acessibilidade',
-    hint: 'Solicitações de adaptação',
+    to: '/app/adaptacoes',
+    label: 'Adaptações',
+    hint: 'Ajustes em vigor',
     restritoA: ['admin', 'rh', 'gestor'],
     icon: <path d="M12 4a3 3 0 110 6 3 3 0 010-6zM5 20c1.2-3.6 3.8-6 7-6s5.8 2.4 7 6M9 13l1.5 2L14 11" />,
   },
   {
     to: '/app/lidera',
-    label: 'IncluiPro Lidera',
-    hint: 'Kits de treinamento',
+    label: 'Treinamentos',
+    hint: 'Kits de capacitação',
     icon: <path d="M4 6h16M4 6v12a1 1 0 001 1h6M4 6l2-3h12l2 3M14 19l3 2v-6.5M17 14.5l3-2" />,
   },
   {
+    to: '/app/solicitacoes',
+    label: 'Solicitações',
+    hint: 'Pedidos de adaptação',
+    restritoA: ['admin', 'rh', 'gestor'],
+    icon: <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />,
+  },
+  {
+    to: '/app/documentos',
+    label: 'Documentos',
+    hint: 'Laudos e comprovantes',
+    icon: <path d="M7 4h7l4 4v12a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1zM14 4v4h4M9 13l2 2 4-4" />,
+  },
+  {
     to: '/app/conta',
-    label: 'Minha conta',
+    label: 'Configurações',
     hint: 'Empresa e assinatura',
-    icon: <path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" />,
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+      </>
+    ),
   },
 ]
 

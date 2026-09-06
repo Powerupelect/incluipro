@@ -19,10 +19,12 @@ import { ContratoOperador } from './pages/legal/ContratoOperador.jsx'
 import { Seguranca } from './pages/legal/Seguranca.jsx'
 import { Acessibilidade } from './pages/legal/Acessibilidade.jsx'
 import { Dashboard } from './pages/app/Dashboard.jsx'
+import { Colaboradores } from './pages/app/Colaboradores.jsx'
+import { ColaboradorFicha } from './pages/app/ColaboradorFicha.jsx'
 import { Avalia } from './pages/app/Avalia.jsx'
+import { Adaptacoes } from './pages/app/Adaptacoes.jsx'
 import { Lidera } from './pages/app/Lidera.jsx'
 import { Conta } from './pages/app/Conta.jsx'
-import { MatrizCompatibilidade } from './pages/app/MatrizCompatibilidade.jsx'
 import { TriagemLaudos } from './pages/app/TriagemLaudos.jsx'
 import { CentralAcessibilidade } from './pages/app/CentralAcessibilidade.jsx'
 import { AdminLogin } from './pages/admin/AdminLogin.jsx'
@@ -67,11 +69,13 @@ export default function App() {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="colaboradores" element={<Colaboradores />} />
+            <Route path="colaboradores/:id" element={<ColaboradorFicha />} />
             <Route path="avalia" element={<Avalia />} />
-            <Route path="matriz" element={<MatrizCompatibilidade />} />
-            <Route path="laudos" element={<TriagemLaudos />} />
-            <Route path="acessibilidade" element={<CentralAcessibilidade />} />
+            <Route path="adaptacoes" element={<Adaptacoes />} />
             <Route path="lidera" element={<Lidera />} />
+            <Route path="solicitacoes" element={<CentralAcessibilidade />} />
+            <Route path="documentos" element={<TriagemLaudos />} />
             <Route path="conta" element={<Conta />} />
           </Route>
         </Routes>

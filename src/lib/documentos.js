@@ -26,6 +26,18 @@ export async function getDocumentos(empresaId) {
   return data || []
 }
 
+/** Documentos de um único colaborador — usado na Ficha do colaborador. */
+export async function getDocumentosPorColaborador(colaboradorId) {
+  if (!colaboradorId) return []
+  const { data, error } = await supabase
+    .from('documentos')
+    .select('*')
+    .eq('colaborador_id', colaboradorId)
+    .order('criado_em', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
 export async function uploadDocumento({ empresaId, colaboradorId, tipo, arquivo, dataEmissao, dataValidade, descreveBarreira }) {
   let arquivoPath = null
   if (arquivo) {

@@ -7,15 +7,15 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-svh bg-mist-200">
-      <aside className="hidden w-72 shrink-0 lg:block">
-        <div className="fixed left-0 top-0 h-svh w-72">
+      <aside className="hidden w-60 shrink-0 lg:block">
+        <div className="fixed left-0 top-0 h-svh w-60">
           <AppSidebar />
         </div>
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div className="w-72">
+          <div className="w-60">
             <AppSidebar onNavigate={() => setMobileOpen(false)} />
           </div>
           <button
@@ -40,7 +40,7 @@ export function AppLayout() {
           <span className="font-display text-sm font-semibold text-indigo-700">IncluiPro</span>
         </div>
         <main className="flex-1 px-5 py-8 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>
         </main>

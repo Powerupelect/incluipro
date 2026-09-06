@@ -3,21 +3,47 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { getReports } from '../../lib/reports.js'
 import { getEmpresa, contarPcdAtivos } from '../../lib/empresa.js'
-import { calcularCota } from '../../lib/cota.js'
 import { kits } from '../../lib/kits.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PainelCota } from '../../components/PainelCota.jsx'
-import { getColaboradoresComDeficiencia, getDocumentos } from '../../lib/documentos.js'
-import { resumoTriagem } from '../../lib/triagemLaudos.js'
+import { getDocumentos } from '../../lib/documentos.js'
+import { getSolicitacoes } from '../../lib/solicitacoesAcessibilidade.js'
+import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
 
-const CARD_ICONS = {
-  realizadas: (
-    <path d="M6 4h9l3 3v13a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1zM8 12h8M8 16h5M8 8h4" />
-  ),
-  pendentes: <path d="M12 7v5l3 3M12 22a10 10 0 100-20 10 10 0 000 20z" />,
-  treinamentos: (
-    <path d="M4 6h16M4 6v12a1 1 0 001 1h6M4 6l2-3h12l2 3M14 19l3 2v-6.5M17 14.5l3-2" />
-  ),
+function calcularPendencias(documentos, solicitacoes) {
+  const hoje = new Date().toISOString().slice(0, 10)
+  const pendencias = []
+
+  const laudosSemBarreira = documentos.filter((d) => d.tipo === 'laudo' && !d.descreve_barreira_funcional)
+  if (laudosSemBarreira.length > 0) {
+    pendencias.push({
+      cor: 'amber',
+      texto: `${laudosSemBarreira.length} laudo${laudosSemBarreira.length !== 1 ? 's' : ''} sem descrição de barreira funcional`,
+      link: '/app/documentos',
+    })
+  }
+
+  const adaptacoesVencidas = solicitacoes.filter(
+    (s) => s.prazo && s.prazo < hoje && s.status !== 'concluido' && s.status !== 'recusado',
+  )
+  if (adaptacoesVencidas.length > 0) {
+    pendencias.push({
+      cor: 'red',
+      texto: `${adaptacoesVencidas.length} solicitação${adaptacoesVencidas.length !== 1 ? 'ões' : ''} de adaptação com prazo vencido`,
+      link: '/app/solicitacoes',
+    })
+  }
+
+  const documentosVencidos = documentos.filter((d) => d.data_validade && d.data_validade < hoje)
+  if (documentosVencidos.length > 0) {
+    pendencias.push({
+      cor: 'amber',
+      texto: `${documentosVencidos.length} documento${documentosVencidos.length !== 1 ? 's' : ''} vencido${documentosVencidos.length !== 1 ? 's' : ''}`,
+      link: '/app/documentos',
+    })
+  }
+
+  return pendencias
 }
 
 export function Dashboard() {
@@ -25,28 +51,31 @@ export function Dashboard() {
   const [historico, setHistorico] = useState([])
   const [empresa, setEmpresa] = useState(null)
   const [pcdAtivos, setPcdAtivos] = useState(0)
-  const [triagem, setTriagem] = useState(null)
+  const [pendencias, setPendencias] = useState(null)
+  const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
     if (!user?.empresaId) return
     let ativo = true
-    getReports(user.empresaId)
-      .then((relatorios) => {
-        if (ativo) setHistorico(relatorios)
-      })
-      .catch(() => {})
-    Promise.all([getEmpresa(user.empresaId), contarPcdAtivos(user.empresaId)])
-      .then(([empresaData, count]) => {
+    setCarregando(true)
+    Promise.all([
+      getReports(user.empresaId),
+      getEmpresa(user.empresaId),
+      contarPcdAtivos(user.empresaId),
+      getDocumentos(user.empresaId),
+      getSolicitacoes(user.empresaId),
+    ])
+      .then(([relatorios, empresaData, count, documentos, solicitacoes]) => {
         if (!ativo) return
+        setHistorico(relatorios)
         setEmpresa(empresaData)
         setPcdAtivos(count)
+        setPendencias(calcularPendencias(documentos, solicitacoes))
       })
       .catch(() => {})
-    Promise.all([getColaboradoresComDeficiencia(user.empresaId), getDocumentos(user.empresaId)])
-      .then(([cols, docs]) => {
-        if (ativo) setTriagem(resumoTriagem(cols, docs))
+      .finally(() => {
+        if (ativo) setCarregando(false)
       })
-      .catch(() => {})
     return () => {
       ativo = false
     }
@@ -55,198 +84,111 @@ export function Dashboard() {
   const recentes = historico.slice(0, 5)
   const novosKits = kits.filter((k) => k.novo)
 
-  const cotaResultado =
-    empresa && empresa.total_funcionarios > 0
-      ? calcularCota({
-          totalFuncionarios: empresa.total_funcionarios || 0,
-          aprendizes: empresa.aprendizes || 0,
-          aposentadosInvalidez: empresa.aposentados_invalidez || 0,
-          pcdAtuais: pcdAtivos,
-        })
-      : null
-
-  const stats = [
-    {
-      key: 'realizadas',
-      label: 'Avaliações realizadas',
-      valor: historico.length,
-      nota: historico.length === 0 ? 'Nenhuma ainda' : 'Total nesta conta',
-      accent: 'signal',
-    },
-    {
-      key: 'pendentes',
-      label: 'Avaliações pendentes',
-      valor: 0,
-      nota: 'Tudo em dia',
-      accent: 'amber',
-    },
-    {
-      key: 'treinamentos',
-      label: 'Treinamentos disponíveis',
-      valor: kits.length,
-      nota: novosKits.length > 0 ? `${novosKits.length} novo` : 'Biblioteca completa',
-      accent: 'volt',
-      destaque: novosKits.length > 0,
-    },
-  ]
-
   return (
     <div>
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-signal-600">
-            Painel geral
-          </p>
-          <h1 className="mt-1 font-display text-3xl font-semibold text-indigo-800">
-            Olá, {user?.companyName || 'bem-vindo(a)'}
-          </h1>
-          <p className="mt-2 max-w-2xl text-graphite-500">
-            Acompanhe suas avaliações e a biblioteca de treinamentos em um só lugar.
-          </p>
-        </div>
-        <Button to="/app/avalia" size="lg">+ Novo Relatório Técnico de Inclusão</Button>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <h1 className="font-display text-2xl font-semibold text-indigo-900">Painel</h1>
+        <Button to="/app/avalia" size="lg">+ Nova avaliação</Button>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        {stats.map((s) => (
-          <div
-            key={s.key}
-            className="relative overflow-hidden rounded-2xl border border-mist-300 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop"
-          >
-            {s.destaque && (
-              <span className="absolute right-4 top-4 rounded-full bg-signal-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-                {s.nota}
-              </span>
+      {carregando ? (
+        <p className="text-sm text-graphite-500">Carregando…</p>
+      ) : (
+        <>
+          <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
+
+          <div className="mt-6 rounded-2xl border border-mist-300 bg-white p-6">
+            <h2 className="text-base font-semibold text-graphite-900">Pendências</h2>
+            {pendencias && pendencias.length > 0 ? (
+              <ul className="mt-3 space-y-2.5">
+                {pendencias.map((p, i) => (
+                  <li key={i}>
+                    {p.link ? (
+                      <Link to={p.link} className="hover:underline">
+                        <StatusPonto cor={p.cor}>{p.texto}</StatusPonto>
+                      </Link>
+                    ) : (
+                      <StatusPonto cor={p.cor}>{p.texto}</StatusPonto>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 text-sm text-graphite-500">Nenhuma pendência identificada no momento.</p>
             )}
-            <span
-              className={`flex h-11 w-11 items-center justify-center rounded-xl ${
-                s.accent === 'signal'
-                  ? 'bg-signal-50 text-signal-700'
-                  : s.accent === 'volt'
-                    ? 'bg-volt-50 text-volt-700'
-                    : 'bg-amber-50 text-amber-700'
-              }`}
-            >
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                {CARD_ICONS[s.key]}
-              </svg>
-            </span>
-            <p className="mt-4 font-display text-3xl font-semibold text-indigo-900">{s.valor}</p>
-            <p className="mt-1 text-sm font-medium text-graphite-700">{s.label}</p>
-            {!s.destaque && <p className="mt-1 text-xs text-graphite-300">{s.nota}</p>}
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-8">
-        <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
-      </div>
-
-      {cotaResultado && (
-        <div className="mt-6 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-          <h2 className="font-display text-lg font-semibold text-indigo-800">Pendências</h2>
-          {cotaResultado.vagasEmAberto > 0 ? (
-            <p className="mt-2 text-sm text-graphite-700">
-              ⚠️ Ainda faltam <strong>{cotaResultado.vagasEmAberto}</strong> vaga
-              {cotaResultado.vagasEmAberto !== 1 ? 's' : ''} para cumprir a cota de PCD.
-            </p>
-          ) : (
-            <p className="mt-2 text-sm text-graphite-500">✅ Nenhuma pendência de cota no momento.</p>
-          )}
-        </div>
-      )}
-
-      {triagem && triagem.total > 0 && (
-        <div className="mt-6 rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-display text-lg font-semibold text-indigo-800">Triagem de laudos</h2>
-              <p className="mt-2 text-sm text-graphite-700">
-                {triagem.total} cadastrado{triagem.total === 1 ? '' : 's'} · {triagem.consistentes} com
-                documentação consistente · {triagem.emRisco} em risco
-              </p>
-              <p className="mt-1 text-xs text-graphite-300">
-                Indicativo de risco documental — não é parecer jurídico ou médico.
-              </p>
-            </div>
-            <Link to="/app/laudos" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
-              Ver detalhes →
-            </Link>
-          </div>
-        </div>
-      )}
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-display text-lg font-semibold text-indigo-800">
-              Relatórios recentes
-            </h2>
-            <Link to="/app/avalia" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
-              Ver todos →
-            </Link>
           </div>
 
-          {recentes.length === 0 ? (
-            <div className="mt-6 rounded-xl bg-mist-100 p-6 text-center">
-              <p className="text-sm text-graphite-500">
-                Nenhum relatório gerado ainda. Comece uma nova avaliação para ver o resumo aqui.
-              </p>
-              <Button to="/app/avalia" size="sm" className="mt-4">
-                Começar agora
-              </Button>
-            </div>
-          ) : (
-            <ul className="mt-4 divide-y divide-mist-200">
-              {recentes.map((item) => (
-                <li key={item.id} className="flex items-center justify-between gap-3 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-graphite-900">
-                      {item.candidato}
-                    </p>
-                    <p className="truncate text-xs text-graphite-300">
-                      {item.cargo || 'Cargo não informado'} ·{' '}
-                      {new Date(item.updatedAt || item.createdAt).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                  <Link
-                    to="/app/avalia"
-                    className="shrink-0 text-xs font-semibold text-indigo-700 hover:text-signal-600"
-                  >
-                    Abrir
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+            <div className="rounded-2xl border border-mist-300 bg-white p-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-base font-semibold text-graphite-900">Avaliações recentes</h2>
+                <Link to="/app/avalia" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
+                  Ver todas →
+                </Link>
+              </div>
 
-        <div className="rounded-2xl border border-mist-300 bg-white p-6 shadow-card">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-display text-lg font-semibold text-indigo-800">
-              Treinamentos
-            </h2>
-            <Link to="/app/lidera" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
-              Ver todos →
-            </Link>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {kits.map((kit) => (
-              <li key={kit.tema} className="flex items-center justify-between gap-3 rounded-xl border border-mist-200 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-graphite-900">{kit.tema}</p>
-                  <p className="text-xs text-graphite-300">{kit.slides} slides</p>
+              {recentes.length === 0 ? (
+                <div className="mt-4">
+                  <EstadoVazio
+                    titulo="Nenhuma avaliação gerada ainda"
+                    descricao="Comece uma nova avaliação para ver o resumo aqui."
+                    acao={<Button to="/app/avalia" size="sm">Começar agora</Button>}
+                  />
                 </div>
-                {kit.novo && (
-                  <span className="shrink-0 rounded-full bg-signal-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-                    Novo
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+              ) : (
+                <ul className="mt-4 divide-y divide-mist-200">
+                  {recentes.map((item) => (
+                    <li key={item.id} className="flex items-center justify-between gap-3 py-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-graphite-900">
+                          {item.candidato}
+                        </p>
+                        <p className="truncate text-xs text-graphite-400">
+                          {item.cargo || 'Cargo não informado'} ·{' '}
+                          {new Date(item.updatedAt || item.createdAt).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <Link
+                        to="/app/avalia"
+                        className="shrink-0 text-xs font-semibold text-indigo-700 hover:text-signal-600"
+                      >
+                        Abrir
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-mist-300 bg-white p-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-base font-semibold text-graphite-900">Treinamentos</h2>
+                <Link to="/app/lidera" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
+                  Ver todos →
+                </Link>
+              </div>
+              <ul className="mt-4 space-y-3">
+                {kits.map((kit) => (
+                  <li key={kit.tema} className="flex items-center justify-between gap-3 rounded-xl border border-mist-200 px-4 py-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-graphite-900">{kit.tema}</p>
+                      <p className="text-xs text-graphite-400">{kit.slides} slides</p>
+                    </div>
+                    {kit.novo && (
+                      <span className="shrink-0 rounded-full bg-signal-600 px-2.5 py-1 text-[10px] font-bold text-white">
+                        Novo
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {novosKits.length > 0 && (
+                <p className="mt-3 text-xs text-graphite-400">{novosKits.length} kit(s) novo(s) na biblioteca.</p>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
