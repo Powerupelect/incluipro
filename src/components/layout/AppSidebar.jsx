@@ -43,6 +43,13 @@ const items = [
     icon: <path d="M12 4a3 3 0 110 6 3 3 0 010-6zM5 20c1.2-3.6 3.8-6 7-6s5.8 2.4 7 6M9 13l1.5 2L14 11" />,
   },
   {
+    to: '/app/canal-colaborador',
+    label: 'Canal do Colaborador',
+    hint: 'Pedidos recebidos sem login',
+    restritoA: ['admin', 'rh', 'gestor'],
+    icon: <path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-5 4V6a1 1 0 011-1z" />,
+  },
+  {
     to: '/app/documentos',
     label: 'Documentos',
     hint: 'Laudos e comprovantes',

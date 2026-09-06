@@ -3,6 +3,7 @@
 // membro de uma empresa que não criou.
 
 import { supabase } from './supabase.js'
+import { gerarIdentificadorPublico } from './canalColaborador.js'
 
 export async function getPrimeiraEmpresa(contaId) {
   const { data, error } = await supabase
@@ -18,12 +19,25 @@ export async function getPrimeiraEmpresa(contaId) {
 }
 
 export async function criarEmpresa({ contaId, nome }) {
-  const { data, error } = await supabase
-    .from('empresas')
-    .insert({ conta_id: contaId, nome: nome || 'Minha empresa' })
-    .select()
-    .single()
-  if (error) throw error
+  const nomeEmpresa = nome || 'Minha empresa'
+
+  let data = null
+  let erroInsercao = null
+  for (let tentativa = 0; tentativa < 5 && !data; tentativa++) {
+    const resultado = await supabase
+      .from('empresas')
+      .insert({ conta_id: contaId, nome: nomeEmpresa, identificador_publico: gerarIdentificadorPublico(nomeEmpresa) })
+      .select()
+      .single()
+    if (!resultado.error) {
+      data = resultado.data
+    } else if (resultado.error.code === '23505') {
+      erroInsercao = resultado.error // colisão de slug — tenta de novo com outro sufixo
+    } else {
+      throw resultado.error
+    }
+  }
+  if (!data) throw erroInsercao || new Error('Não foi possível criar a empresa agora.')
 
   const { error: erroMembro } = await supabase
     .from('membros_empresa')

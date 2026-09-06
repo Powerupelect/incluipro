@@ -25,6 +25,10 @@ export function enviarDiagnostico(payload) {
   return postJSON('/api/enviar-diagnostico', payload)
 }
 
+export function enviarSolicitacaoCanal(payload) {
+  return postJSON('/api/canal-solicitar', payload)
+}
+
 export function adminLogin(email, senha) {
   return postJSON('/api/admin-login', { email, senha })
 }
