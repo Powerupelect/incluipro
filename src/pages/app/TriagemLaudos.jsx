@@ -148,20 +148,37 @@ export function TriagemLaudos() {
             const aberto = colaboradorAberto === colaborador.id
             return (
               <div key={colaborador.id} className="rounded-lg border border-mist-300 bg-white">
-                <button
-                  onClick={() => setColaboradorAberto(aberto ? null : colaborador.id)}
-                  className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left"
-                >
-                  <div>
-                    <p className="font-semibold text-graphite-900">{colaborador.nome}</p>
-                    <p className="text-sm text-graphite-500">{colaborador.tipo_deficiencia}</p>
-                  </div>
-                  <span className="shrink-0">
+                <div className="flex w-full items-center justify-between gap-4 px-6 py-4">
+                  <button
+                    onClick={() => setColaboradorAberto(aberto ? null : colaborador.id)}
+                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                  >
+                    <svg
+                      viewBox="0 0 20 20"
+                      className={`h-4 w-4 shrink-0 text-graphite-400 transition-transform ${aberto ? 'rotate-90' : ''}`}
+                      fill="currentColor"
+                    >
+                      <path d="M7 4l6 6-6 6V4z" />
+                    </svg>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-graphite-900">{colaborador.nome}</p>
+                      <p className="truncate text-sm text-graphite-500">{colaborador.tipo_deficiencia}</p>
+                    </div>
+                  </button>
+                  <div className="flex shrink-0 items-center gap-3">
                     <StatusPonto cor={emRisco ? 'amber' : 'signal'}>
                       {emRisco ? 'Em risco' : 'Consistente'}
                     </StatusPonto>
-                  </span>
-                </button>
+                    <Button
+                      shape="crm"
+                      as="button"
+                      size="sm"
+                      onClick={() => setColaboradorAberto(colaborador.id)}
+                    >
+                      + Adicionar documento
+                    </Button>
+                  </div>
+                </div>
 
                 {aberto && (
                   <div className="border-t border-mist-200 px-6 py-5">

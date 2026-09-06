@@ -122,6 +122,7 @@ export async function importarColaboradores(validas, empresaId) {
 
   let importados = 0
   const falhas = []
+  const colaboradoresCriados = []
 
   for (const { linha, dados } of validas) {
     try {
@@ -137,20 +138,25 @@ export async function importarColaboradores(validas, empresaId) {
         }
       }
 
-      const { error } = await supabase.from('colaboradores').insert({
-        empresa_id: empresaId,
-        nome: dados.nome,
-        cargo: dados.cargo || null,
-        tipo_deficiencia: dados.tipoDeficiencia || null,
-        observacoes_condicao: dados.observacoesCondicao || null,
-        unidade_id: unidadeId,
-      })
+      const { data, error } = await supabase
+        .from('colaboradores')
+        .insert({
+          empresa_id: empresaId,
+          nome: dados.nome,
+          cargo: dados.cargo || null,
+          tipo_deficiencia: dados.tipoDeficiencia || null,
+          observacoes_condicao: dados.observacoesCondicao || null,
+          unidade_id: unidadeId,
+        })
+        .select()
+        .single()
       if (error) throw error
+      colaboradoresCriados.push(data)
       importados++
     } catch (err) {
       falhas.push({ linha, motivo: err.message || 'Erro ao importar esta linha.' })
     }
   }
 
-  return { importados, falhas }
+  return { importados, falhas, colaboradoresCriados }
 }

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { calcularCota, corSemaforo, faixaCota } from '../lib/cota.js'
 import { StatusPonto } from './ui/Table.jsx'
@@ -6,8 +5,6 @@ import { StatusPonto } from './ui/Table.jsx'
 const MES_ANO = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
 export function PainelCota({ empresa, pcdAtivos }) {
-  const [simulando, setSimulando] = useState(0)
-
   if (!empresa) return null
 
   const totalFuncionarios = empresa.total_funcionarios || 0
@@ -32,12 +29,6 @@ export function PainelCota({ empresa, pcdAtivos }) {
   }
 
   const resultado = calcularCota({ totalFuncionarios, aprendizes, aposentadosInvalidez, pcdAtuais: pcdAtivos })
-  const resultadoSimulado = calcularCota({
-    totalFuncionarios,
-    aprendizes,
-    aposentadosInvalidez,
-    pcdAtuais: pcdAtivos + simulando,
-  })
   const semaforo = corSemaforo(resultado.percentualCumprimento)
 
   return (
@@ -65,12 +56,12 @@ export function PainelCota({ empresa, pcdAtivos }) {
         <p className="text-sm font-semibold text-graphite-900">Como esse número foi calculado</p>
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex items-center justify-between">
-            <dt className="text-graphite-500">Empregados CLT (matriz e filiais)</dt>
+            <dt className="text-graphite-500">Total de empregados CLT (matriz e filiais)</dt>
             <dd className="tabular-nums text-graphite-900">{totalFuncionarios}</dd>
           </div>
           {aprendizes > 0 && (
             <div className="flex items-center justify-between">
-              <dt className="text-graphite-500">− aprendizes</dt>
+              <dt className="text-graphite-500">− aprendizes (não entram na base — Lei 10.097/2000)</dt>
               <dd className="tabular-nums text-graphite-900">{aprendizes}</dd>
             </div>
           )}
@@ -81,42 +72,14 @@ export function PainelCota({ empresa, pcdAtivos }) {
             </div>
           )}
           <div className="flex items-center justify-between border-t border-mist-200 pt-1.5 font-semibold">
-            <dt className="text-graphite-900">Base de cálculo</dt>
+            <dt className="text-graphite-900">Base de cálculo da cota</dt>
             <dd className="tabular-nums text-graphite-900">{resultado.base}</dd>
           </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-graphite-500">
-              × {Math.round(resultado.percentual * 100)}% ({faixaCota(resultado.base)})
-            </dt>
-            <dd className="tabular-nums font-semibold text-indigo-900">{resultado.cotaDevida}</dd>
-          </div>
         </dl>
-      </div>
-
-      <div className="mt-6 border-t border-mist-300 pt-6">
-        <p className="text-sm font-semibold text-graphite-900">
-          Simulador: se eu contratar mais pessoas, como fico?
+        <p className="mt-4 text-sm text-graphite-700">
+          Alíquota legal aplicável: <strong>{Math.round(resultado.percentual * 100)}%</strong>, faixa de{' '}
+          {faixaCota(resultado.base)} → cota devida de <strong>{resultado.cotaDevida}</strong>.
         </p>
-        <div className="mt-3 flex items-center gap-4">
-          <input
-            type="range"
-            min="0"
-            max="20"
-            value={simulando}
-            onChange={(e) => setSimulando(Number(e.target.value))}
-            className="flex-1 accent-signal-600"
-          />
-          <span className="w-16 shrink-0 text-right text-sm font-semibold tabular-nums text-graphite-900">
-            +{simulando}
-          </span>
-        </div>
-        {simulando > 0 && (
-          <p className="mt-3 text-sm text-graphite-700">
-            Com mais <strong>{simulando}</strong> contratação{simulando > 1 ? 'ões' : ''}, ficam{' '}
-            <strong>{resultadoSimulado.vagasEmAberto}</strong> vaga{resultadoSimulado.vagasEmAberto !== 1 ? 's' : ''}{' '}
-            em aberto ({Math.round(resultadoSimulado.percentualCumprimento)}% da cota cumprido).
-          </p>
-        )}
       </div>
     </div>
   )

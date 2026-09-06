@@ -83,6 +83,9 @@ export function Dashboard() {
 
           <div className="mt-6 rounded-lg border border-mist-300 bg-white p-6">
             <h2 className="text-base font-semibold text-graphite-900">Pendências</h2>
+            <p className="mt-1 text-xs text-graphite-400">
+              Documentação e adaptações que precisam de atenção — laudos incompletos, prazos vencidos.
+            </p>
             {pendencias && pendencias.length > 0 ? (
               <ul className="mt-3 space-y-2.5">
                 {pendencias.map((p, i) => (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
 import { TabelaContainer, Th, Td, StatusPonto, EstadoVazio, useOrdenacao } from '../../components/ui/Table.jsx'
+import { ImportarColaboradoresModal } from '../../components/ImportarColaboradoresModal.jsx'
 import {
   getColaboradores,
   criarColaborador,
@@ -30,6 +31,7 @@ export function Colaboradores() {
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(null) // { colaborador, vinculos } | null
+  const [importModalAberto, setImportModalAberto] = useState(false)
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -131,12 +133,20 @@ export function Colaboradores() {
         <div>
           <h1 className="font-display text-2xl font-semibold text-indigo-900">Colaboradores</h1>
           <p className="mt-1 text-sm text-graphite-500">
-            Cadastro da empresa — é a partir daqui que se cria uma avaliação, uma adaptação ou um documento.
+            {carregando
+              ? 'Cadastro da empresa.'
+              : `${colaboradores.length} colaborador${colaboradores.length !== 1 ? 'es' : ''} cadastrado${colaboradores.length !== 1 ? 's' : ''}.`}
+            {' '}É a partir daqui que se cria uma avaliação, uma adaptação ou um documento.
           </p>
         </div>
-        <Button shape="crm" as="button" onClick={abrirNovo}>
-          + Novo colaborador
-        </Button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <Button shape="crm" as="button" variant="ghost" onClick={() => setImportModalAberto(true)}>
+            Importar por CSV
+          </Button>
+          <Button shape="crm" as="button" onClick={abrirNovo}>
+            + Novo colaborador
+          </Button>
+        </div>
       </div>
 
       <input
@@ -293,6 +303,13 @@ export function Colaboradores() {
           </div>
         </div>
       )}
+
+      <ImportarColaboradoresModal
+        open={importModalAberto}
+        onClose={() => setImportModalAberto(false)}
+        empresaId={user?.empresaId}
+        onImportado={(novos) => setColaboradores((cols) => [...cols, ...novos])}
+      />
     </div>
   )
 }
