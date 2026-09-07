@@ -117,22 +117,119 @@ function stripInlineMarkdown(text) {
   return text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').trim()
 }
 
+const ROTULO_RECURSOS = 'Recursos e adaptações sugeridas:'
+const LINE_H = 13
+
+/** Parágrafo no formato "**Rótulo:** texto" (ver bloco() em montarRelatorio.js) — desenha o
+ * rótulo em negrito e o resto em peso normal, na mesma linha, cuidando da quebra de linha. */
+function drawParagrafoComRotulo(doc, y, rotulo, resto) {
+  const prefixo = `${rotulo} `
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9.5)
+  const larguraPrefixo = doc.getTextWidth(prefixo)
+
+  doc.setFont('helvetica', 'normal')
+  const palavras = resto.split(/\s+/).filter(Boolean)
+  const linhas = []
+  let atual = []
+  for (const palavra of palavras) {
+    const primeiraLinha = linhas.length === 0
+    const larguraMax = primeiraLinha ? CONTENT_W - larguraPrefixo : CONTENT_W
+    const candidata = [...atual, palavra].join(' ')
+    if (atual.length > 0 && doc.getTextWidth(candidata) > larguraMax) {
+      linhas.push(atual)
+      atual = [palavra]
+    } else {
+      atual.push(palavra)
+    }
+  }
+  linhas.push(atual)
+
+  y = ensureSpace(doc, y, linhas.length * LINE_H)
+
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...COLORS.labelText)
+  doc.text(prefixo, MARGIN, y + 9)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(...COLORS.bodyText)
+  doc.text(linhas[0].join(' '), MARGIN + larguraPrefixo, y + 9)
+  for (let i = 1; i < linhas.length; i++) {
+    doc.text(linhas[i].join(' '), MARGIN, y + 9 + i * LINE_H)
+  }
+
+  return y + linhas.length * LINE_H + 6
+}
+
+/** Quadro destacado para os recursos e adaptações sugeridas — a parte mais importante do
+ * parecer, por isso ganha tratamento visual diferente de um bullet list comum. */
+function drawQuadroRecursos(doc, y, itens) {
+  const padding = 12
+  const tituloH = 16
+  const inner = CONTENT_W - padding * 2 - 14
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9.5)
+  const itensQuebrados = itens.map((item) => doc.splitTextToSize(item, inner))
+  const linhasTotais = itensQuebrados.reduce((acc, linhas) => acc + linhas.length, 0)
+  const alturaCaixa = padding * 2 + tituloH + linhasTotais * LINE_H + (itensQuebrados.length - 1) * 4
+
+  y = ensureSpace(doc, y, alturaCaixa + 10)
+
+  doc.setFillColor(233, 250, 246) // signal-50
+  doc.setDrawColor(...COLORS.brightTeal)
+  doc.setLineWidth(1)
+  doc.roundedRect(MARGIN, y, CONTENT_W, alturaCaixa, 4, 4, 'FD')
+
+  let innerY = y + padding
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9.5)
+  doc.setTextColor(...COLORS.darkGreen)
+  doc.text(ROTULO_RECURSOS.toUpperCase(), MARGIN + padding, innerY + 8)
+  innerY += tituloH
+
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(...COLORS.bodyText)
+  for (const linhas of itensQuebrados) {
+    doc.text('•', MARGIN + padding, innerY + 9)
+    doc.text(linhas, MARGIN + padding + 14, innerY + 9)
+    innerY += linhas.length * LINE_H + 4
+  }
+
+  return y + alturaCaixa + 12
+}
+
 function drawProseBody(doc, y, rawText) {
   const lines = (rawText || '').split('\n')
   doc.setFontSize(9.5)
   let paragraphBuffer = []
+  let recursosBuffer = null // vira array quando encontra o rótulo de recursos, pra virar o quadro
 
   function flushParagraph() {
     if (paragraphBuffer.length === 0) return
-    const text = stripInlineMarkdown(paragraphBuffer.join(' '))
+    const bruto = paragraphBuffer.join(' ').trim()
     paragraphBuffer = []
+    if (!bruto) return
+
+    const comRotulo = bruto.match(/^\*\*(.+?)\*\*\s*/)
+    if (comRotulo) {
+      const rotulo = comRotulo[1].trim()
+      const resto = stripInlineMarkdown(bruto.slice(comRotulo[0].length))
+      if (rotulo === ROTULO_RECURSOS) {
+        recursosBuffer = []
+        return
+      }
+      y = drawParagrafoComRotulo(doc, y, rotulo, resto)
+      return
+    }
+
+    const text = stripInlineMarkdown(bruto)
     if (!text) return
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(...COLORS.bodyText)
     const wrapped = doc.splitTextToSize(text, CONTENT_W)
-    y = ensureSpace(doc, y, wrapped.length * 13)
+    y = ensureSpace(doc, y, wrapped.length * LINE_H)
     doc.text(wrapped, MARGIN, y + 9)
-    y += wrapped.length * 13 + 6
+    y += wrapped.length * LINE_H + 6
   }
 
   for (const rawLine of lines) {
@@ -144,18 +241,25 @@ function drawProseBody(doc, y, rawText) {
     if (/^[-*]\s+/.test(line)) {
       flushParagraph()
       const bulletText = stripInlineMarkdown(line.replace(/^[-*]\s+/, ''))
+      if (recursosBuffer !== null) {
+        recursosBuffer.push(bulletText)
+        continue
+      }
       const wrapped = doc.splitTextToSize(bulletText, CONTENT_W - 14)
-      y = ensureSpace(doc, y, wrapped.length * 13)
+      y = ensureSpace(doc, y, wrapped.length * LINE_H)
       doc.setFont('helvetica', 'normal')
       doc.setTextColor(...COLORS.bodyText)
       doc.text('•', MARGIN, y + 9)
       doc.text(wrapped, MARGIN + 12, y + 9)
-      y += wrapped.length * 13 + 4
+      y += wrapped.length * LINE_H + 4
       continue
     }
     paragraphBuffer.push(line)
   }
   flushParagraph()
+  if (recursosBuffer && recursosBuffer.length > 0) {
+    y = drawQuadroRecursos(doc, y, recursosBuffer)
+  }
   return y + 4
 }
 
