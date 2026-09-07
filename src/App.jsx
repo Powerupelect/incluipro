@@ -8,7 +8,6 @@ import { AppLayout } from './components/layout/AppLayout.jsx'
 
 import { Home } from './pages/Home.jsx'
 import { Diagnostico } from './pages/Diagnostico.jsx'
-import { Demonstracao } from './pages/Demonstracao.jsx'
 import { Produtos } from './pages/Produtos.jsx'
 import { Assinatura } from './pages/Assinatura.jsx'
 import { Login } from './pages/Login.jsx'
@@ -44,7 +43,6 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/diagnostico" element={<Diagnostico />} />
-            <Route path="/demonstracao" element={<Demonstracao />} />
             <Route path="/produtos" element={<Produtos />} />
             <Route path="/assinatura" element={<Assinatura />} />
             <Route path="/login" element={<Login />} />

@@ -1,58 +1,101 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/Button.jsx'
 
-// Capturas reais — da conta de demonstração e do site público. Ver /demonstracao pra
-// uma versão mais completa, com galeria por produto (Demonstracao.jsx).
+// Capturas reais — da conta de demonstração e do site público.
 const TELAS = [
   {
     numero: '01',
     titulo: 'A conta que ninguém mostra',
     texto:
-      'Total de empregados, exclusões legais e percentual aplicado — a base de cálculo aberta, do jeito que a fiscalização verifica. Errar o denominador é uma das maiores causas de autuação.',
-    imagem: '/demo/painel-app.png',
-    largura: 1624,
-    altura: 756,
-    alt: 'Painel do IncluiPro mostrando o cálculo aberto da cota de PCD, com total de empregados, exclusões legais e percentual aplicado.',
+      'Total de empregados, exclusões legais e percentual aplicado — a base de cálculo aberta, do jeito que a fiscalização verifica. Errar o denominador é uma das maiores causas de autuação. A mesma lógica de consistência vale para os documentos que sustentam cada enquadramento.',
+    imagens: [
+      {
+        src: '/demo/painel-app.png',
+        largura: 1624,
+        altura: 756,
+        alt: 'Painel do IncluiPro mostrando o cálculo aberto da cota de PCD, com total de empregados, exclusões legais e percentual aplicado.',
+      },
+      {
+        src: '/demo/documentos-app.png',
+        largura: 1440,
+        altura: 900,
+        alt: 'Tela de Documentos do IncluiPro, com a checagem de consistência documental por colaborador.',
+      },
+    ],
   },
   {
     numero: '02',
     titulo: 'Relatório técnico sem partir do zero',
     texto:
       'Estrutura padronizada e orientação durante o preenchimento. A informação é registrada uma vez e reaproveitada nos documentos seguintes.',
-    imagem: '/demo/relatorio-amostra.png',
-    largura: 896,
-    altura: 1213,
-    alt: 'Modelo de Relatório Técnico de Inclusão gerado pelo IncluiPro Avalia, com dados fictícios.',
+    imagens: [
+      {
+        src: '/demo/avaliacoes-app.png',
+        largura: 1624,
+        altura: 760,
+        alt: 'Tela de avaliações do IncluiPro, dentro da plataforma.',
+      },
+      {
+        src: '/demo/relatorio-amostra.png',
+        largura: 896,
+        altura: 1213,
+        alt: 'Modelo de Relatório Técnico de Inclusão gerado pelo IncluiPro Avalia, com dados fictícios.',
+      },
+    ],
   },
   {
     numero: '03',
     titulo: 'A liderança preparada antes da chegada',
     texto:
       'Kits em slides por tema e por tipo de deficiência, prontos para aplicar. Cada sessão realizada fica registrada com data e participantes.',
-    imagem: '/demo/treinamentos-app.png',
-    largura: 1624,
-    altura: 761,
-    alt: 'Tela de treinamentos do IncluiPro listando kits em slides organizados por tema e por tipo de deficiência.',
+    imagens: [
+      {
+        src: '/demo/treinamentos-app.png',
+        largura: 1440,
+        altura: 1400,
+        alt: 'Tela de treinamentos do IncluiPro listando kits em slides organizados por tema e por tipo de deficiência.',
+      },
+    ],
   },
   {
     numero: '04',
     titulo: 'O único canal feito para quem é incluído',
     texto:
-      'Um link próprio da empresa para solicitar recursos e adaptações, com protocolo de acompanhamento. Nenhuma outra solução do mercado oferece esse lado.',
-    imagem: '/demo/canal-app.png',
-    largura: 1624,
-    altura: 760,
-    alt: 'Painel de Solicitações do IncluiPro com o link do Canal do Colaborador e pedidos recebidos.',
+      'Um link próprio da empresa para solicitar recursos e adaptações, sem precisar de login, com protocolo de acompanhamento. Nenhuma outra solução do mercado oferece esse lado.',
+    imagens: [
+      {
+        src: '/demo/canal-app.png',
+        largura: 1624,
+        altura: 760,
+        alt: 'Painel de Solicitações do IncluiPro com o link do Canal do Colaborador e pedidos recebidos.',
+      },
+      {
+        src: '/demo/canal-formulario.png',
+        largura: 878,
+        altura: 1204,
+        alt: 'Formulário público do Canal do Colaborador, sem necessidade de login.',
+      },
+      {
+        src: '/demo/canal-confirmacao.png',
+        largura: 796,
+        altura: 398,
+        alt: 'Tela de confirmação do Canal do Colaborador com o protocolo gerado.',
+      },
+    ],
   },
   {
     numero: '05',
     titulo: 'Documentação pronta antes de precisar',
     texto:
       'Tudo que a empresa fez, consolidado em um documento único com protocolo e verificação de integridade.',
-    imagem: '/demo/dossie-real.png',
-    largura: 1191,
-    altura: 1314,
-    alt: 'Página do Dossiê Técnico do IncluiPro, documento consolidado com protocolo de verificação.',
+    imagens: [
+      {
+        src: '/demo/dossie-real.png',
+        largura: 1191,
+        altura: 1314,
+        alt: 'Página do Dossiê Técnico do IncluiPro, documento consolidado com protocolo de verificação.',
+      },
+    ],
   },
 ]
 
@@ -80,27 +123,129 @@ function useEntradaUnica(ref) {
   }, [ref])
 }
 
+function SetaImagem({ direcao, onClick, label }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-lg text-white backdrop-blur hover:bg-indigo-900 ${
+        direcao === 'anterior' ? 'left-3' : 'right-3'
+      }`}
+    >
+      {direcao === 'anterior' ? '‹' : '›'}
+    </button>
+  )
+}
+
 function ImagemDemo({ tela, containerRef }) {
-  const imgRef = useRef(null)
-  useEntradaUnica(imgRef)
+  const wrapperRef = useRef(null)
+  useEntradaUnica(wrapperRef)
+  const [indice, setIndice] = useState(0)
+  const [ampliada, setAmpliada] = useState(false)
+  const imagem = tela.imagens[indice]
+  const temVarias = tela.imagens.length > 1
+
+  useEffect(() => {
+    if (!ampliada) return
+    function onKey(e) {
+      if (e.key === 'Escape') setAmpliada(false)
+      if (e.key === 'ArrowRight' && temVarias) setIndice((i) => (i + 1) % tela.imagens.length)
+      if (e.key === 'ArrowLeft' && temVarias) setIndice((i) => (i - 1 + tela.imagens.length) % tela.imagens.length)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [ampliada, temVarias, tela.imagens.length])
 
   return (
     <div ref={containerRef}>
       <div className="mb-4 lg:hidden">
         <span className="font-display text-3xl font-semibold text-white/20">{tela.numero}</span>
-        <h3 className="mt-1 font-display text-xl font-medium text-white">{tela.titulo}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-indigo-200">{tela.texto}</p>
+        <h3 className="mt-1 font-display text-2xl font-medium text-white">{tela.titulo}</h3>
+        <p className="mt-2 text-base leading-relaxed text-indigo-200">{tela.texto}</p>
       </div>
-      <img
-        ref={imgRef}
-        src={tela.imagem}
-        alt={tela.alt}
-        width={tela.largura}
-        height={tela.altura}
-        loading="lazy"
-        decoding="async"
-        className="demo-item w-full rounded-lg border border-white/10"
-      />
+
+      <div ref={wrapperRef} className="demo-item relative">
+        <button
+          type="button"
+          onClick={() => setAmpliada(true)}
+          className="group block w-full cursor-zoom-in"
+          aria-label={`Ampliar imagem: ${imagem.alt}`}
+        >
+          <img
+            src={imagem.src}
+            alt={imagem.alt}
+            width={imagem.largura}
+            height={imagem.altura}
+            loading="lazy"
+            decoding="async"
+            className="w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90"
+          />
+          <span className="pointer-events-none absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M8.5 3a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM17 17l-3.5-3.5" strokeLinecap="round" />
+            </svg>
+          </span>
+        </button>
+
+        {temVarias && (
+          <>
+            <SetaImagem
+              direcao="anterior"
+              label="Imagem anterior"
+              onClick={() => setIndice((i) => (i - 1 + tela.imagens.length) % tela.imagens.length)}
+            />
+            <SetaImagem
+              direcao="proxima"
+              label="Próxima imagem"
+              onClick={() => setIndice((i) => (i + 1) % tela.imagens.length)}
+            />
+            <div className="mt-3 flex justify-center gap-1.5">
+              {tela.imagens.map((img, i) => (
+                <button
+                  key={img.src}
+                  onClick={() => setIndice(i)}
+                  aria-label={`Ver imagem ${i + 1} de ${tela.imagens.length}`}
+                  aria-current={i === indice}
+                  className={`h-1.5 rounded-full transition-all ${i === indice ? 'w-6 bg-signal-400' : 'w-1.5 bg-white/25'}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {ampliada && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-950/90 p-4 backdrop-blur-sm"
+          onClick={() => setAmpliada(false)}
+        >
+          <div className="relative max-h-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
+            <img src={imagem.src} alt={imagem.alt} className="max-h-[90svh] w-auto rounded-lg" />
+            <button
+              onClick={() => setAmpliada(false)}
+              aria-label="Fechar"
+              className="absolute -right-3 -top-3 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-indigo-900 text-white shadow-pop hover:bg-indigo-800"
+            >
+              ✕
+            </button>
+            {temVarias && (
+              <>
+                <SetaImagem
+                  direcao="anterior"
+                  label="Imagem anterior"
+                  onClick={() => setIndice((i) => (i - 1 + tela.imagens.length) % tela.imagens.length)}
+                />
+                <SetaImagem
+                  direcao="proxima"
+                  label="Próxima imagem"
+                  onClick={() => setIndice((i) => (i + 1) % tela.imagens.length)}
+                />
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -134,10 +279,13 @@ export function DemoSection() {
     <section className="bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
-          <h2 className="font-display text-4xl font-medium text-white sm:text-5xl">
+          <span className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-300">
+            Demonstração
+          </span>
+          <h2 className="mt-5 font-display text-4xl font-medium text-white sm:text-5xl">
             Veja a plataforma por dentro
           </h2>
-          <p className="mt-4 text-lg text-indigo-200">
+          <p className="mt-4 text-xl text-indigo-200">
             Três produtos, um único lugar. Sem instalação, sem planilha paralela.
           </p>
         </div>
@@ -150,9 +298,12 @@ export function DemoSection() {
                 praticamente não tem "janela" de rolagem pra grudar). */}
             <div className="demo-texto">
               <div key={telaAtiva.numero} className="demo-legenda">
-                <span className="font-display text-5xl font-semibold text-white/20">{telaAtiva.numero}</span>
-                <h3 className="mt-4 font-display text-2xl font-medium text-white">{telaAtiva.titulo}</h3>
-                <p className="mt-3 text-base leading-relaxed text-indigo-200">{telaAtiva.texto}</p>
+                <span className="font-display text-7xl font-semibold text-white/15">{telaAtiva.numero}</span>
+                <h3 className="mt-5 font-display text-3xl font-medium leading-tight text-white">
+                  {telaAtiva.titulo}
+                </h3>
+                <span className="mt-4 block h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
+                <p className="mt-5 text-lg leading-relaxed text-indigo-200">{telaAtiva.texto}</p>
               </div>
             </div>
           </div>
