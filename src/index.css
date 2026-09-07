@@ -394,3 +394,53 @@
     animation: none !important;
   }
 }
+
+/* Seção de demonstração (Home.jsx) — coluna de texto fixa, imagens rolando.
+   .demo-texto é o filho de altura natural (curta) dentro de um wrapper esticado pelo grid
+   até a altura da coluna de imagens — sticky precisa da altura natural aqui, senão a
+   "janela" de rolagem em que ele consegue ficar grudado praticamente desaparece. */
+@media (min-width: 1024px) {
+  .demo-texto {
+    position: sticky;
+    top: 7rem;
+  }
+}
+
+.demo-item {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.demo-item--visivel {
+  animation: demo-entrada 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes demo-entrada {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-legenda {
+  animation: demo-legenda-fade 250ms ease;
+}
+
+@keyframes demo-legenda-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-item {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+  .demo-texto {
+    position: static;
+  }
+  .demo-legenda {
+    animation: none;
+  }
+}

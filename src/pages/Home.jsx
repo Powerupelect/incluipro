@@ -6,6 +6,7 @@ import { ReportSampleModal } from '../components/ReportSampleModal.jsx'
 import { FaqAccordion } from '../components/FaqAccordion.jsx'
 import { CalculadoraCota } from '../components/CalculadoraCota.jsx'
 import { MomentoDossie } from '../components/MomentoDossie.jsx'
+import { DemoSection } from '../components/DemoSection.jsx'
 
 const LINK_KIT_PERSONALIZADO =
   'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
@@ -357,6 +358,8 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      <DemoSection />
 
       {/* Planos e valores — claro */}
       <section id="planos" className="relative overflow-hidden bg-white px-5 py-24 sm:px-8 sm:py-28">
