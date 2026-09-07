@@ -279,7 +279,7 @@ const COR_TEXTO_SUBTITULO = {
 
 function CartaoKpi({ titulo, valor, subtitulo, corSubtitulo = 'neutro', variacao }) {
   return (
-    <div className="rounded-lg border border-mist-300 bg-white p-5">
+    <div className="rounded-lg border border-mist-400 bg-white p-5">
       <p className="text-xs font-medium text-graphite-400">{titulo}</p>
       <div className="mt-1.5 flex items-baseline gap-2">
         <p className="font-display text-3xl font-semibold text-indigo-900">{valor}</p>

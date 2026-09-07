@@ -23,7 +23,7 @@ export function Login() {
     setEntrando(true)
     try {
       await login(form)
-      const from = location.state?.from?.pathname || '/app/avalia'
+      const from = location.state?.from?.pathname || '/app'
       navigate(from, { replace: true })
     } catch (err) {
       setError(err.message)

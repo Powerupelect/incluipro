@@ -25,7 +25,7 @@ export function Cadastro() {
       if (resultado?.requiresEmailConfirmation) {
         setConfirmarEmail(true)
       } else {
-        navigate('/app/avalia', { replace: true })
+        navigate('/app', { replace: true })
       }
     } catch (err) {
       setError(err.message)
