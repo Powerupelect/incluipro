@@ -74,12 +74,14 @@ const TELAS = [
         largura: 878,
         altura: 1204,
         alt: 'Formulário público do Canal do Colaborador, sem necessidade de login.',
+        enquadrar: true,
       },
       {
         src: '/demo/canal-confirmacao.png',
         largura: 796,
         altura: 398,
         alt: 'Tela de confirmação do Canal do Colaborador com o protocolo gerado.',
+        enquadrar: true,
       },
     ],
   },
@@ -169,7 +171,7 @@ function ImagemDemo({ tela, containerRef }) {
         <button
           type="button"
           onClick={() => setAmpliada(true)}
-          className="group block w-full cursor-zoom-in"
+          className={`group block w-full cursor-zoom-in ${imagem.enquadrar ? 'rounded-lg border border-white/10 bg-white p-10 sm:p-14' : ''}`}
           aria-label={`Ampliar imagem: ${imagem.alt}`}
         >
           <img
@@ -179,7 +181,11 @@ function ImagemDemo({ tela, containerRef }) {
             height={imagem.altura}
             loading="lazy"
             decoding="async"
-            className="w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90"
+            className={
+              imagem.enquadrar
+                ? 'mx-auto max-w-[380px] transition-opacity group-hover:opacity-90'
+                : 'w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90'
+            }
           />
           <span className="pointer-events-none absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
             <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
