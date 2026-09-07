@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
-  <rect width="1280" height="800" fill="#f3f5f8"/>
-  <rect x="0" y="0" width="1280" height="56" fill="#e7eaf1"/>
-  <circle cx="28" cy="28" r="7" fill="#dbe0e9"/>
-  <circle cx="52" cy="28" r="7" fill="#dbe0e9"/>
-  <circle cx="76" cy="28" r="7" fill="#dbe0e9"/>
-  <text x="640.0" y="380.0" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="#0f1526" text-anchor="middle">Dossiê Técnico</text>
-  <text x="640.0" y="430.0" font-family="Arial, sans-serif" font-size="22" fill="#565d6d" text-anchor="middle">placeholder — documento consolidado</text>
-</svg>

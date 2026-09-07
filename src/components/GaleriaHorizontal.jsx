@@ -45,7 +45,7 @@ export function GaleriaHorizontal({ itens }) {
     const item = itens[0]
     return (
       <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
-        <img src={item.src} alt={item.alt} width={1280} height={800} className="w-full" />
+        <img src={item.src} alt={item.alt} width={item.largura || 1280} height={item.altura || 800} className="w-full" />
         {item.legenda && (
           <p className="border-t border-white/10 px-5 py-3 text-sm text-indigo-200">{item.legenda}</p>
         )}
@@ -69,7 +69,7 @@ export function GaleriaHorizontal({ itens }) {
               <img
                 src={item.src}
                 alt={item.alt}
-                className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
               />
             </div>
             {item.legenda && (

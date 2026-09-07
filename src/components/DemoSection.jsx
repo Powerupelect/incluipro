@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/Button.jsx'
 
-// Capturas reais da conta de demonstração — ver public/demo/README.txt para o que cada
-// arquivo deve mostrar quando substituído (por enquanto são placeholders .svg).
+// Capturas reais — da conta de demonstração e do site público. Ver /demonstracao pra
+// uma versão mais completa, com galeria por produto (Demonstracao.jsx).
 const TELAS = [
   {
     numero: '01',
     titulo: 'A conta que ninguém mostra',
     texto:
       'Total de empregados, exclusões legais e percentual aplicado — a base de cálculo aberta, do jeito que a fiscalização verifica. Errar o denominador é uma das maiores causas de autuação.',
-    imagem: '/demo/painel.svg',
+    imagem: '/demo/painel-app.png',
+    largura: 1624,
+    altura: 756,
     alt: 'Painel do IncluiPro mostrando o cálculo aberto da cota de PCD, com total de empregados, exclusões legais e percentual aplicado.',
   },
   {
@@ -17,15 +19,19 @@ const TELAS = [
     titulo: 'Relatório técnico sem partir do zero',
     texto:
       'Estrutura padronizada e orientação durante o preenchimento. A informação é registrada uma vez e reaproveitada nos documentos seguintes.',
-    imagem: '/demo/avaliacoes.svg',
-    alt: 'Tela de avaliação do IncluiPro com o relatório técnico de inclusão de um colaborador preenchido.',
+    imagem: '/demo/relatorio-amostra.png',
+    largura: 896,
+    altura: 1213,
+    alt: 'Modelo de Relatório Técnico de Inclusão gerado pelo IncluiPro Avalia, com dados fictícios.',
   },
   {
     numero: '03',
     titulo: 'A liderança preparada antes da chegada',
     texto:
       'Kits em slides por tema e por tipo de deficiência, prontos para aplicar. Cada sessão realizada fica registrada com data e participantes.',
-    imagem: '/demo/treinamentos.svg',
+    imagem: '/demo/treinamentos-app.png',
+    largura: 1624,
+    altura: 761,
     alt: 'Tela de treinamentos do IncluiPro listando kits em slides organizados por tema e por tipo de deficiência.',
   },
   {
@@ -33,7 +39,9 @@ const TELAS = [
     titulo: 'O único canal feito para quem é incluído',
     texto:
       'Um link próprio da empresa para solicitar recursos e adaptações, com protocolo de acompanhamento. Nenhuma outra solução do mercado oferece esse lado.',
-    imagem: '/demo/canal.svg',
+    imagem: '/demo/canal-app.png',
+    largura: 1624,
+    altura: 760,
     alt: 'Painel de Solicitações do IncluiPro com o link do Canal do Colaborador e pedidos recebidos.',
   },
   {
@@ -41,7 +49,9 @@ const TELAS = [
     titulo: 'Documentação pronta antes de precisar',
     texto:
       'Tudo que a empresa fez, consolidado em um documento único com protocolo e verificação de integridade.',
-    imagem: '/demo/dossie.svg',
+    imagem: '/demo/dossie-real.png',
+    largura: 1191,
+    altura: 1314,
     alt: 'Página do Dossiê Técnico do IncluiPro, documento consolidado com protocolo de verificação.',
   },
 ]
@@ -85,8 +95,8 @@ function ImagemDemo({ tela, containerRef }) {
         ref={imgRef}
         src={tela.imagem}
         alt={tela.alt}
-        width={1280}
-        height={800}
+        width={tela.largura}
+        height={tela.altura}
         loading="lazy"
         decoding="async"
         className="demo-item w-full rounded-lg border border-white/10"
