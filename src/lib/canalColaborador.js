@@ -88,27 +88,24 @@ export async function gerarESalvarIdentificadorPublico(empresaId, nomeEmpresa) {
 }
 
 /** Resolve a empresa a partir do slug da URL pública — só os dados necessários para
- * identificar a empresa no topo do formulário (nunca colaboradores, dados internos etc). */
+ * identificar a empresa no topo do formulário (nunca colaboradores, dados internos etc).
+ * Usa uma função RPC (não uma view) de propósito: uma função exige o slug exato e nunca
+ * pode ser "listada" sem argumento — ver schema_etapa15.sql. */
 export async function getEmpresaPorSlug(slug) {
   if (!slug) return null
-  const { data, error } = await supabase
-    .from('empresas_publico')
-    .select('id, nome, identificador_publico')
-    .eq('identificador_publico', slug)
-    .maybeSingle()
+  const { data, error } = await supabase.rpc('empresa_por_slug', { p_slug: slug })
   if (error) throw error
-  return data
+  return data?.[0] || null
 }
 
-/** Consulta pública de andamento por protocolo — só status e data, nunca conteúdo. */
+/** Consulta pública de andamento por protocolo — só status e data, nunca conteúdo.
+ * Também via RPC — ver nota acima e schema_etapa15.sql. */
 export async function consultarProtocolo(protocolo) {
-  const { data, error } = await supabase
-    .from('solicitacoes_canal_status')
-    .select('protocolo, status, atualizada_em')
-    .eq('protocolo', protocolo.trim().toUpperCase())
-    .maybeSingle()
+  const { data, error } = await supabase.rpc('status_por_protocolo', {
+    p_protocolo: protocolo.trim().toUpperCase(),
+  })
   if (error) throw error
-  return data
+  return data?.[0] || null
 }
 
 /** Pedidos recebidos pelo canal, para o painel do RH. */

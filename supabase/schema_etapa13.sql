@@ -6,6 +6,13 @@
 -- Ponto mais sensível: a tela pública GRAVA mas não LÊ nada além do status pelo
 -- protocolo — nunca lista, nome ou descrição. Por isso o acesso público passa por
 -- VIEWs estreitas (só as colunas necessárias), nunca pela tabela inteira.
+--
+-- CORREÇÃO POSTERIOR (ver schema_etapa15.sql): as duas views abaixo, do jeito que
+-- estão aqui, rodam com o privilégio de quem criou a view — não do usuário anon —
+-- e por isso o "grant select" acaba deixando LISTAR todas as linhas (todas as
+-- empresas, todos os protocolos), não só a que a consulta pública pede. A etapa 15
+-- revoga o acesso a essas views e troca por funções RPC (empresa_por_slug,
+-- status_por_protocolo), que só devolvem uma linha por vez. Rode a etapa 15.
 
 -- ============================================================
 -- Identificador público da empresa (slug do link) — não sequencial, imutável

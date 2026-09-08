@@ -80,12 +80,9 @@ export default async (req) => {
   try {
     const supabase = clienteSupabase()
 
-    const { data: empresa, error: erroEmpresa } = await supabase
-      .from('empresas_publico')
-      .select('id')
-      .eq('identificador_publico', slug)
-      .maybeSingle()
+    const { data: empresas, error: erroEmpresa } = await supabase.rpc('empresa_por_slug', { p_slug: slug })
     if (erroEmpresa) throw erroEmpresa
+    const empresa = empresas?.[0]
     if (!empresa) {
       return Response.json({ enviado: false, motivo: 'Link inválido — confira com o RH da sua empresa.' }, { status: 404 })
     }
