@@ -1,6 +1,14 @@
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button.jsx'
 
+const ACCENT_PILL = {
+  signal: 'bg-signal-50 text-signal-700',
+  volt: 'bg-volt-50 text-volt-700',
+  amber: 'bg-amber-50 text-amber-700',
+  indigo: 'bg-indigo-50 text-indigo-700',
+  graphite: 'bg-graphite-50 text-graphite-700',
+}
+
 const produtos = [
   {
     nome: 'IncluiPro Avalia',
@@ -30,6 +38,32 @@ const produtos = [
     ],
   },
   {
+    nome: 'Canal do Colaborador',
+    tag: 'Link próprio da empresa',
+    accent: 'indigo',
+    descricao:
+      'Um link próprio da empresa para o colaborador solicitar recursos e adaptações diretamente, sem precisar de login, com protocolo de acompanhamento — nenhuma outra solução do mercado oferece esse lado.',
+    recursos: [
+      'Colaborador registra o pedido sem login, direto pelo link da empresa.',
+      'Protocolo de acompanhamento gerado na hora — sem depender de e-mail espalhado.',
+      'Pedidos aparecem organizados no painel do RH, com status atualizado.',
+      'Reduz solicitações informais perdidas em conversa de corredor ou WhatsApp.',
+    ],
+  },
+  {
+    nome: 'IncluiPro Documentos',
+    tag: 'Dossiê técnico consolidado',
+    accent: 'graphite',
+    descricao:
+      'Toda a documentação organizada por colaborador, consolidada em um único dossiê com protocolo e verificação de integridade — pronto para apresentar à fiscalização a qualquer momento.',
+    recursos: [
+      'Reúne relatórios, laudos e comprovantes por colaborador em um só lugar.',
+      'Gerado a qualquer momento, com o que já foi registrado na plataforma.',
+      'Protocolo e hash de integridade — evidência de que o documento não foi alterado.',
+      'Elimina a corrida por documentação espalhada quando a fiscalização chega.',
+    ],
+  },
+  {
     nome: 'Kit Personalizado',
     tag: 'Sob consulta',
     accent: 'amber',
@@ -50,11 +84,13 @@ export function Produtos() {
       <section className="mx-auto max-w-4xl px-5 py-16 text-center sm:px-8">
         <p className="text-base font-semibold uppercase tracking-wide text-signal-600">Produtos</p>
         <h1 className="mt-2 font-display text-4xl font-semibold text-indigo-800 sm:text-5xl">
-          Uma plataforma, três formas de estruturar a inclusão
+          Uma plataforma, cinco formas de estruturar a inclusão
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-graphite-500">
           IncluiPro Avalia estrutura a avaliação de candidatos. IncluiPro Lidera prepara quem vai
-          gerir o dia a dia. E quando isso não é suficiente, o Kit Personalizado cobre o restante.
+          gerir o dia a dia. O Canal do Colaborador dá voz a quem já está na empresa. O IncluiPro
+          Documentos consolida tudo em um dossiê único. E quando isso não é suficiente, o Kit
+          Personalizado cobre o restante.
         </p>
       </section>
 
@@ -66,13 +102,7 @@ export function Produtos() {
           >
             <div>
               <span
-                className={`inline-block rounded-full px-4 py-1.5 text-sm font-semibold ${
-                  p.accent === 'signal'
-                    ? 'bg-signal-50 text-signal-700'
-                    : p.accent === 'volt'
-                      ? 'bg-volt-50 text-volt-700'
-                      : 'bg-amber-50 text-amber-700'
-                }`}
+                className={`inline-block rounded-full px-4 py-1.5 text-sm font-semibold ${ACCENT_PILL[p.accent]}`}
               >
                 {p.tag}
               </span>
@@ -114,14 +144,14 @@ export function Produtos() {
               Plano Principal
             </span>
             <p className="mt-4 font-display text-xl font-semibold text-white">Um plano, todos os módulos</p>
-            <p className="mt-2 font-display text-2xl font-semibold text-white">
-              R$ 697<span className="ml-1 text-base font-medium text-indigo-300">/ mês</span>
+            <p className="mt-3 font-display text-lg font-medium text-indigo-300 line-through decoration-2">
+              R$ 697<span className="ml-1 font-normal">/ mês</span>
             </p>
-            <p className="mt-1 text-base font-semibold text-signal-300">
-              Condição de fundador: R$ 522<span className="ml-1 font-medium text-indigo-300">/ mês</span>
+            <p className="mt-1 font-display text-4xl font-semibold text-signal-300">
+              R$ 522<span className="ml-1 text-base font-medium text-indigo-300">/ mês</span>
             </p>
-            <p className="mt-1 text-sm text-indigo-300">
-              Mantida nas renovações enquanto o contrato permanecer ativo.
+            <p className="mt-2 text-sm text-indigo-300">
+              Condição de fundador — mantida nas renovações enquanto o contrato permanecer ativo.
             </p>
 
             <ul className="mt-6 space-y-3 border-t border-white/10 pt-6">

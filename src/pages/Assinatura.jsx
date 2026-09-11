@@ -48,7 +48,7 @@ export function Assinatura() {
         <h1 className="mt-2 font-display text-3xl font-semibold text-indigo-800 sm:text-4xl">
           Um plano único, com tudo incluso
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-graphite-500">
+        <p className="mx-auto mt-4 max-w-2xl text-base text-graphite-500 sm:text-lg">
           Produto único, sem travamento de recurso por plano. Preço fixo, sem variação por porte
           da empresa.
         </p>
@@ -66,26 +66,26 @@ export function Assinatura() {
           <span className="relative mb-4 inline-block w-fit rounded-full bg-volt-50 px-3 py-1 text-xs font-semibold text-volt-700">
             Plano Principal
           </span>
-          <h2 className="relative font-display text-2xl font-semibold text-indigo-800">
+          <h2 className="relative font-display text-2xl font-semibold text-indigo-800 sm:text-3xl">
             Um plano, todos os módulos
           </h2>
 
           <div className="relative mt-5">
-            <p className="font-display text-4xl font-semibold text-indigo-900">
-              R$ 697<span className="ml-1 text-lg font-medium text-graphite-400">/ mês</span>
+            <p className="font-display text-xl font-medium text-graphite-400 line-through decoration-2">
+              R$ 697<span className="ml-1 font-normal">/ mês</span>
             </p>
-            <p className="mt-2 text-base font-semibold text-signal-700">
-              Condição de fundador: R$ 522<span className="ml-1 font-medium text-graphite-500">/ mês</span>
+            <p className="mt-1 font-display text-5xl font-semibold text-signal-700">
+              R$ 522<span className="ml-1 text-xl font-medium text-graphite-500">/ mês</span>
             </p>
-            <p className="mt-1 text-xs text-graphite-500">
-              Mantida nas renovações enquanto o contrato permanecer ativo.
+            <p className="mt-2 text-sm font-medium text-graphite-600">
+              Condição de fundador — mantida nas renovações enquanto o contrato permanecer ativo.
             </p>
           </div>
 
           <ul className="relative mt-7 space-y-3 border-t border-mist-300 pt-7">
             {ITENS_INCLUSOS.map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
-                <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
+              <li key={item} className="flex items-start gap-2.5 text-base text-graphite-700">
+                <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 shrink-0 text-signal-600" fill="currentColor">
                   <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
                 </svg>
                 {item}
@@ -93,7 +93,7 @@ export function Assinatura() {
             ))}
           </ul>
 
-          <p className="relative mt-6 text-xs font-medium text-graphite-400">
+          <p className="relative mt-6 text-sm font-medium text-graphite-500">
             Menos que o piso da multa de uma única vaga não preenchida.
           </p>
 
@@ -108,10 +108,16 @@ export function Assinatura() {
           </Button>
           <a
             href={LINK_NOTA_FISCAL}
-            className="relative mt-3 text-center text-xs font-medium text-graphite-400 underline decoration-graphite-300 underline-offset-2 hover:text-graphite-600"
+            className="relative mt-3 text-center text-sm font-medium text-graphite-500 underline decoration-graphite-300 underline-offset-2 hover:text-graphite-700"
           >
             Preciso de nota fiscal e contrato
           </a>
+          <p className="relative mt-1 text-center text-xs text-graphite-400">
+            Entre em contato com nosso e-mail:{' '}
+            <a href="mailto:contato@incluipro.com" className="font-medium text-graphite-500 hover:text-graphite-700">
+              contato@incluipro.com
+            </a>
+          </p>
         </div>
       </section>
 

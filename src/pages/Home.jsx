@@ -94,34 +94,9 @@ const faqItems = [
       'Acesso completo ao IncluiPro Avalia e ao IncluiPro Lidera, atualizações constantes da plataforma, novos treinamentos, atualizações legais e melhorias contínuas, além de suporte por e-mail para a equipe de RH. Preço fixo de R$ 697/mês, com condição de fundador de R$ 522/mês mantida nas renovações enquanto o contrato permanecer ativo.',
   },
   {
-    pergunta: 'Para quais empresas a IncluiPro é indicada?',
-    resposta:
-      'Para times de RH, Diversidade e Compliance que precisam estruturar processos de inclusão de pessoas com deficiência de forma organizada — desde a avaliação de candidatos até a capacitação de lideranças.',
-  },
-  {
-    pergunta: 'Como funciona o diagnóstico?',
-    resposta:
-      'O Diagnóstico de Maturidade em Inclusão é um questionário gratuito que avalia indicadores-chave do processo atual da empresa e devolve, na hora, o nível de maturidade (Inicial, Em desenvolvimento ou Avançado) com recomendações práticas.',
-  },
-  {
-    pergunta: 'Como funciona o IncluiPro Avalia?',
-    resposta:
-      'Você preenche as anotações da entrevista em um formulário organizado por blocos, com uma Consulta Rápida de recursos sugeridos por tipo de deficiência. O sistema monta o Relatório Técnico de Inclusão automaticamente, que pode ser editado livremente antes de exportar em PDF.',
-  },
-  {
     pergunta: 'Como funcionam os treinamentos?',
     resposta:
       'O IncluiPro Lidera oferece uma biblioteca de kits de treinamento em slides, organizados por tema (fundamentos, comunicação e postura, gestão do dia a dia, casos práticos), prontos para baixar e usar em reuniões e capacitações internas.',
-  },
-  {
-    pergunta: 'Posso solicitar materiais personalizados?',
-    resposta:
-      'Sim. Quando os kits padrão não cobrem um cenário específico da sua empresa, você pode solicitar um Kit Personalizado, desenvolvido sob consulta e orçamento conforme o escopo necessário.',
-  },
-  {
-    pergunta: 'Como funcionam as atualizações?',
-    resposta:
-      'A plataforma recebe atualizações constantes: novos treinamentos, melhorias de funcionalidades e atualizações legais e normativas, quando aplicável — tudo incluído na assinatura, sem custo adicional.',
   },
   {
     pergunta: 'Como posso contratar?',
@@ -452,14 +427,15 @@ export function Home() {
                   ))}
                 </ul>
                 <div className="mt-8 border-t border-mist-300 pt-6">
-                  <p className="font-display text-2xl font-semibold text-indigo-900">
-                    R$ 697<span className="ml-1 text-base font-medium text-graphite-400">/ mês</span>
+                  <p className="font-display text-lg font-medium text-graphite-400 line-through decoration-2">
+                    R$ 697<span className="ml-1 font-normal">/ mês</span>
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-signal-700">
-                    Condição de fundador: R$ 522<span className="ml-1 font-medium text-graphite-500">/ mês</span>
+                  <p className="mt-1 font-display text-4xl font-semibold text-signal-700">
+                    R$ 522<span className="ml-1 text-base font-medium text-graphite-500">/ mês</span>
                   </p>
-                  <p className="mt-1 text-xs text-graphite-500">
-                    Produto único, todos os módulos incluídos. Sem variação por porte da empresa.
+                  <p className="mt-2 text-sm text-graphite-500">
+                    Condição de fundador. Produto único, todos os módulos incluídos, sem variação
+                    por porte da empresa.
                   </p>
                   <Button to="/assinatura" className="mt-5 w-full justify-center">
                     Ver plano e assinar

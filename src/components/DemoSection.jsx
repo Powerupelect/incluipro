@@ -28,6 +28,8 @@ const TELAS = [
     titulo: 'Relatório técnico sem partir do zero',
     texto:
       'Estrutura padronizada e orientação durante o preenchimento. A informação é registrada uma vez e reaproveitada nos documentos seguintes.',
+    destaque:
+      'Pode ser encaminhado direto para as lideranças responsáveis pelo colaborador — assim, todos os envolvidos já sabem como apoiar a inclusão desde o início.',
     imagens: [
       {
         src: '/demo/avaliacoes-app.png',
@@ -61,7 +63,8 @@ const TELAS = [
     numero: '04',
     titulo: 'O único canal feito para quem é incluído',
     texto:
-      'Um link próprio da empresa para solicitar recursos e adaptações, sem precisar de login, com protocolo de acompanhamento. Nenhuma outra solução do mercado oferece esse lado.',
+      'Um link próprio da empresa para solicitar recursos e adaptações, sem precisar de login, com protocolo de acompanhamento.',
+    destaque: 'Nenhuma outra solução do mercado oferece esse lado.',
     imagens: [
       {
         src: '/demo/canal-app.png',
@@ -165,6 +168,9 @@ function ImagemDemo({ tela, containerRef }) {
         <span className="font-display text-3xl font-semibold text-white/20">{tela.numero}</span>
         <h3 className="mt-1 font-display text-2xl font-medium text-white">{tela.titulo}</h3>
         <p className="mt-2 text-base leading-relaxed text-indigo-200">{tela.texto}</p>
+        {tela.destaque && (
+          <p className="mt-2 text-base font-semibold leading-relaxed text-amber-300">{tela.destaque}</p>
+        )}
       </div>
 
       <div ref={wrapperRef} className="demo-item relative">
@@ -282,7 +288,7 @@ export function DemoSection() {
   const telaAtiva = TELAS[ativo]
 
   return (
-    <section className="bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
+    <section id="demonstracao" className="bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <span className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-300">
@@ -310,6 +316,9 @@ export function DemoSection() {
                 </h3>
                 <span className="mt-4 block h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
                 <p className="mt-5 text-lg leading-relaxed text-indigo-200">{telaAtiva.texto}</p>
+                {telaAtiva.destaque && (
+                  <p className="mt-3 text-lg font-semibold leading-relaxed text-amber-300">{telaAtiva.destaque}</p>
+                )}
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { Button } from '../ui/Button.jsx'
 const links = [
   { to: '/#solucoes', label: 'Soluções' },
   { to: '/diagnostico', label: 'Diagnóstico' },
-  { to: '/#como-funciona', label: 'Como funciona' },
+  { to: '/#demonstracao', label: 'Como funciona' },
   { to: '/#planos', label: 'Planos' },
   { to: '/#fundadores', label: 'Programa Fundadores' },
 ]

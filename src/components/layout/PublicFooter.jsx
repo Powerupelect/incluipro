@@ -24,6 +24,8 @@ export function PublicFooter() {
             <ul className="mt-3 space-y-2 text-sm text-indigo-200">
               <li><Link className="hover:text-white" to="/produtos">IncluiPro Avalia</Link></li>
               <li><Link className="hover:text-white" to="/produtos">IncluiPro Lidera</Link></li>
+              <li><Link className="hover:text-white" to="/produtos">Canal do Colaborador</Link></li>
+              <li><Link className="hover:text-white" to="/produtos">IncluiPro Documentos</Link></li>
               <li><Link className="hover:text-white" to="/diagnostico">Diagnóstico gratuito</Link></li>
             </ul>
           </div>
