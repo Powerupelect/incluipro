@@ -160,29 +160,43 @@ export function Home() {
       {/* Hero — claro */}
       <section id="hero" className="relative overflow-hidden bg-mist-100 px-5 py-20 sm:px-8 sm:py-28">
         <div className="hero-mosaic absolute inset-0" aria-hidden="true" />
-        <div className="relative mx-auto max-w-5xl">
-          <Reveal className="max-w-3xl">
-            <h1 className="font-display text-4xl font-medium leading-[1.08] text-indigo-900 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
-              Estruture a inclusão de pessoas com deficiência em um só lugar.
-            </h1>
-            <p className="mt-6 max-w-[62ch] text-lg leading-relaxed text-graphite-500">
-              Relatórios técnicos, treinamentos para lideranças e ferramentas para apoiar o RH na
-              construção de processos de inclusão mais organizados e consistentes.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button to="/#avalia" size="lg">Conhecer as soluções</Button>
-              <Button to="/#planos" variant="ghost" size="lg">Ver planos</Button>
-            </div>
-            <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-1.5 rounded-2xl border border-mist-300 bg-white/80 px-6 py-4 text-sm font-medium text-graphite-700 shadow-card backdrop-blur">
-              <span>Alinhado à LBI e à Lei de Cotas</span>
-              <span aria-hidden="true" className="text-signal-500">·</span>
-              <span>Metodologia especializada</span>
-              <span aria-hidden="true" className="text-signal-500">·</span>
-              <span>Atualizações constantes</span>
-            </div>
-          </Reveal>
+        <div className="relative mx-auto max-w-6xl">
+          <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <Reveal className="max-w-3xl">
+              <h1 className="font-display text-4xl font-medium leading-[1.08] text-indigo-900 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
+                Estruture a inclusão de pessoas com deficiência em um só lugar.
+              </h1>
+              <p className="mt-6 max-w-[62ch] text-lg leading-relaxed text-graphite-500">
+                Relatórios técnicos, treinamentos para lideranças e ferramentas para apoiar o RH na
+                construção de processos de inclusão mais organizados e consistentes.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button to="/#avalia" size="lg">Conhecer as soluções</Button>
+                <Button to="/#planos" variant="ghost" size="lg">Ver planos</Button>
+              </div>
+              <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-1.5 rounded-2xl border border-mist-300 bg-white/80 px-6 py-4 text-sm font-medium text-graphite-700 shadow-card backdrop-blur">
+                <span>Alinhado à LBI e à Lei de Cotas</span>
+                <span aria-hidden="true" className="text-signal-500">·</span>
+                <span>Metodologia especializada</span>
+                <span aria-hidden="true" className="text-signal-500">·</span>
+                <span>Atualizações constantes</span>
+              </div>
+            </Reveal>
 
-          <Reveal delay={100} className="mt-16">
+            <Reveal delay={100} className="relative mx-auto w-full max-w-sm lg:max-w-none">
+              <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-signal-100/70 blur-2xl" aria-hidden="true" />
+              <div className="overflow-hidden rounded-3xl border border-white shadow-pop">
+                <img
+                  src="/hero-inclusao.jpg"
+                  alt="Colaborador cadeirante e colega de trabalho conversando em ambiente profissional"
+                  className="aspect-[3/4] w-full object-cover"
+                  loading="eager"
+                />
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={150} className="mt-16">
             <p className="font-display text-xl font-medium text-indigo-900">
               Qual é a cota de PCD da sua empresa?
             </p>
@@ -414,8 +428,10 @@ export function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="orbit-glow bg-white p-8 sm:p-10">
-                <p className="text-xs font-semibold text-signal-700">Com IncluiPro</p>
+              <div className="orbit-glow relative bg-signal-50 p-8 ring-1 ring-inset ring-signal-200 sm:p-10">
+                <span className="inline-block rounded-full bg-signal-600 px-3 py-1 text-xs font-semibold text-white">
+                  Com IncluiPro
+                </span>
                 <ul className="mt-6 space-y-4">
                   {['Sem limite de relatórios no período', ...atualizacoes.slice(0, 3)].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-base font-medium text-indigo-900">
