@@ -10,8 +10,6 @@ import { DemoSection } from '../components/DemoSection.jsx'
 
 const LINK_KIT_PERSONALIZADO =
   'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
-const LINK_SOLICITAR_PROPOSTA =
-  'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Proposta%20-%20Plano%20Empresarial'
 const LINK_FALAR_CONSULTOR = 'mailto:contato@incluipro.com?subject=Contato%20Enterprise'
 const LINK_PROGRAMA_FUNDADORES =
   'mailto:contato@incluipro.com?subject=Interesse%20no%20Programa%20Fundadores'
@@ -91,9 +89,9 @@ const depoimentos = [
 
 const faqItems = [
   {
-    pergunta: 'O que está incluído no Plano Empresarial?',
+    pergunta: 'O que está incluído no plano?',
     resposta:
-      'O Plano Empresarial inclui acesso completo ao IncluiPro Avalia e ao IncluiPro Lidera, atualizações constantes da plataforma, novos treinamentos, atualizações legais e melhorias contínuas, além de suporte por e-mail para a equipe de RH. O preço varia conforme o porte da empresa — solicite uma proposta para ver a condição do seu caso.',
+      'Acesso completo ao IncluiPro Avalia e ao IncluiPro Lidera, atualizações constantes da plataforma, novos treinamentos, atualizações legais e melhorias contínuas, além de suporte por e-mail para a equipe de RH. Preço fixo de R$ 697/mês, com condição de fundador de R$ 522/mês mantida nas renovações enquanto o contrato permanecer ativo.',
   },
   {
     pergunta: 'Para quais empresas a IncluiPro é indicada?',
@@ -128,7 +126,54 @@ const faqItems = [
   {
     pergunta: 'Como posso contratar?',
     resposta:
-      'Solicite uma proposta pelo site. Nossa equipe entra em contato para entender o porte da sua empresa, apresentar a condição comercial e liberar o acesso à plataforma.',
+      'Assine diretamente pelo site, com pagamento processado pela Hotmart, e o acesso é liberado logo em seguida. Se sua empresa precisa de nota fiscal e contrato antes de contratar, use o link "Preciso de nota fiscal e contrato" na página de assinatura.',
+  },
+  {
+    pergunta: 'Como funciona o cálculo da cota?',
+    resposta:
+      'A base considera o total de empregados da empresa, somando matriz e filiais, excluídos aprendizes e aposentados por invalidez. Sobre essa base aplica-se o percentual da faixa: 2% de 100 a 200 empregados, 3% de 201 a 500, 4% de 501 a 1.000 e 5% acima disso. A fração é sempre arredondada para cima.',
+  },
+  {
+    pergunta: 'O que é o Relatório Técnico de Inclusão?',
+    resposta:
+      'Documento com estrutura padronizada que registra perfil, cargo, rotina, autonomia, condições ergonômicas e recursos sugeridos para cada colaborador com deficiência. Serve como evidência documental das ações de inclusão.',
+  },
+  {
+    pergunta: 'Onde ficam os dados?',
+    resposta:
+      'Em banco de dados na nuvem, com isolamento por cliente e controle de acesso por perfil. Cada empresa acessa apenas os próprios dados.',
+  },
+  {
+    pergunta: 'Como é tratada a LGPD?',
+    resposta:
+      'Dados sensíveis relacionados à deficiência são tratados exclusivamente para a finalidade contratada, com acesso restrito, exportação disponível e exclusão definitiva mediante solicitação.',
+  },
+  {
+    pergunta: 'A plataforma é acessível?',
+    resposta:
+      'Segue as diretrizes WCAG 2.1 nível AA, incluindo navegação por teclado e compatibilidade com leitor de tela.',
+  },
+  {
+    pergunta: 'Vocês fazem recrutamento?',
+    resposta:
+      'Não. A IncluiPro estrutura e documenta o processo de inclusão. Não indicamos candidatos nem emitimos laudos médicos.',
+  },
+  {
+    pergunta: 'Precisa instalar algo?',
+    resposta: 'Não. O acesso é pelo navegador, imediato após a contratação.',
+  },
+  {
+    pergunta: 'Como funciona o Canal do colaborador?',
+    resposta:
+      'Cada empresa recebe um link próprio para divulgar internamente. O colaborador acessa sem login, descreve o que precisa e recebe um código de protocolo para acompanhar. As solicitações aparecem no painel do RH.',
+  },
+  {
+    pergunta: 'Emitem nota fiscal?',
+    resposta: 'Sim. A contratação é feita mediante emissão de nota fiscal de serviço.',
+  },
+  {
+    pergunta: 'Tem prazo mínimo?',
+    resposta: 'Não. O contrato é mensal, sem fidelidade.',
   },
 ]
 
@@ -407,15 +452,17 @@ export function Home() {
                   ))}
                 </ul>
                 <div className="mt-8 border-t border-mist-300 pt-6">
-                  <p className="font-display text-xl font-semibold text-indigo-900">
-                    Planos conforme o porte da empresa
+                  <p className="font-display text-2xl font-semibold text-indigo-900">
+                    R$ 697<span className="ml-1 text-base font-medium text-graphite-400">/ mês</span>
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-signal-700">
+                    Condição de fundador: R$ 522<span className="ml-1 font-medium text-graphite-500">/ mês</span>
                   </p>
                   <p className="mt-1 text-xs text-graphite-500">
-                    Produto único, sem travamento de recurso — o que varia é o preço, por faixa de
-                    funcionários.
+                    Produto único, todos os módulos incluídos. Sem variação por porte da empresa.
                   </p>
-                  <Button href={LINK_SOLICITAR_PROPOSTA} className="mt-5 w-full justify-center">
-                    Solicitar proposta
+                  <Button to="/assinatura" className="mt-5 w-full justify-center">
+                    Ver plano e assinar
                   </Button>
                 </div>
               </div>

@@ -4,17 +4,18 @@ import { Button } from '../components/ui/Button.jsx'
 import { checkAccess } from '../lib/api.js'
 import { PLANO_LABEL } from '../lib/plano.js'
 
-const LINK_SOLICITAR_PROPOSTA =
-  'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Proposta%20-%20Plano%20Empresarial'
+const LINK_ASSINAR = 'https://pay.hotmart.com/W106997348I'
+const LINK_NOTA_FISCAL =
+  'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Nota%20Fiscal%20e%20Contrato'
 
 const ITENS_INCLUSOS = [
-  'IncluiPro Avalia — avaliações sociais estruturadas, sem limite no período',
-  'IncluiPro Lidera — biblioteca completa de treinamentos',
-  'Atualizações constantes da plataforma',
-  'Novos treinamentos adicionados continuamente',
-  'Atualizações legais, sempre que a legislação mudar',
-  'Melhorias e novas funcionalidades sem custo adicional',
-  'Suporte por e-mail em até 1 dia útil',
+  'Painel de conformidade com cálculo da cota legal',
+  'Relatórios Técnicos de Inclusão, sem limite no período',
+  'Kits de capacitação para lideranças, por tema e por tipo de deficiência',
+  'Canal do colaborador com link próprio da empresa',
+  'Documentação consolidada para fiscalização',
+  'Sem limite de usuários',
+  'Sem prazo mínimo de permanência',
 ]
 
 export function Assinatura() {
@@ -48,8 +49,8 @@ export function Assinatura() {
           Um plano único, com tudo incluso
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-graphite-500">
-          Produto único, sem travamento de recurso por plano. O que varia é o preço, por faixa de
-          funcionários — solicite uma proposta para a sua empresa.
+          Produto único, sem travamento de recurso por plano. Preço fixo, sem variação por porte
+          da empresa.
         </p>
         {semAcesso && (
           <p className="mx-auto mt-6 max-w-xl rounded-xl bg-amber-50 px-5 py-3 text-sm font-medium text-amber-700">
@@ -66,12 +67,20 @@ export function Assinatura() {
             Plano Principal
           </span>
           <h2 className="relative font-display text-2xl font-semibold text-indigo-800">
-            Plano Empresarial
+            Um plano, todos os módulos
           </h2>
-          <p className="relative mt-3 font-display text-2xl font-semibold text-indigo-900">
-            Planos conforme o porte da empresa
-          </p>
-          <p className="relative mt-1 text-sm text-graphite-500">tudo incluso, sem taxas extras</p>
+
+          <div className="relative mt-5">
+            <p className="font-display text-4xl font-semibold text-indigo-900">
+              R$ 697<span className="ml-1 text-lg font-medium text-graphite-400">/ mês</span>
+            </p>
+            <p className="mt-2 text-base font-semibold text-signal-700">
+              Condição de fundador: R$ 522<span className="ml-1 font-medium text-graphite-500">/ mês</span>
+            </p>
+            <p className="mt-1 text-xs text-graphite-500">
+              Mantida nas renovações enquanto o contrato permanecer ativo.
+            </p>
+          </div>
 
           <ul className="relative mt-7 space-y-3 border-t border-mist-300 pt-7">
             {ITENS_INCLUSOS.map((item) => (
@@ -84,12 +93,25 @@ export function Assinatura() {
             ))}
           </ul>
 
-          <Button href={LINK_SOLICITAR_PROPOSTA} className="relative mt-8 w-full justify-center" size="lg">
-            Solicitar proposta
-          </Button>
-          <p className="relative mt-3 text-center text-xs text-graphite-300">
-            Nossa equipe entra em contato com a condição comercial para o porte da sua empresa.
+          <p className="relative mt-6 text-xs font-medium text-graphite-400">
+            Menos que o piso da multa de uma única vaga não preenchida.
           </p>
+
+          <Button
+            href={LINK_ASSINAR}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative mt-6 w-full justify-center"
+            size="lg"
+          >
+            Assinar
+          </Button>
+          <a
+            href={LINK_NOTA_FISCAL}
+            className="relative mt-3 text-center text-xs font-medium text-graphite-400 underline decoration-graphite-300 underline-offset-2 hover:text-graphite-600"
+          >
+            Preciso de nota fiscal e contrato
+          </a>
         </div>
       </section>
 

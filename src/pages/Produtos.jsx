@@ -103,8 +103,8 @@ export function Produtos() {
             Um plano único, com tudo incluso
           </h2>
           <p className="mt-4 text-lg text-indigo-200">
-            Produto único, sem travamento de recurso por plano. O que varia é o preço, por faixa
-            de funcionários.
+            Produto único, sem travamento de recurso por plano. Preço fixo, sem variação por porte
+            da empresa.
           </p>
         </div>
 
@@ -113,11 +113,16 @@ export function Produtos() {
             <span className="inline-block rounded-full bg-volt-500/20 px-4 py-1.5 text-sm font-semibold text-volt-200">
               Plano Principal
             </span>
-            <p className="mt-4 font-display text-xl font-semibold text-white">Plano Empresarial</p>
+            <p className="mt-4 font-display text-xl font-semibold text-white">Um plano, todos os módulos</p>
             <p className="mt-2 font-display text-2xl font-semibold text-white">
-              Planos conforme o porte da empresa
+              R$ 697<span className="ml-1 text-base font-medium text-indigo-300">/ mês</span>
             </p>
-            <p className="mt-1 text-base text-indigo-300">tudo incluso, sem taxas extras</p>
+            <p className="mt-1 text-base font-semibold text-signal-300">
+              Condição de fundador: R$ 522<span className="ml-1 font-medium text-indigo-300">/ mês</span>
+            </p>
+            <p className="mt-1 text-sm text-indigo-300">
+              Mantida nas renovações enquanto o contrato permanecer ativo.
+            </p>
 
             <ul className="mt-6 space-y-3 border-t border-white/10 pt-6">
               {[
@@ -135,12 +140,8 @@ export function Produtos() {
               ))}
             </ul>
 
-            <Button
-              href="mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Proposta%20-%20Plano%20Empresarial"
-              className="mt-6 w-full justify-center"
-              size="lg"
-            >
-              Solicitar proposta
+            <Button to="/assinatura" className="mt-6 w-full justify-center" size="lg">
+              Ver plano e assinar
             </Button>
           </div>
 

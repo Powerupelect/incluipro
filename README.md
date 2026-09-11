@@ -66,10 +66,15 @@ manual de acesso.
 
 ## Pagamentos e liberação de acesso (Hotmart)
 
-A assinatura (`/assinatura`) e o Produtos (`/produtos`) usam links reais de pagamento da Hotmart:
+A assinatura (`/assinatura`) usa o link real de pagamento da Hotmart (a página `/produtos` só
+aponta internamente para `/assinatura`, não tem link de pagamento próprio):
 
-- **Mensal — R$ 69,90**: `https://pay.hotmart.com/W106997348I`
-- **Vitalício — R$ 247**: `https://pay.hotmart.com/B106997595Q?bid=1785730636924`
+- **Mensal — R$ 697** (condição de fundador: R$ 522, mantida nas renovações enquanto o contrato
+  permanecer ativo): `https://pay.hotmart.com/W106997348I`
+
+O preço é definido no painel da Hotmart, não no código — se ele mudar lá, atualize também o valor
+exibido em `src/pages/Assinatura.jsx`, `src/pages/Home.jsx` (seção `#planos`) e
+`src/pages/Produtos.jsx` (seção "Acesso"), que mostram o preço em texto fixo.
 
 O acesso a `/app` é controlado por um backend real em `netlify/functions/`, com os registros de
 quem está liberado guardados em **Netlify Blobs** (armazenamento embutido do Netlify — não exige
