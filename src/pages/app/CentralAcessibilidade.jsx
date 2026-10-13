@@ -100,7 +100,7 @@ export function CentralAcessibilidade() {
     if (!q) return solicitacoes
     return solicitacoes.filter(
       (s) =>
-        (s.colaboradores?.nome || '').toLowerCase().includes(q) ||
+        (s.colaboradores?.nome || s.colaborador_nome || '').toLowerCase().includes(q) ||
         (TIPOS_SOLICITACAO.find((t) => t.id === s.tipo)?.label || '').toLowerCase().includes(q) ||
         (STATUS_LABEL[s.status] || '').toLowerCase().includes(q),
     )
@@ -606,7 +606,10 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-graphite-900">
-            {s.colaboradores?.nome || 'Colaborador'}
+            {s.colaboradores?.nome || s.colaborador_nome || 'Colaborador'}
+            {!s.colaborador_id && (
+              <span className="ml-2 text-xs font-normal text-red-500">· colaborador excluído</span>
+            )}
             {s.canal_protocolo && (
               <span className="ml-2 text-xs font-normal text-graphite-400">
                 · originado do Canal do Colaborador ({s.canal_protocolo})

@@ -60,7 +60,7 @@ export async function montarDadosDossie(empresaId) {
   const adaptacoesExecutadas = solicitacoes
     .filter((s) => s.status === 'executado' || s.status === 'concluido')
     .map((s) => ({
-      colaborador: s.colaboradores?.nome || '—',
+      colaborador: s.colaboradores?.nome || s.colaborador_nome || '—',
       tipo: TIPOS_SOLICITACAO.find((t) => t.id === s.tipo)?.label || s.tipo,
       data: s.atualizado_em,
       temComprovante: Boolean(s.anexo_path),

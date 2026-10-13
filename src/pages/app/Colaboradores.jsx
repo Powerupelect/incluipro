@@ -315,8 +315,14 @@ export function Colaboradores() {
                 • {confirmandoExclusao.vinculos?.avaliacoes ?? '—'} avaliação(ões) / relatório(s)
               </li>
               <li>• {confirmandoExclusao.vinculos?.documentos ?? '—'} documento(s)</li>
-              <li>• {confirmandoExclusao.vinculos?.solicitacoes ?? '—'} solicitação(ões) de adaptação</li>
             </ul>
+            {confirmandoExclusao.vinculos?.solicitacoes > 0 && (
+              <p className="mt-3 text-sm text-graphite-700">
+                As {confirmandoExclusao.vinculos.solicitacoes} solicitação(ões) de adaptação dele(a)
+                não serão apagadas — ficam preservadas em Solicitações, só sem o vínculo com o
+                colaborador.
+              </p>
+            )}
             <div className="mt-6 flex gap-2.5">
               <Button shape="crm" as="button" variant="danger" onClick={handleConfirmarExclusao}>
                 Excluir definitivamente
