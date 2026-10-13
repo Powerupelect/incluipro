@@ -39,6 +39,7 @@ export default function App() {
         <Routes>
           <Route path="/solicitar/:slug" element={<CanalFormulario />} />
           <Route path="/solicitar/:slug/consultar" element={<CanalConsulta />} />
+          <Route path="/consultar" element={<CanalConsulta />} />
 
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />

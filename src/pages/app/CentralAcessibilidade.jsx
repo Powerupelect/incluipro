@@ -426,11 +426,6 @@ function CanalCard({ solicitacao: s, colaboradores, onAtualizar, onPromover }) {
     }
   }
 
-  function handleDescartar() {
-    if (!confirm('Descartar esta solicitação? Ela deixa de contar nas estatísticas do canal.')) return
-    onAtualizar(s.id, () => atualizarStatusCanal(s.id, { status: 'descartada' }))
-  }
-
   return (
     <div className="rounded-lg border border-mist-300 bg-white p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -477,9 +472,6 @@ function CanalCard({ solicitacao: s, colaboradores, onAtualizar, onPromover }) {
           >
             Recusar
           </Button>
-          <Button shape="crm" as="button" size="sm" variant="ghost" onClick={handleDescartar}>
-            Descartar
-          </Button>
         </div>
       )}
 
@@ -511,6 +503,8 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
   const [responsavel, setResponsavel] = useState(s.responsavel || '')
   const [prazo, setPrazo] = useState(s.prazo || '')
   const [motivoRecusa, setMotivoRecusa] = useState(s.motivo_recusa || '')
+  const [valorRecursoCanal, setValorRecursoCanal] = useState(s.valor_recurso ?? '')
+  const [salvandoValor, setSalvandoValor] = useState(false)
   const [editando, setEditando] = useState(false)
   const [edicao, setEdicao] = useState({
     tipo: s.tipo,
@@ -536,6 +530,20 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
   async function handleAbrirAnexo() {
     const url = await urlAssinadaAnexo(s.anexo_path).catch(() => null)
     if (url) window.open(url, '_blank', 'noopener')
+  }
+
+  async function handleSalvarValorRecurso(e) {
+    e.preventDefault()
+    setSalvandoValor(true)
+    try {
+      await onAtualizar(s.id, () =>
+        atualizarSolicitacao(s.id, {
+          valorRecurso: valorRecursoCanal ? Number(valorRecursoCanal) : null,
+        }),
+      )
+    } finally {
+      setSalvandoValor(false)
+    }
   }
 
   async function handleSalvarEdicao(e) {
@@ -677,6 +685,27 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
           <button onClick={handleAbrirAnexo} className="text-left text-sm font-semibold text-signal-600 hover:text-signal-700 sm:col-span-2">
             Abrir anexo enviado
           </button>
+        )}
+
+        {s.canal_protocolo && (
+          <form onSubmit={handleSalvarValorRecurso} className="flex items-end gap-2.5 sm:col-span-2">
+            <label className="flex-1 text-sm">
+              <span className="font-semibold text-graphite-700">Valor do recurso (opcional)</span>
+              <input
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                value={valorRecursoCanal}
+                onChange={(e) => setValorRecursoCanal(e.target.value)}
+                placeholder="Ex: 850,00"
+                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+              />
+            </label>
+            <Button shape="crm" as="button" type="submit" size="sm" variant="ghost" disabled={salvandoValor}>
+              {salvandoValor ? 'Salvando…' : 'Salvar valor'}
+            </Button>
+          </form>
         )}
 
         {s.status !== 'concluido' && s.status !== 'recusado' && (

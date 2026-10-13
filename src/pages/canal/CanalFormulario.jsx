@@ -15,7 +15,18 @@ export function CanalFormulario() {
   const [enviando, setEnviando] = useState(false)
   const [erroEnvio, setErroEnvio] = useState('')
   const [protocolo, setProtocolo] = useState(null)
+  const [copiado, setCopiado] = useState(false)
   const erroRef = useRef(null)
+
+  async function handleCopiarProtocolo() {
+    try {
+      await navigator.clipboard.writeText(protocolo)
+      setCopiado(true)
+      setTimeout(() => setCopiado(false), 2500)
+    } catch {
+      // clipboard indisponível — a pessoa ainda vê o código na tela pra copiar à mão
+    }
+  }
 
   useEffect(() => {
     let ativo = true
@@ -109,16 +120,28 @@ export function CanalFormulario() {
         <div className="rounded-lg border border-signal-200 bg-signal-50 p-8 text-center">
           <h1 className="font-display text-2xl font-semibold text-indigo-900">Solicitação enviada</h1>
           <p className="mt-3 text-graphite-700">
-            Guarde o código abaixo para consultar o andamento do seu pedido.
+            Guarde o código abaixo para consultar o andamento do seu pedido mais tarde — se você
+            perder o link desta página, ainda poderá consultar com este código.
           </p>
           <p className="mt-5 font-display text-3xl font-semibold tracking-wide text-signal-700">
             {protocolo}
           </p>
-          <Link
-            to={`/solicitar/${slug}/consultar`}
-            className="mt-6 inline-block text-sm font-semibold text-indigo-700 underline hover:text-signal-700"
+          <button
+            type="button"
+            onClick={handleCopiarProtocolo}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-signal-300 bg-white px-4 py-2 text-sm font-semibold text-signal-700 hover:border-signal-400 hover:bg-signal-50"
           >
-            Consultar andamento
+            {copiado ? 'Copiado!' : 'Copiar código'}
+          </button>
+          <p className="mt-6 text-sm text-graphite-600">
+            Para consultar depois, acesse <strong>incluipro.com/consultar</strong> e informe esse
+            código — funciona de qualquer lugar, mesmo sem este link.
+          </p>
+          <Link
+            to="/consultar"
+            className="mt-3 inline-block text-sm font-semibold text-indigo-700 underline hover:text-signal-700"
+          >
+            Consultar andamento agora
           </Link>
         </div>
       </main>

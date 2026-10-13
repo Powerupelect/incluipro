@@ -89,17 +89,20 @@ export async function criarSolicitacao({ empresaId, colaboradorId, tipo, descric
   return data
 }
 
-/** Edita os dados originais do pedido (não é o avanço de status/fluxo, ver avancarStatus). */
-export async function atualizarSolicitacao(id, { tipo, descricao, dataPedido, solicitadoPor, valorRecurso }) {
+/** Edita os dados originais do pedido (não é o avanço de status/fluxo, ver avancarStatus).
+ * Cada campo só entra na atualização se foi explicitamente passado — permite também um
+ * ajuste parcial (ex: só o valor do recurso) sem apagar os demais campos. */
+export async function atualizarSolicitacao(id, { tipo, descricao, dataPedido, solicitadoPor, valorRecurso } = {}) {
+  const patch = {}
+  if (tipo !== undefined) patch.tipo = tipo
+  if (descricao !== undefined) patch.descricao = descricao
+  if (dataPedido !== undefined) patch.data_pedido = dataPedido
+  if (solicitadoPor !== undefined) patch.solicitado_por = solicitadoPor || null
+  if (valorRecurso !== undefined) patch.valor_recurso = valorRecurso || null
+
   const { data, error } = await supabase
     .from('solicitacoes_acessibilidade')
-    .update({
-      tipo,
-      descricao,
-      data_pedido: dataPedido,
-      solicitado_por: solicitadoPor || null,
-      valor_recurso: valorRecurso || null,
-    })
+    .update(patch)
     .eq('id', id)
     .select('*, colaboradores(nome)')
     .single()
