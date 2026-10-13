@@ -271,6 +271,12 @@ export function CanalFormulario() {
         >
           {enviando ? 'Enviando…' : 'Enviar solicitação'}
         </button>
+        <Link
+          to="/consultar"
+          className="flex min-h-[44px] w-full items-center justify-center rounded-md border border-signal-300 bg-white px-6 py-3 text-base font-semibold text-signal-700 hover:border-signal-400 hover:bg-signal-50"
+        >
+          Consultar solicitação
+        </Link>
       </form>
 
       <footer className="mt-10 text-center text-xs text-graphite-300">

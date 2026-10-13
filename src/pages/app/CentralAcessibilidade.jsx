@@ -531,6 +531,10 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
     valorRecurso: s.valor_recurso ?? '',
   })
   const [salvandoEdicao, setSalvandoEdicao] = useState(false)
+  const [valorSalvo, setValorSalvo] = useState(false)
+  const [acompanhamentoSalvo, setAcompanhamentoSalvo] = useState(false)
+  const finalizado = s.status === 'concluido' || s.status === 'recusado'
+  const [detalhesAbertos, setDetalhesAbertos] = useState(!finalizado)
   const proximoIndex = STATUS_FLUXO.indexOf(s.status)
   const proximoStatus = proximoIndex >= 0 && proximoIndex < STATUS_FLUXO.length - 1 ? STATUS_FLUXO[proximoIndex + 1] : null
 
@@ -542,6 +546,8 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
     setSalvandoAcompanhamento(true)
     try {
       await onAtualizar(s.id, () => atualizarAcompanhamento(s.id, { responsavel, prazo }))
+      setAcompanhamentoSalvo(true)
+      setTimeout(() => setAcompanhamentoSalvo(false), 2500)
     } finally {
       setSalvandoAcompanhamento(false)
     }
@@ -567,6 +573,8 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
           valorRecurso: valorRecursoCanal ? Number(valorRecursoCanal) : null,
         }),
       )
+      setValorSalvo(true)
+      setTimeout(() => setValorSalvo(false), 2500)
     } finally {
       setSalvandoValor(false)
     }
@@ -702,9 +710,21 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
         <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">Motivo da recusa: {s.motivo_recusa}</p>
       )}
 
+      {finalizado && (
+        <button
+          onClick={() => setDetalhesAbertos((v) => !v)}
+          className="mt-3 text-xs font-semibold text-indigo-700 hover:text-indigo-900"
+        >
+          {detalhesAbertos ? '▲ Ocultar detalhes' : '▼ Ver detalhes'}
+        </button>
+      )}
+
+      {detalhesAbertos && (
       <div className="mt-4 grid gap-3 border-t border-mist-200 pt-4 sm:grid-cols-2">
         <label className="text-sm sm:col-span-2">
-          <span className="font-semibold text-graphite-700">Anexo de comprovação</span>
+          <span className="font-semibold text-graphite-700">
+            {s.anexo_path ? 'Trocar anexo de comprovação' : 'Anexo de comprovação'}
+          </span>
           <input
             type="file"
             onChange={handleAnexo}
@@ -733,7 +753,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
               />
             </label>
             <button type="submit" disabled={salvandoValor} className="text-xs font-semibold text-signal-700 hover:text-signal-800">
-              {salvandoValor ? 'Salvando…' : 'Salvar'}
+              {salvandoValor ? 'Salvando…' : valorSalvo ? 'Salvo!' : 'Salvar'}
             </button>
           </form>
         )}
@@ -766,7 +786,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
                 disabled={salvandoAcompanhamento}
                 onClick={handleSalvarAcompanhamento}
               >
-                {salvandoAcompanhamento ? 'Salvando…' : 'Salvar responsável/prazo'}
+                {salvandoAcompanhamento ? 'Salvando…' : acompanhamentoSalvo ? 'Salvo!' : 'Salvar responsável/prazo'}
               </Button>
               {proximoStatus && (
                 <Button shape="crm"
@@ -794,6 +814,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
           </>
         )}
       </div>
+      )}
     </div>
   )
 }
