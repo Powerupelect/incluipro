@@ -151,9 +151,12 @@ export async function promoverParaSolicitacao(canalId, { empresaId, colaboradorI
     .single()
   if (erroNova) throw erroNova
 
+  // Marca o pedido original do canal como encerrado — a partir daqui, quem acompanha o
+  // andamento de verdade é a solicitação interna recém-criada. Sem isso, o registro do
+  // canal ficava "aberto" para sempre nas contagens, mesmo já vinculado e concluído.
   const { error: erroCanal } = await supabase
     .from('solicitacoes_canal')
-    .update({ solicitacao_acessibilidade_id: nova.id })
+    .update({ solicitacao_acessibilidade_id: nova.id, status: 'concluida' })
     .eq('id', canalId)
   if (erroCanal) throw erroCanal
 

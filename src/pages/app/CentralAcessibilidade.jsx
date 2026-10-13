@@ -175,6 +175,7 @@ export function CentralAcessibilidade() {
     setSolicitacoesCanal((s) =>
       s.map((x) => (x.id === canalItem.id ? { ...x, solicitacao_acessibilidade_id: novaSolicitacao.id } : x)),
     )
+    setDestaqueId(novaSolicitacao.id)
   }
 
   async function handleCriar(e) {

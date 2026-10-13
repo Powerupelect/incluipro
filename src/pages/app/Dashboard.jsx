@@ -104,7 +104,9 @@ export function Dashboard() {
   const solicitacoesAbertas = useMemo(
     () =>
       solicitacoesInternas.filter(STATUS_INTERNO_ABERTO).length +
-      solicitacoesCanal.filter(STATUS_CANAL_ABERTO).length,
+      // Pedidos já vinculados a um colaborador passam a ser acompanhados só pela solicitação
+      // interna criada na promoção — contar os dois lados dobraria o mesmo pedido.
+      solicitacoesCanal.filter((s) => !s.solicitacao_acessibilidade_id).filter(STATUS_CANAL_ABERTO).length,
     [solicitacoesInternas, solicitacoesCanal],
   )
 
