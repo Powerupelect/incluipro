@@ -423,7 +423,7 @@ export function CentralAcessibilidade() {
 function CanalCard({ solicitacao: s, colaboradores, onAtualizar, onPromover }) {
   const [colaboradorId, setColaboradorId] = useState('')
   const [promovendo, setPromovendo] = useState(false)
-  const emFluxo = !['recusada', 'descartada'].includes(s.status)
+  const emFluxo = !['concluida', 'recusada', 'descartada'].includes(s.status)
   const proximoIndex = STATUS_CANAL_FLUXO.indexOf(s.status)
   const proximoStatus =
     proximoIndex >= 0 && proximoIndex < STATUS_CANAL_FLUXO.length - 1 ? STATUS_CANAL_FLUXO[proximoIndex + 1] : null

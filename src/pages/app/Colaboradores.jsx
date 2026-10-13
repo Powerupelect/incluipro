@@ -96,6 +96,10 @@ export function Colaboradores() {
       setErro('Informe o nome do colaborador.')
       return
     }
+    if (!form.tipoDeficiencia.trim()) {
+      setErro('Informe o tipo de deficiência — ele conta na cota de PCD.')
+      return
+    }
     setSalvando(true)
     setErro('')
     try {
@@ -264,10 +268,14 @@ export function Colaboradores() {
               <label className="block text-sm">
                 <span className="font-semibold text-graphite-700">Tipo de deficiência</span>
                 <input
+                  required
                   value={form.tipoDeficiencia}
                   onChange={(e) => setForm((f) => ({ ...f, tipoDeficiencia: e.target.value }))}
                   className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
                 />
+                <span className="mt-1 block text-xs text-graphite-400">
+                  Obrigatório — colaboradores cadastrados aqui contam na cota de PCD.
+                </span>
               </label>
               <label className="block text-sm">
                 <span className="font-semibold text-graphite-700">Data de admissão</span>
@@ -284,7 +292,7 @@ export function Colaboradores() {
               <Button shape="crm" as="button" type="submit" disabled={salvando}>
                 {salvando ? 'Salvando…' : 'Salvar'}
               </Button>
-              <Button shape="crm" as="button" type="button" variant="ghost" onClick={() => setModalAberto(false)}>
+              <Button shape="crm" as="button" type="button" variant="ghost" disabled={salvando} onClick={() => setModalAberto(false)}>
                 Cancelar
               </Button>
             </div>
