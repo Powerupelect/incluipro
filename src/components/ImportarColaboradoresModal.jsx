@@ -91,7 +91,13 @@ export function ImportarColaboradoresModal({ open, onClose, empresaId, onImporta
               Baixar planilha modelo
             </button>
             <div className="mt-4">
-              <input ref={csvInputRef} type="file" accept=".csv,text/csv" onChange={handleSelecionarCsv} />
+              <input
+                ref={csvInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                onChange={handleSelecionarCsv}
+                className="w-full text-sm text-graphite-500 file:mr-3 file:rounded-md file:border-0 file:bg-signal-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-signal-700"
+              />
             </div>
           </>
         )}

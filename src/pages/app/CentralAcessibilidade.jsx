@@ -642,7 +642,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <StatusPonto cor={STATUS_PONTO_COR[s.status]}>{STATUS_LABEL[s.status]}</StatusPonto>
-          {!editando && (
+          {!editando && !s.canal_protocolo && (
             <span className="flex gap-3 text-xs font-semibold">
               <button onClick={() => setEditando(true)} className="text-indigo-700 hover:text-indigo-900">
                 Editar
@@ -650,6 +650,11 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
               <button onClick={() => onExcluir(s.id)} className="text-red-500 hover:text-red-700">
                 Excluir
               </button>
+            </span>
+          )}
+          {s.canal_protocolo && (
+            <span className="text-xs text-graphite-400" title="Pedido recebido pelo colaborador — mantido como registro original, sem edição ou exclusão.">
+              Registro original do colaborador
             </span>
           )}
         </div>
@@ -662,7 +667,11 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
       <div className="mt-4 grid gap-3 border-t border-mist-200 pt-4 sm:grid-cols-2">
         <label className="text-sm sm:col-span-2">
           <span className="font-semibold text-graphite-700">Anexo de comprovação</span>
-          <input type="file" onChange={handleAnexo} className="mt-1.5 w-full text-sm" />
+          <input
+            type="file"
+            onChange={handleAnexo}
+            className="mt-1.5 w-full text-sm text-graphite-500 file:mr-3 file:rounded-md file:border-0 file:bg-signal-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-signal-700"
+          />
         </label>
         {s.anexo_path && (
           <button onClick={handleAbrirAnexo} className="text-left text-sm font-semibold text-signal-600 hover:text-signal-700 sm:col-span-2">
