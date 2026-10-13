@@ -134,8 +134,9 @@ export function CanalFormulario() {
             {copiado ? 'Copiado!' : 'Copiar código'}
           </button>
           <p className="mt-6 text-sm text-graphite-600">
-            Para consultar depois, acesse <strong>incluipro.com/consultar</strong> e informe esse
-            código — funciona de qualquer lugar, mesmo sem este link.
+            Para consultar depois, acesse{' '}
+            <strong>{typeof window !== 'undefined' ? window.location.host : ''}/consultar</strong>{' '}
+            e informe esse código — funciona de qualquer lugar, mesmo sem este link.
           </p>
           <Link
             to="/consultar"

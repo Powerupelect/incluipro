@@ -642,6 +642,7 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
                 {TIPOS_SOLICITACAO.find((t) => t.id === s.tipo)?.label || s.tipo} · pedido em{' '}
                 {new Date(s.data_pedido).toLocaleDateString('pt-BR')}
                 {s.solicitado_por && ` · registrado por ${s.solicitado_por}`}
+                {s.responsavel && ` · responsável: ${s.responsavel}`}
                 {s.valor_recurso != null && ` · ${formatBRL(Number(s.valor_recurso))}`}
               </p>
               <p className="mt-2 text-sm text-graphite-700">{s.descricao}</p>
