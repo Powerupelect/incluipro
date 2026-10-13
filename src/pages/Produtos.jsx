@@ -12,13 +12,13 @@ const ACCENT_PILL = {
 const produtos = [
   {
     nome: 'IncluiPro Avalia',
-    tag: 'PIRI',
+    tag: 'Plano de Integração e Rotina Inclusiva',
     accent: 'signal',
     descricao:
-      'Metodologia estruturada que transforma as anotações de uma entrevista em um PIRI profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
+      'Metodologia estruturada que transforma as anotações de uma entrevista em um Plano de Integração e Rotina Inclusiva profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
     recursos: [
       'Reduz o tempo do RH em cada avaliação — formulário guiado por blocos substitui anotações soltas e retrabalho.',
-      'PIRI pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
+      'Documento pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
       'Recomendações certas na hora certa: Consulta Rápida sugere ajustes por tipo de deficiência (visual, física, auditiva, intelectual, cognitiva/neurodivergente, múltipla).',
       'Edição livre do texto antes de finalizar — sua equipe mantém o controle editorial completo.',
       'Histórico organizado e pronto para consulta — documentação rastreável para auditorias e fiscalizações da Lei de Cotas.',
@@ -175,16 +175,6 @@ export function Produtos() {
             </Button>
           </div>
 
-          <p className="mt-6 text-center text-base text-indigo-300">
-            Múltiplas unidades ou operação de grande porte?{' '}
-            <a
-              href="mailto:contato@incluipro.com?subject=Contato%20Enterprise"
-              className="font-semibold text-white hover:text-signal-300"
-            >
-              Falar com consultor
-            </a>
-            .
-          </p>
         </div>
 
         <p className="mt-8 text-center text-base text-indigo-300">

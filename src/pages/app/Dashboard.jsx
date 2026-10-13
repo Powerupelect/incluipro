@@ -12,8 +12,6 @@ import { getSolicitacoesCanal } from '../../lib/canalColaborador.js'
 import { calcularPendencias } from '../../lib/pendencias.js'
 import { calcularCota, corSemaforo } from '../../lib/cota.js'
 import { tendenciaMensal, contagemPorMes } from '../../lib/painelMetricas.js'
-import { montarDadosDossie } from '../../lib/dossie.js'
-import { gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
 import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
 
 const STATUS_INTERNO_ABERTO = (s) => !['concluido', 'recusado'].includes(s.status)
@@ -28,7 +26,6 @@ export function Dashboard() {
   const [solicitacoesCanal, setSolicitacoesCanal] = useState([])
   const [pendencias, setPendencias] = useState(null)
   const [carregando, setCarregando] = useState(true)
-  const [gerandoResumo, setGerandoResumo] = useState(false)
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -102,25 +99,11 @@ export function Dashboard() {
     return { buckets, mostrar: mesesAtivos >= 2 }
   }, [historico, solicitacoesInternas, solicitacoesCanal])
 
-  async function handleBaixarResumo() {
-    if (!empresa || gerandoResumo) return
-    setGerandoResumo(true)
-    try {
-      const dados = await montarDadosDossie(user.empresaId)
-      gerarResumoExecutivoPDF(dados)
-    } finally {
-      setGerandoResumo(false)
-    }
-  }
-
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <h1 className="font-display text-2xl font-semibold text-indigo-900">Painel</h1>
         <div className="flex flex-wrap gap-2">
-          <Button shape="crm" as="button" variant="ghost" onClick={handleBaixarResumo} disabled={!empresa || gerandoResumo}>
-            {gerandoResumo ? 'Gerando…' : 'Baixar resumo executivo'}
-          </Button>
           <Button shape="crm" to="/app/avalia" size="lg">+ Nova avaliação</Button>
         </div>
       </div>

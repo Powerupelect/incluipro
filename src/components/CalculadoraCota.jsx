@@ -121,7 +121,7 @@ export function CalculadoraCota() {
                 <div className="rounded-xl border border-mist-300 bg-white p-5">
                   <p className="text-base font-semibold text-signal-700">IncluiPro Avalia</p>
                   <p className="mt-1.5 text-base leading-relaxed text-graphite-600">
-                    PIRI pronto em minutos, para estruturar cada
+                    Plano de Integração e Rotina Inclusiva pronto em minutos, para estruturar cada
                     contratação e organizar a documentação da cota.
                   </p>
                 </div>

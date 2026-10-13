@@ -1,4 +1,4 @@
-// Geração do PDF do Plano de Integração e Rotina Inclusiva (PIRI) do IncluiPro Avalia, seguindo o modelo
+// Geração do PDF do Plano de Integração e Rotina Inclusiva do IncluiPro Avalia, seguindo o modelo
 // visual validado: cabeçalho com logo (3 barras + "INCLUIPRO"), título e frase de abertura
 // fixos, barras de seção coloridas alternando entre as cores da marca, tabelas de
 // identificação/deficiência com largura fixa, e rodapé fixo com os dois avisos legais +
@@ -279,7 +279,7 @@ function parseSections(markdown) {
 }
 
 /**
- * Gera e baixa o PDF do Plano de Integração e Rotina Inclusiva (PIRI).
+ * Gera e baixa o PDF do Plano de Integração e Rotina Inclusiva.
  * @param {object} params
  * @param {string} params.nome
  * @param {string} params.cargo
@@ -288,7 +288,7 @@ function parseSections(markdown) {
  * @param {string} params.observacoesCondicao
  * @param {string} params.relatorioMarkdown
  */
-export function baixarRelatorioPDF({
+export function montarRelatorioPDFDoc({
   nome,
   cargo,
   empresa,
@@ -367,6 +367,15 @@ export function baixarRelatorioPDF({
     y = drawProseBody(doc, y, section.body)
   }
 
-  const nomeArquivo = `piri-${(nome || 'candidato').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
+  return doc
+}
+
+/**
+ * Gera e baixa o PDF do Plano de Integração e Rotina Inclusiva.
+ * @param {object} params ver {@link montarRelatorioPDFDoc}
+ */
+export function baixarRelatorioPDF(params) {
+  const doc = montarRelatorioPDFDoc(params)
+  const nomeArquivo = `plano-integracao-rotina-inclusiva-${(params.nome || 'candidato').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
   doc.save(nomeArquivo)
 }

@@ -53,6 +53,7 @@ export function CentralAcessibilidade() {
   const [formAberto, setFormAberto] = useState(false)
   const [nova, setNova] = useState(NOVA_INICIAL)
   const [salvando, setSalvando] = useState(false)
+  const [erroCriar, setErroCriar] = useState('')
   const [busca, setBusca] = useState('')
   const [linkCopiado, setLinkCopiado] = useState(false)
   const [gerandoLink, setGerandoLink] = useState(false)
@@ -169,6 +170,7 @@ export function CentralAcessibilidade() {
   async function handleCriar(e) {
     e.preventDefault()
     if (!nova.colaboradorId || !nova.descricao.trim()) return
+    setErroCriar('')
     setSalvando(true)
     try {
       const criada = await criarSolicitacao({
@@ -179,8 +181,8 @@ export function CentralAcessibilidade() {
       setSolicitacoes((s) => [criada, ...s])
       setNova(NOVA_INICIAL)
       setFormAberto(false)
-    } catch {
-      // silencioso
+    } catch (err) {
+      setErroCriar(err.message || 'Não foi possível registrar a solicitação. Tente novamente.')
     } finally {
       setSalvando(false)
     }
@@ -343,6 +345,7 @@ export function CentralAcessibilidade() {
               />
             </label>
           </div>
+          {erroCriar && <p className="mt-4 text-sm text-red-600">{erroCriar}</p>}
           <div className="mt-5 flex gap-2.5">
             <Button shape="crm" as="button" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Registrar solicitação'}

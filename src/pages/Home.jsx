@@ -10,7 +10,6 @@ import { DemoSection } from '../components/DemoSection.jsx'
 
 const LINK_KIT_PERSONALIZADO =
   'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
-const LINK_FALAR_CONSULTOR = 'mailto:contato@incluipro.com?subject=Contato%20Enterprise'
 const LINK_PROGRAMA_FUNDADORES =
   'mailto:contato@incluipro.com?subject=Interesse%20no%20Programa%20Fundadores'
 
@@ -50,7 +49,7 @@ const lideraItens = [
 const comoFunciona = [
   { numero: '01', titulo: 'Cadastro da empresa', texto: 'Crie a conta da empresa em poucos minutos.' },
   { numero: '02', titulo: 'Cálculo da cota', texto: 'Descubra a cota de PCD devida por lei e quantas vagas estão em aberto, com nosso calculador gratuito.' },
-  { numero: '03', titulo: 'Avaliação dos colaboradores', texto: 'Gere o PIRI padronizado com o IncluiPro Avalia.' },
+  { numero: '03', titulo: 'Avaliação dos colaboradores', texto: 'Gere o Plano de Integração e Rotina Inclusiva padronizado com o IncluiPro Avalia.' },
   { numero: '04', titulo: 'Capacitação das lideranças', texto: 'Distribua treinamentos prontos do IncluiPro Lidera para as equipes de gestão.' },
   { numero: '05', titulo: 'Documentação organizada', texto: 'Centralize toda a documentação de inclusão em um só lugar.' },
 ]
@@ -109,7 +108,7 @@ const faqItems = [
       'A base considera o total de empregados da empresa, somando matriz e filiais, excluídos aprendizes e aposentados por invalidez. Sobre essa base aplica-se o percentual da faixa: 2% de 100 a 200 empregados, 3% de 201 a 500, 4% de 501 a 1.000 e 5% acima disso. A fração é sempre arredondada para cima.',
   },
   {
-    pergunta: 'O que é o PIRI?',
+    pergunta: 'O que é o Plano de Integração e Rotina Inclusiva?',
     resposta:
       'Documento com estrutura padronizada que registra perfil, cargo, rotina, autonomia, condições ergonômicas e recursos sugeridos para cada colaborador com deficiência. Serve como evidência documental das ações de inclusão.',
   },
@@ -258,11 +257,11 @@ export function Home() {
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[3fr_2fr] lg:items-center">
           <Reveal>
             <h2 className="font-display text-5xl font-medium text-white">IncluiPro Avalia</h2>
-            <p className="mt-2 text-base font-medium text-indigo-300">PIRI</p>
+            <p className="mt-2 text-base font-medium text-indigo-300">Plano de Integração e Rotina Inclusiva</p>
             <p className="mt-5 max-w-[60ch] text-lg leading-relaxed text-indigo-200">
               Você preenche as anotações da entrevista em um formulário organizado por blocos, com
               uma Consulta Rápida de recursos sugeridos por tipo de deficiência. O sistema monta o
-              PIRI automaticamente — editável, antes de exportar em PDF.
+              documento automaticamente — editável, antes de exportar em PDF.
             </p>
             <ul className="mt-8 space-y-4">
               {avaliaItens.map((item) => (
@@ -279,7 +278,7 @@ export function Home() {
                 onClick={() => setAmostraAberta(true)}
                 className="inline-flex items-center gap-2 rounded-full bg-signal-500 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:bg-signal-400"
               >
-                Ver amostra completa do PIRI
+                Ver amostra completa do documento
               </button>
               <Button to="/diagnostico" variant="outlineLight">
                 Fazer diagnóstico gratuito
@@ -290,10 +289,10 @@ export function Home() {
           <Reveal delay={120} direction="scale">
             <img
               src="/previews/avalia-relatorio.png"
-              alt="PIRI real gerado pelo IncluiPro Avalia"
+              alt="Plano de Integração e Rotina Inclusiva real gerado pelo IncluiPro Avalia"
               className="w-full rounded-lg border border-white/10"
               width={640}
-              height={800}
+              height={906}
               loading="lazy"
             />
           </Reveal>
@@ -433,7 +432,7 @@ export function Home() {
                   Com IncluiPro
                 </span>
                 <ul className="mt-6 space-y-4">
-                  {['PIRI sem limite no período', ...atualizacoes.slice(0, 3)].map((item) => (
+                  {['Sem limite de documentos no período', ...atualizacoes.slice(0, 3)].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-base font-medium text-indigo-900">
                       <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 shrink-0 text-signal-600" fill="currentColor">
                         <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
@@ -459,26 +458,6 @@ export function Home() {
                 </div>
               </div>
             </div>
-          </Reveal>
-
-          <Reveal delay={150} className="mt-6 overflow-hidden rounded-2xl border border-mist-300 bg-mist-100 p-8 sm:p-10">
-            <span className="text-xs font-semibold text-graphite-500">Enterprise</span>
-            <p className="mt-3 font-display text-xl font-medium text-indigo-900">
-              Para empresas com múltiplas unidades ou operações de grande porte
-            </p>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {['Múltiplas unidades', 'Gestão de acessos', 'Importação em massa', 'Onboarding assistido'].map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-graphite-700">
-                  <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-signal-600" fill="currentColor">
-                    <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
-                  </svg>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Button href={LINK_FALAR_CONSULTOR} variant="ghost" className="mt-6">
-              Falar com consultor
-            </Button>
           </Reveal>
 
           <p className="mx-auto mt-6 max-w-2xl text-center text-xs leading-relaxed text-graphite-400">

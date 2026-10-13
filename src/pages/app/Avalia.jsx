@@ -469,7 +469,7 @@ export function Avalia() {
     <div>
       {sucesso && (
         <div className="mb-6 flex items-center gap-3 rounded-lg border border-signal-200 bg-signal-50 px-5 py-4 text-sm font-semibold text-signal-800">
-          PIRI gerado com sucesso! Veja o resultado ao lado, edite se precisar e baixe o PDF.
+          Plano de Integração e Rotina Inclusiva gerado com sucesso! Veja o resultado ao lado, edite se precisar e baixe o PDF.
         </div>
       )}
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
@@ -478,9 +478,9 @@ export function Avalia() {
             Avaliações
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-graphite-500">
-            Preencha as anotações da entrevista por blocos e monte o relatório estruturado com a
-            metodologia IncluiPro — consulte recursos e ajustes sugeridos por tipo de deficiência e
-            edite o texto livremente antes de baixar o PDF.
+            Preencha as anotações da entrevista por blocos e monte o Plano de Integração e Rotina
+            Inclusiva com a metodologia IncluiPro — consulte recursos e ajustes sugeridos por tipo
+            de deficiência e edite o texto livremente antes de baixar o PDF.
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
@@ -603,7 +603,7 @@ export function Avalia() {
           )}
 
           <Button shape="crm" as="button" onClick={handleGerar} className="w-full justify-center" size="lg">
-            Gerar PIRI
+            Gerar documento
           </Button>
         </div>
 
@@ -611,7 +611,7 @@ export function Avalia() {
           <div className="rounded-lg border border-mist-300 bg-white p-6">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
-                PIRI gerado
+                Documento gerado
               </h2>
               {relatorio && !editMode && (
                 <div className="flex flex-wrap gap-2">
@@ -625,19 +625,19 @@ export function Avalia() {
                     onClick={handleEditar}
                     className="rounded-md border border-mist-400 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:border-signal-400"
                   >
-                    Editar PIRI
+                    Editar documento
                   </button>
                   <button
                     onClick={handleBaixarPdf}
                     className="rounded-md bg-signal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-signal-700"
                   >
-                    Baixar PIRI em PDF
+                    Baixar PDF
                   </button>
                   <button
                     onClick={handleNovoRelatorio}
                     className="rounded-md border border-mist-400 px-3 py-1.5 text-xs font-semibold text-graphite-700 hover:border-signal-400"
                   >
-                    Gerar Novo PIRI
+                    Gerar novo documento
                   </button>
                 </div>
               )}
@@ -662,7 +662,7 @@ export function Avalia() {
             <div className="mt-4">
               {!relatorio && (
                 <p className="rounded-md bg-mist-200 p-5 text-sm text-graphite-500">
-                  Preencha o formulário e clique em "Gerar PIRI" para ver o resultado aqui.
+                  Preencha o formulário e clique em "Gerar documento" para ver o resultado aqui.
                 </p>
               )}
               {relatorio && !editMode && (
@@ -709,7 +709,7 @@ export function Avalia() {
           <div className="rounded-lg border border-mist-300 bg-white p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-lg font-semibold text-indigo-800">
-                Meus PIRIs
+                Meus documentos
               </h2>
             </div>
             <input
@@ -720,12 +720,12 @@ export function Avalia() {
             />
 
             {historicoCarregando ? (
-              <p className="mt-4 text-sm text-graphite-500">Carregando PIRIs…</p>
+              <p className="mt-4 text-sm text-graphite-500">Carregando documentos…</p>
             ) : historico.length === 0 ? (
               <div className="mt-4">
                 <EstadoVazio
-                  titulo="Nenhum PIRI gerado ainda"
-                  descricao="Preencha o formulário ao lado e clique em Gerar PIRI para ver o histórico aqui."
+                  titulo="Nenhum documento gerado ainda"
+                  descricao="Preencha o formulário ao lado e clique em Gerar documento para ver o histórico aqui."
                 />
               </div>
             ) : historicoFiltrado.length === 0 ? (

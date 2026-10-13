@@ -124,10 +124,10 @@ export function gerarDiagnosticoPdfBuffer({ empresa, resultado }) {
 
   // Como a IncluiPro ajuda
   y = drawSectionTitle(doc, y, 'Como a IncluiPro ajuda a fechar essas vagas com segurança')
-  y = drawParagrafo(doc, y, 'IncluiPro Avalia — PIRI', { bold: true, size: 10.5 })
+  y = drawParagrafo(doc, y, 'IncluiPro Avalia — Plano de Integração e Rotina Inclusiva', { bold: true, size: 10.5 })
   y += 2
   y = drawBullet(doc, y, 'Formulário guiado por blocos substitui anotações soltas e retrabalho.')
-  y = drawBullet(doc, y, 'PIRI pronto em minutos, editável antes de finalizar.')
+  y = drawBullet(doc, y, 'Documento pronto em minutos, editável antes de finalizar.')
   y = drawBullet(doc, y, 'Consulta Rápida sugere recursos e ajustes por tipo de deficiência.')
   y += 10
   y = drawParagrafo(doc, y, 'IncluiPro Lidera — Treinamentos para Lideranças', { bold: true, size: 10.5 })

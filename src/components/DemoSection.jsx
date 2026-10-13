@@ -25,7 +25,7 @@ const TELAS = [
   },
   {
     numero: '02',
-    titulo: 'PIRI sem partir do zero',
+    titulo: 'Plano de Integração e Rotina Inclusiva sem partir do zero',
     texto:
       'Estrutura padronizada e orientação durante o preenchimento. A informação é registrada uma vez e reaproveitada nos documentos seguintes.',
     destaque:
@@ -39,9 +39,9 @@ const TELAS = [
       },
       {
         src: '/demo/relatorio-amostra.png',
-        largura: 896,
-        altura: 1213,
-        alt: 'Modelo de PIRI gerado pelo IncluiPro Avalia, com dados fictícios.',
+        largura: 888,
+        altura: 1202,
+        alt: 'Modelo de Plano de Integração e Rotina Inclusiva gerado pelo IncluiPro Avalia, com dados fictícios.',
       },
     ],
   },

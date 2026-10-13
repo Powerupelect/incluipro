@@ -14,10 +14,9 @@ import {
   criarUnidade,
   removerUnidade,
 } from '../../lib/empresa.js'
-import { getMembros, convidarMembro, removerMembro, PAPEL_LABEL } from '../../lib/membros.js'
 import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacaoTotal.js'
 import { montarDadosDossie } from '../../lib/dossie.js'
-import { gerarDossieTecnicoPDF, gerarResumoExecutivoPDF } from '../../lib/pdfDossie.js'
+import { gerarDossieTecnicoPDF } from '../../lib/pdfDossie.js'
 import { SUGESTAO_ESFORCOS_RECRUTAMENTO, SUGESTAO_PLANO_DE_ACAO, EXEMPLO_CAPACITACAO } from '../../lib/sugestoesDossie.js'
 import { excluirEmpresaDefinitivamente } from '../../lib/exclusaoConta.js'
 import { StatusPonto } from '../../components/ui/Table.jsx'
@@ -50,14 +49,9 @@ export function Conta() {
   const [novaUnidade, setNovaUnidade] = useState('')
   const [salvandoUnidade, setSalvandoUnidade] = useState(false)
 
-  const [membros, setMembros] = useState([])
-  const [convite, setConvite] = useState({ email: '', papel: 'rh', unidadeId: '' })
-  const [convidando, setConvidando] = useState(false)
-  const [erroConvite, setErroConvite] = useState('')
 
   const [exportando, setExportando] = useState(false)
   const [gerandoDossie, setGerandoDossie] = useState(false)
-  const [gerandoResumo, setGerandoResumo] = useState(false)
   const [erroDossie, setErroDossie] = useState('')
   const [personalizarDossieAberto, setPersonalizarDossieAberto] = useState(false)
   const [dossieManual, setDossieManual] = useState({
@@ -89,7 +83,6 @@ export function Conta() {
   useEffect(() => {
     if (!user?.empresaId) return
     getUnidades(user.empresaId).then(setUnidades).catch(() => {})
-    getMembros(user.empresaId).then(setMembros).catch(() => {})
   }, [user?.empresaId])
 
   async function handleCriarUnidade(e) {
@@ -117,37 +110,6 @@ export function Conta() {
     }
   }
 
-  async function handleConvidar(e) {
-    e.preventDefault()
-    setErroConvite('')
-    if (!convite.email.trim()) return
-    setConvidando(true)
-    try {
-      await convidarMembro({
-        empresaId: user.empresaId,
-        email: convite.email,
-        papel: convite.papel,
-        unidadeId: convite.unidadeId || null,
-      })
-      const atualizados = await getMembros(user.empresaId)
-      setMembros(atualizados)
-      setConvite({ email: '', papel: 'rh', unidadeId: '' })
-    } catch (err) {
-      setErroConvite(err.message || 'Não foi possível convidar agora.')
-    } finally {
-      setConvidando(false)
-    }
-  }
-
-  async function handleRemoverMembro(id) {
-    if (!confirm('Remover o acesso desta pessoa à empresa?')) return
-    try {
-      await removerMembro(id)
-      setMembros((m) => m.filter((x) => x.id !== id))
-    } catch {
-      // silencioso
-    }
-  }
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -302,7 +264,7 @@ export function Conta() {
                 </button>
               </dd>
             )}
-            <p className="mt-1 text-xs text-graphite-400">
+            <p className="mt-1.5 text-sm text-graphite-500">
               Aparece no menu e é o que o colaborador vê no topo do Canal do Colaborador — mantenha
               o nome real da empresa, não um e-mail ou apelido interno.
             </p>
@@ -417,89 +379,23 @@ export function Conta() {
       </div>
 
       <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
-        <h2 className="font-display text-lg font-semibold text-indigo-800">Equipe</h2>
-        <p className="mt-1 text-sm text-graphite-500">
-          Papéis de acesso: admin (tudo, inclusive convidar), RH (cria e edita tudo), gestor
-          (apenas a própria unidade) e leitura (visualizar e baixar).
-        </p>
-        {membros.length > 0 && (
-          <ul className="mt-4 divide-y divide-mist-200">
-            {membros.map((m) => (
-              <li key={m.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-                <div className="min-w-0">
-                  <p className="truncate text-graphite-900">
-                    {m.nome || m.email} {m.pendente && <span className="text-xs text-amber-600">(convite pendente)</span>}
-                  </p>
-                  <p className="text-xs text-graphite-400">{PAPEL_LABEL[m.papel] || m.papel}</p>
-                </div>
-                {ehAdmin && (
-                  <button
-                    onClick={() => handleRemoverMembro(m.id)}
-                    className="shrink-0 text-xs font-semibold text-red-500 hover:text-red-700"
-                  >
-                    Remover
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-        {ehAdmin && (
-          <form onSubmit={handleConvidar} className="mt-4 flex flex-col gap-2.5 sm:flex-row">
-            {erroConvite && <p className="text-sm text-red-600 sm:hidden">{erroConvite}</p>}
-            <input
-              type="email"
-              value={convite.email}
-              onChange={(e) => setConvite((c) => ({ ...c, email: e.target.value }))}
-              placeholder="e-mail@empresa.com.br"
-              className="flex-1 rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-            />
-            <select
-              value={convite.papel}
-              onChange={(e) => setConvite((c) => ({ ...c, papel: e.target.value }))}
-              className="rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-            >
-              <option value="admin">Admin</option>
-              <option value="rh">RH</option>
-              <option value="gestor">Gestor</option>
-              <option value="leitura">Leitura</option>
-            </select>
-            {convite.papel === 'gestor' && (
-              <select
-                value={convite.unidadeId}
-                onChange={(e) => setConvite((c) => ({ ...c, unidadeId: e.target.value }))}
-                className="rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-              >
-                <option value="">Selecione a unidade</option>
-                {unidades.map((u) => (
-                  <option key={u.id} value={u.id}>{u.nome}</option>
-                ))}
-              </select>
-            )}
-            <Button shape="crm" as="button" type="submit" size="sm" disabled={convidando}>
-              {convidando ? 'Convidando…' : 'Convidar'}
-            </Button>
-          </form>
-        )}
-        {erroConvite && <p className="mt-2 hidden text-sm text-red-600 sm:block">{erroConvite}</p>}
-      </div>
-
-      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Documentos de saída</h2>
         <p className="mt-1 text-sm text-graphite-500">
-          Dois documentos para públicos distintos: o dossiê técnico traz evidência verificável
-          para a fiscalização, e o resumo executivo é uma página para a diretoria. Seções sem
-          nenhum dado registrado ficam de fora do dossiê — para completá-las, use "Personalizar
-          antes de gerar" abaixo.
+          O dossiê técnico traz evidência verificável para a fiscalização. Seções sem nenhum dado
+          registrado ficam de fora — para completá-las, use "Personalizar antes de gerar" abaixo.
         </p>
 
-        <button
+        <Button
+          shape="crm"
+          as="button"
           type="button"
+          variant="ghost"
+          size="sm"
+          className="mt-4"
           onClick={() => setPersonalizarDossieAberto((v) => !v)}
-          className="mt-4 text-sm font-semibold text-indigo-700 hover:text-signal-700"
         >
           {personalizarDossieAberto ? 'Ocultar personalização' : 'Personalizar seções antes de gerar (opcional)'}
-        </button>
+        </Button>
 
         {personalizarDossieAberto && (
           <div className="mt-4 space-y-4 rounded-md border border-mist-300 bg-mist-100 p-4">
@@ -605,27 +501,6 @@ export function Conta() {
             }}
           >
             {gerandoDossie ? 'Gerando…' : 'Gerar dossiê técnico'}
-          </Button>
-          <Button shape="crm"
-            as="button"
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={gerandoResumo}
-            onClick={async () => {
-              setErroDossie('')
-              setGerandoResumo(true)
-              try {
-                const dados = await montarDadosDossie(user.empresaId)
-                gerarResumoExecutivoPDF(dados)
-              } catch {
-                setErroDossie('Não foi possível gerar o resumo agora. Tente novamente.')
-              } finally {
-                setGerandoResumo(false)
-              }
-            }}
-          >
-            {gerandoResumo ? 'Gerando…' : 'Baixar resumo executivo'}
           </Button>
         </div>
         {erroDossie && <p className="mt-3 text-sm text-red-600">{erroDossie}</p>}

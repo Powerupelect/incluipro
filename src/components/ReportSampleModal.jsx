@@ -54,7 +54,7 @@ export function ReportSampleModal({ open, onClose }) {
       >
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-2xl border-b border-mist-300 bg-white/95 px-6 py-3.5 backdrop-blur">
           <p className="text-sm font-semibold text-indigo-800">
-            Amostra do PIRI — IncluiPro Avalia
+            Amostra do Plano de Integração e Rotina Inclusiva — IncluiPro Avalia
           </p>
           <button
             onClick={onClose}

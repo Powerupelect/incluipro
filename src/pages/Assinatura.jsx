@@ -10,7 +10,7 @@ const LINK_NOTA_FISCAL =
 
 const ITENS_INCLUSOS = [
   'Painel de conformidade com cálculo da cota legal',
-  'PIRI sem limite no período',
+  'Plano de Integração e Rotina Inclusiva sem limite no período',
   'Kits de capacitação para lideranças, por tema e por tipo de deficiência',
   'Canal do colaborador com link próprio da empresa',
   'Documentação consolidada para fiscalização',

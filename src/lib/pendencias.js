@@ -1,4 +1,4 @@
-// Pendências reais do painel e do resumo executivo — só o que dá pra calcular a partir de
+// Pendências reais do painel — só o que dá pra calcular a partir de
 // dados que o sistema efetivamente rastreia (nada de métrica fictícia).
 
 export function calcularPendencias(documentos, solicitacoes) {
