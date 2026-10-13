@@ -361,7 +361,9 @@ function CartaoKpi({ icone, corIcone = 'indigo', titulo, valor, subtitulo, corSu
 
 function GraficoEvolucao({ buckets }) {
   const max = Math.max(1, ...buckets.flatMap((b) => [b.avaliacoes, b.solicitacoes]))
-  const alturaMax = 130
+  const topoRotulo = 16
+  const alturaMax = 118
+  const baseY = topoRotulo + alturaMax
   const larguraGrupo = 60
 
   return (
@@ -375,22 +377,32 @@ function GraficoEvolucao({ buckets }) {
         </span>
       </div>
       <svg
-        viewBox={`0 0 ${buckets.length * larguraGrupo} 160`}
+        viewBox={`0 0 ${buckets.length * larguraGrupo} ${baseY + 26}`}
         className="mt-3 w-full"
         style={{ height: 170 }}
         role="img"
         aria-label={`Evolução mensal: ${buckets.map((b) => `${b.label}, ${b.avaliacoes} avaliações e ${b.solicitacoes} solicitações`).join('; ')}`}
       >
-        <line x1="0" y1={alturaMax + 10} x2={buckets.length * larguraGrupo} y2={alturaMax + 10} className="stroke-mist-300" strokeWidth="1" />
+        <line x1="0" y1={baseY} x2={buckets.length * larguraGrupo} y2={baseY} className="stroke-mist-300" strokeWidth="1" />
         {buckets.map((b, i) => {
           const x = i * larguraGrupo
           const alturaAval = (b.avaliacoes / max) * alturaMax
           const alturaSol = (b.solicitacoes / max) * alturaMax
           return (
             <g key={`${b.label}-${i}`}>
-              <rect x={x + 10} y={alturaMax + 10 - alturaAval} width="16" height={alturaAval} rx="2" className="fill-signal-500" />
-              <rect x={x + 30} y={alturaMax + 10 - alturaSol} width="16" height={alturaSol} rx="2" className="fill-indigo-300" />
-              <text x={x + 30} y={alturaMax + 28} textAnchor="middle" className="fill-graphite-400 text-[9px]">
+              {b.avaliacoes > 0 && (
+                <text x={x + 18} y={baseY - alturaAval - 5} textAnchor="middle" className="fill-signal-700 text-[9px] font-semibold tabular-nums">
+                  {b.avaliacoes}
+                </text>
+              )}
+              <rect x={x + 10} y={baseY - alturaAval} width="16" height={alturaAval} rx="2" className="fill-signal-500" />
+              {b.solicitacoes > 0 && (
+                <text x={x + 38} y={baseY - alturaSol - 5} textAnchor="middle" className="fill-indigo-500 text-[9px] font-semibold tabular-nums">
+                  {b.solicitacoes}
+                </text>
+              )}
+              <rect x={x + 30} y={baseY - alturaSol} width="16" height={alturaSol} rx="2" className="fill-indigo-300" />
+              <text x={x + 30} y={baseY + 18} textAnchor="middle" className="fill-graphite-400 text-[9px]">
                 {b.label}
               </text>
             </g>
