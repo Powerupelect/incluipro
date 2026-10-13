@@ -25,7 +25,7 @@ const TELAS = [
   },
   {
     numero: '02',
-    titulo: 'Relatório técnico sem partir do zero',
+    titulo: 'PIRI sem partir do zero',
     texto:
       'Estrutura padronizada e orientação durante o preenchimento. A informação é registrada uma vez e reaproveitada nos documentos seguintes.',
     destaque:
@@ -41,7 +41,7 @@ const TELAS = [
         src: '/demo/relatorio-amostra.png',
         largura: 896,
         altura: 1213,
-        alt: 'Modelo de Relatório Técnico de Inclusão gerado pelo IncluiPro Avalia, com dados fictícios.',
+        alt: 'Modelo de PIRI gerado pelo IncluiPro Avalia, com dados fictícios.',
       },
     ],
   },

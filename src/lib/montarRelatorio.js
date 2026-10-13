@@ -1,4 +1,4 @@
-// Montagem do Relatório Técnico de Inclusão — sem IA. O conteúdo vem diretamente
+// Montagem do Plano de Integração e Rotina Inclusiva (PIRI) — sem IA. O conteúdo vem diretamente
 // das anotações do avaliador e dos recursos de acessibilidade selecionados na
 // Consulta Rápida, organizados no mesmo formato oficial do IncluiPro Avalia.
 

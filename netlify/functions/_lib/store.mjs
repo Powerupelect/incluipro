@@ -11,7 +11,7 @@ function normalizeEmail(email) {
 }
 
 function accessStore() {
-  return getStore(STORE_NAME)
+  return getStore(STORE_NAME, { consistency: 'strong' })
 }
 
 export async function getAccessRecord(email) {

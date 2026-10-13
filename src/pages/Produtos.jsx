@@ -12,13 +12,13 @@ const ACCENT_PILL = {
 const produtos = [
   {
     nome: 'IncluiPro Avalia',
-    tag: 'Relatórios Técnicos de Inclusão',
+    tag: 'PIRI',
     accent: 'signal',
     descricao:
-      'Metodologia estruturada que transforma as anotações de uma entrevista em um Relatório Técnico de Inclusão profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
+      'Metodologia estruturada que transforma as anotações de uma entrevista em um PIRI profissional, pronto para compor o processo de contratação — com uma Consulta Rápida de recursos e ajustes sugeridos por tipo de deficiência.',
     recursos: [
       'Reduz o tempo do RH em cada avaliação — formulário guiado por blocos substitui anotações soltas e retrabalho.',
-      'Relatório técnico pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
+      'PIRI pronto em minutos, no modelo oficial IncluiPro (Rotina e Autonomia, Observações Ergonômicas e Ambientais, Parecer e Recomendações).',
       'Recomendações certas na hora certa: Consulta Rápida sugere ajustes por tipo de deficiência (visual, física, auditiva, intelectual, cognitiva/neurodivergente, múltipla).',
       'Edição livre do texto antes de finalizar — sua equipe mantém o controle editorial completo.',
       'Histórico organizado e pronto para consulta — documentação rastreável para auditorias e fiscalizações da Lei de Cotas.',

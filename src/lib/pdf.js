@@ -1,4 +1,4 @@
-// Geração do PDF do Relatório Técnico de Inclusão do IncluiPro Avalia, seguindo o modelo
+// Geração do PDF do Plano de Integração e Rotina Inclusiva (PIRI) do IncluiPro Avalia, seguindo o modelo
 // visual validado: cabeçalho com logo (3 barras + "INCLUIPRO"), título e frase de abertura
 // fixos, barras de seção coloridas alternando entre as cores da marca, tabelas de
 // identificação/deficiência com largura fixa, e rodapé fixo com os dois avisos legais +
@@ -28,7 +28,7 @@ const FOOTER_BLOCK_H = 62
 const FOOTER_TOP = PAGE_H - MARGIN - FOOTER_BLOCK_H
 
 const AVISO_1 =
-  '• ESTE RELATÓRIO TEM CARÁTER TÉCNICO E SOCIAL, ELABORADO COM BASE NAS INFORMAÇÕES OBTIDAS DURANTE A ENTREVISTA DE AVALIAÇÃO E NAS NECESSIDADES APRESENTADAS PELA PESSOA AVALIADA.'
+  '• ESTE DOCUMENTO TEM CARÁTER TÉCNICO E SOCIAL, ELABORADO COM BASE NAS INFORMAÇÕES OBTIDAS DURANTE A ENTREVISTA DE AVALIAÇÃO E NAS NECESSIDADES APRESENTADAS PELA PESSOA AVALIADA.'
 const AVISO_2 =
   '• NÃO SUBSTITUI LAUDOS MÉDICOS, PSICOLÓGICOS OU DEMAIS DOCUMENTOS LEGAIS RELACIONADOS AO ENQUADRAMENTO DA DEFICIÊNCIA, SERVINDO EXCLUSIVAMENTE COMO INSTRUMENTO DE APOIO À PROMOÇÃO DA ACESSIBILIDADE E INCLUSÃO NO AMBIENTE DE TRABALHO.'
 const ASSINATURA = 'IncluiPro Soluções · Inclusão estruturada.'
@@ -279,7 +279,7 @@ function parseSections(markdown) {
 }
 
 /**
- * Gera e baixa o PDF do Relatório Técnico de Inclusão.
+ * Gera e baixa o PDF do Plano de Integração e Rotina Inclusiva (PIRI).
  * @param {object} params
  * @param {string} params.nome
  * @param {string} params.cargo
@@ -319,7 +319,7 @@ export function baixarRelatorioPDF({
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(17)
   doc.setTextColor(...COLORS.darkGreen)
-  doc.text('Relatório Técnico de Inclusão', MARGIN, y)
+  doc.text('Plano de Integração e Rotina Inclusiva', MARGIN, y)
   y += 22
 
   // Subtítulo
@@ -334,7 +334,7 @@ export function baixarRelatorioPDF({
   doc.setFontSize(9.5)
   doc.setTextColor(...COLORS.bodyText)
   const intro = doc.splitTextToSize(
-    'Este relatório apresenta recomendações técnicas destinadas a apoiar a inclusão, a acessibilidade e o desenvolvimento profissional da pessoa colaboradora. As orientações aqui descritas devem subsidiar a adaptação do ambiente de trabalho, dos processos de integração, das atividades e das ações de desenvolvimento, promovendo condições que favoreçam autonomia, participação e desempenho em igualdade de oportunidades.',
+    'Este documento apresenta recomendações técnicas destinadas a apoiar a inclusão, a acessibilidade e o desenvolvimento profissional da pessoa colaboradora. As orientações aqui descritas devem subsidiar a adaptação do ambiente de trabalho, dos processos de integração, das atividades e das ações de desenvolvimento, promovendo condições que favoreçam autonomia, participação e desempenho em igualdade de oportunidades.',
     CONTENT_W,
   )
   doc.text(intro, MARGIN, y)
@@ -367,6 +367,6 @@ export function baixarRelatorioPDF({
     y = drawProseBody(doc, y, section.body)
   }
 
-  const nomeArquivo = `relatorio-tecnico-inclusao-${(nome || 'candidato').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
+  const nomeArquivo = `piri-${(nome || 'candidato').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
   doc.save(nomeArquivo)
 }

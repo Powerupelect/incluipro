@@ -54,7 +54,7 @@ export function ReportSampleModal({ open, onClose }) {
       >
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-2xl border-b border-mist-300 bg-white/95 px-6 py-3.5 backdrop-blur">
           <p className="text-sm font-semibold text-indigo-800">
-            Amostra do relatório — IncluiPro Avalia
+            Amostra do PIRI — IncluiPro Avalia
           </p>
           <button
             onClick={onClose}
@@ -77,13 +77,13 @@ export function ReportSampleModal({ open, onClose }) {
               </span>
             </div>
             <h2 className="mt-6 font-display text-2xl font-semibold text-[#1F3B33]">
-              Relatório Técnico de Inclusão
+              Plano de Integração e Rotina Inclusiva
             </h2>
             <p className="mt-1 text-xs font-semibold text-[#7C5CFC]">
               Inclusão estruturada.
             </p>
             <p className="mt-4 text-xs leading-relaxed text-graphite-700">
-              Este relatório apresenta recomendações técnicas destinadas a apoiar a inclusão, a
+              Este documento apresenta recomendações técnicas destinadas a apoiar a inclusão, a
               acessibilidade e o desenvolvimento profissional da pessoa colaboradora. As
               orientações aqui descritas devem subsidiar a adaptação do ambiente de trabalho, dos
               processos de integração, das atividades e das ações de desenvolvimento, promovendo
@@ -161,7 +161,7 @@ export function ReportSampleModal({ open, onClose }) {
 
             <div className="mt-4 rounded-xl border border-mist-300 bg-mist-100 p-4">
               <p className="text-[10px] leading-relaxed text-graphite-500">
-                <strong className="text-graphite-700">Avisos legais fixos:</strong> este relatório
+                <strong className="text-graphite-700">Avisos legais fixos:</strong> este documento
                 tem caráter técnico e social, elaborado com base nas informações obtidas durante a
                 entrevista de avaliação. Não substitui laudos médicos, psicológicos ou demais
                 documentos legais relacionados ao enquadramento da deficiência, servindo
