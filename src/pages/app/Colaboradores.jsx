@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
@@ -32,6 +32,15 @@ export function Colaboradores() {
   const [erro, setErro] = useState('')
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(null) // { colaborador, vinculos } | null
   const [importModalAberto, setImportModalAberto] = useState(false)
+  const [destaqueId, setDestaqueId] = useState(null)
+  const linhasRef = useRef({})
+
+  useEffect(() => {
+    if (!destaqueId) return
+    linhasRef.current[destaqueId]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const timeout = setTimeout(() => setDestaqueId(null), 2500)
+    return () => clearTimeout(timeout)
+  }, [destaqueId])
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -97,9 +106,11 @@ export function Colaboradores() {
           dataDesligamento: editando.data_desligamento,
         })
         setColaboradores((cols) => cols.map((c) => (c.id === atualizado.id ? atualizado : c)))
+        setDestaqueId(atualizado.id)
       } else {
         const criado = await criarColaborador({ empresaId: user.empresaId, ...form })
         setColaboradores((cols) => [...cols, criado])
+        setDestaqueId(criado.id)
       }
       setModalAberto(false)
     } catch {
@@ -183,7 +194,13 @@ export function Colaboradores() {
           </thead>
           <tbody className="divide-y divide-mist-200">
             {ordenados.map((c) => (
-              <tr key={c.id} className="hover:bg-mist-50">
+              <tr
+                key={c.id}
+                ref={(el) => {
+                  linhasRef.current[c.id] = el
+                }}
+                className={`hover:bg-mist-50 ${c.id === destaqueId ? 'bg-signal-50 transition-colors duration-[2000ms]' : 'transition-colors duration-[2000ms]'}`}
+              >
                 <Td>
                   <button
                     onClick={() => navigate(`/app/colaboradores/${c.id}`)}

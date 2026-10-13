@@ -119,6 +119,8 @@ export function ColaboradorFicha() {
           <p className="mt-1 text-sm text-graphite-500">
             {colaborador.cargo || 'Cargo não informado'}
             {colaborador.tipo_deficiencia && ` · ${colaborador.tipo_deficiencia}`}
+            {colaborador.data_admissao &&
+              ` · admitido em ${new Date(colaborador.data_admissao).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`}
             {colaborador.data_desligamento && ' · desligado'}
           </p>
         </div>

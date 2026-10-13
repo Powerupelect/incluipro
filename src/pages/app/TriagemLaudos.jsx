@@ -28,6 +28,7 @@ export function TriagemLaudos() {
   const [carregando, setCarregando] = useState(true)
   const [colaboradorAberto, setColaboradorAberto] = useState(null)
   const [novoDoc, setNovoDoc] = useState(NOVO_DOC_INICIAL)
+  const [arquivoInputKey, setArquivoInputKey] = useState(0)
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState('')
   const [busca, setBusca] = useState('')
@@ -80,6 +81,7 @@ export function TriagemLaudos() {
       })
       setDocumentos((d) => [...d, doc])
       setNovoDoc(NOVO_DOC_INICIAL)
+      setArquivoInputKey((k) => k + 1)
     } catch {
       setErro('Não foi possível salvar o documento. Tente novamente.')
     } finally {
@@ -245,6 +247,7 @@ export function TriagemLaudos() {
                       <label className="text-sm">
                         <span className="font-semibold text-graphite-700">Arquivo (opcional)</span>
                         <input
+                          key={arquivoInputKey}
                           type="file"
                           onChange={(e) => setNovoDoc((d) => ({ ...d, arquivo: e.target.files?.[0] || null }))}
                           className="mt-1.5 w-full text-sm text-graphite-500 file:mr-3 file:rounded-md file:border-0 file:bg-signal-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-signal-700"

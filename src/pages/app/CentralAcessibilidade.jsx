@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { Button } from '../../components/ui/Button.jsx'
@@ -12,6 +12,7 @@ import {
   getSolicitacoes,
   criarSolicitacao,
   atualizarSolicitacao,
+  atualizarAcompanhamento,
   avancarStatus,
   anexarComprovacao,
   urlAssinadaAnexo,
@@ -57,6 +58,15 @@ export function CentralAcessibilidade() {
   const [busca, setBusca] = useState('')
   const [linkCopiado, setLinkCopiado] = useState(false)
   const [gerandoLink, setGerandoLink] = useState(false)
+  const [destaqueId, setDestaqueId] = useState(null)
+  const cardsRef = useRef({})
+
+  useEffect(() => {
+    if (!destaqueId) return
+    cardsRef.current[destaqueId]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const timeout = setTimeout(() => setDestaqueId(null), 2500)
+    return () => clearTimeout(timeout)
+  }, [destaqueId])
 
   useEffect(() => {
     if (!user?.empresaId) return
@@ -181,6 +191,7 @@ export function CentralAcessibilidade() {
       setSolicitacoes((s) => [criada, ...s])
       setNova(NOVA_INICIAL)
       setFormAberto(false)
+      setDestaqueId(criada.id)
     } catch (err) {
       setErroCriar(err.message || 'Não foi possível registrar a solicitação. Tente novamente.')
     } finally {
@@ -193,6 +204,7 @@ export function CentralAcessibilidade() {
     if (!atual) return
     const atualizada = await patchFn(atual)
     setSolicitacoes((s) => s.map((x) => (x.id === id ? atualizada : x)))
+    setDestaqueId(atualizada.id)
   }
 
   return (
@@ -386,6 +398,10 @@ export function CentralAcessibilidade() {
                 empresaId={user.empresaId}
                 onAtualizar={atualizar}
                 onExcluir={handleExcluir}
+                destacado={item.data.id === destaqueId}
+                cardRef={(el) => {
+                  cardsRef.current[item.data.id] = el
+                }}
               />
             ) : (
               <CanalCard
@@ -499,12 +515,13 @@ function CanalCard({ solicitacao: s, colaboradores, onAtualizar, onPromover }) {
   )
 }
 
-function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) {
+function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, destacado, cardRef }) {
   const [responsavel, setResponsavel] = useState(s.responsavel || '')
   const [prazo, setPrazo] = useState(s.prazo || '')
   const [motivoRecusa, setMotivoRecusa] = useState(s.motivo_recusa || '')
   const [valorRecursoCanal, setValorRecursoCanal] = useState(s.valor_recurso ?? '')
   const [salvandoValor, setSalvandoValor] = useState(false)
+  const [salvandoAcompanhamento, setSalvandoAcompanhamento] = useState(false)
   const [editando, setEditando] = useState(false)
   const [edicao, setEdicao] = useState({
     tipo: s.tipo,
@@ -519,6 +536,15 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
 
   async function handleAvancar(novoStatus, extra) {
     await onAtualizar(s.id, () => avancarStatus(s.id, novoStatus, extra))
+  }
+
+  async function handleSalvarAcompanhamento() {
+    setSalvandoAcompanhamento(true)
+    try {
+      await onAtualizar(s.id, () => atualizarAcompanhamento(s.id, { responsavel, prazo }))
+    } finally {
+      setSalvandoAcompanhamento(false)
+    }
   }
 
   async function handleAnexo(e) {
@@ -563,7 +589,10 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
   }
 
   return (
-    <div className="rounded-lg border border-mist-300 bg-white p-6">
+    <div
+      ref={cardRef}
+      className={`rounded-lg border border-mist-300 bg-white p-6 transition-colors duration-[2000ms] ${destacado ? 'bg-signal-50' : ''}`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-graphite-900">
@@ -689,9 +718,9 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
         )}
 
         {s.canal_protocolo && (
-          <form onSubmit={handleSalvarValorRecurso} className="flex items-end gap-2.5 sm:col-span-2">
-            <label className="flex-1 text-sm">
-              <span className="font-semibold text-graphite-700">Valor do recurso (opcional)</span>
+          <form onSubmit={handleSalvarValorRecurso} className="flex flex-wrap items-center gap-2 text-sm sm:col-span-2">
+            <label className="flex items-center gap-2 text-graphite-600">
+              Valor do recurso (opcional)
               <input
                 type="number"
                 inputMode="decimal"
@@ -699,13 +728,13 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
                 step="0.01"
                 value={valorRecursoCanal}
                 onChange={(e) => setValorRecursoCanal(e.target.value)}
-                placeholder="Ex: 850,00"
-                className="mt-1.5 w-full rounded-md border border-mist-400 px-4 py-2.5 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                placeholder="0,00"
+                className="w-28 rounded border border-mist-400 px-2 py-1 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
               />
             </label>
-            <Button shape="crm" as="button" type="submit" size="sm" variant="ghost" disabled={salvandoValor}>
-              {salvandoValor ? 'Salvando…' : 'Salvar valor'}
-            </Button>
+            <button type="submit" disabled={salvandoValor} className="text-xs font-semibold text-signal-700 hover:text-signal-800">
+              {salvandoValor ? 'Salvando…' : 'Salvar'}
+            </button>
           </form>
         )}
 
@@ -730,6 +759,15 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir }) 
             </label>
 
             <div className="flex flex-wrap gap-2 sm:col-span-2">
+              <Button shape="crm"
+                as="button"
+                size="sm"
+                variant="ghost"
+                disabled={salvandoAcompanhamento}
+                onClick={handleSalvarAcompanhamento}
+              >
+                {salvandoAcompanhamento ? 'Salvando…' : 'Salvar responsável/prazo'}
+              </Button>
               {proximoStatus && (
                 <Button shape="crm"
                   as="button"

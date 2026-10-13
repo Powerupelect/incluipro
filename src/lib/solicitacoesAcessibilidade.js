@@ -110,6 +110,22 @@ export async function atualizarSolicitacao(id, { tipo, descricao, dataPedido, so
   return data
 }
 
+/** Salva responsável/prazo sem avançar o status — a pessoa pode querer registrar quem está
+ * cuidando do pedido antes de mudar a etapa do fluxo. */
+export async function atualizarAcompanhamento(id, { responsavel, prazo }) {
+  const patch = {}
+  if (responsavel !== undefined) patch.responsavel = responsavel || null
+  if (prazo !== undefined) patch.prazo = prazo || null
+  const { data, error } = await supabase
+    .from('solicitacoes_acessibilidade')
+    .update(patch)
+    .eq('id', id)
+    .select('*, colaboradores(nome)')
+    .single()
+  if (error) throw error
+  return data
+}
+
 export async function avancarStatus(id, novoStatus, { responsavel, prazo, motivoRecusa } = {}) {
   const patch = { status: novoStatus }
   if (responsavel !== undefined) patch.responsavel = responsavel
