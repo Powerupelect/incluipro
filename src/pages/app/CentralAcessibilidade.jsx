@@ -516,6 +516,7 @@ function CanalCard({ solicitacao: s, colaboradores, onAtualizar, onPromover }) {
 }
 
 function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, destacado, cardRef }) {
+  const anexoInputRef = useRef(null)
   const [responsavel, setResponsavel] = useState(s.responsavel || '')
   const [prazo, setPrazo] = useState(s.prazo || '')
   const [motivoRecusa, setMotivoRecusa] = useState(s.motivo_recusa || '')
@@ -688,6 +689,11 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <StatusPonto cor={STATUS_PONTO_COR[s.status]}>{STATUS_LABEL[s.status]}</StatusPonto>
+          {s.anexo_path && (
+            <button onClick={handleAbrirAnexo} className="text-xs font-semibold text-signal-600 hover:text-signal-700">
+              📎 Abrir anexo enviado
+            </button>
+          )}
           {!editando && !s.canal_protocolo && (
             <span className="flex gap-3 text-xs font-semibold">
               <button onClick={() => setEditando(true)} className="text-indigo-700 hover:text-indigo-900">
@@ -721,21 +727,24 @@ function SolicitacaoCard({ solicitacao: s, empresaId, onAtualizar, onExcluir, de
 
       {detalhesAbertos && (
       <div className="mt-4 grid gap-3 border-t border-mist-200 pt-4 sm:grid-cols-2">
-        <label className="text-sm sm:col-span-2">
-          <span className="font-semibold text-graphite-700">
-            {s.anexo_path ? 'Trocar anexo de comprovação' : 'Anexo de comprovação'}
-          </span>
-          <input
-            type="file"
-            onChange={handleAnexo}
-            className="mt-1.5 w-full text-sm text-graphite-500 file:mr-3 file:rounded-md file:border-0 file:bg-signal-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-signal-700"
-          />
-        </label>
-        {s.anexo_path && (
-          <button onClick={handleAbrirAnexo} className="text-left text-sm font-semibold text-signal-600 hover:text-signal-700 sm:col-span-2">
-            Abrir anexo enviado
-          </button>
-        )}
+        <div className="text-sm sm:col-span-2">
+          <span className="font-semibold text-graphite-700">Anexo de comprovação</span>
+          <div className="mt-1.5">
+            <input
+              ref={anexoInputRef}
+              type="file"
+              onChange={handleAnexo}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => anexoInputRef.current?.click()}
+              className="rounded-md bg-signal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-signal-700"
+            >
+              {s.anexo_path ? 'Trocar anexo' : 'Escolher arquivo'}
+            </button>
+          </div>
+        </div>
 
         {s.canal_protocolo && (
           <form onSubmit={handleSalvarValorRecurso} className="flex flex-wrap items-center gap-2 text-sm sm:col-span-2">

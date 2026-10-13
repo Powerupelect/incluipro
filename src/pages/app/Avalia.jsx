@@ -672,6 +672,14 @@ export function Avalia() {
               )}
               {editMode && (
                 <div>
+                  <label className="mb-3 block max-w-sm text-sm">
+                    <span className="font-semibold text-graphite-700">Tipo de deficiência</span>
+                    <input
+                      value={form.tipoDeficiencia}
+                      onChange={(e) => update('tipoDeficiencia', e.target.value)}
+                      className="mt-1.5 w-full rounded-md border border-mist-400 px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
+                    />
+                  </label>
                   <textarea
                     value={editDraft}
                     onChange={(e) => setEditDraft(e.target.value)}
@@ -680,7 +688,8 @@ export function Avalia() {
                   />
                   <p className="mt-2 text-xs text-graphite-300">
                     Edição livre em Markdown (## define o título de cada seção). Clique em
-                    "Salvar Alterações" para aplicar.
+                    "Salvar Alterações" para aplicar — o tipo de deficiência acima é salvo junto,
+                    mesmo que o texto do documento não seja alterado.
                   </p>
                 </div>
               )}
