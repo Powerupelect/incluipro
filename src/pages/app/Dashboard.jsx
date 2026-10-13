@@ -17,6 +17,37 @@ import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
 const STATUS_INTERNO_ABERTO = (s) => !['concluido', 'recusado'].includes(s.status)
 const STATUS_CANAL_ABERTO = (s) => !['concluida', 'recusada', 'descartada'].includes(s.status)
 
+const HOJE_FORMATADO = new Date().toLocaleDateString('pt-BR', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+})
+
+const ICONE_PESSOAS = (
+  <>
+    <circle cx="9" cy="8" r="3" />
+    <path d="M3 20c.9-3 3-5 6-5s5.1 2 6 5M16 5.5a3 3 0 010 5.8M20.5 20c-.5-2.3-1.7-4-3.5-5" />
+  </>
+)
+const ICONE_ALVO = (
+  <>
+    <circle cx="12" cy="12" r="8" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="12" cy="12" r="0.5" fill="currentColor" />
+  </>
+)
+const ICONE_DOCUMENTO = <path d="M6 4h9l3 3v13a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1zM8 12h8M8 16h5M8 8h4" />
+const ICONE_CAIXA_ENTRADA = (
+  <path d="M4 12h4l1.5 3h5L16 12h4M4 12l1.6-6.4A1 1 0 016.56 5h10.88a1 1 0 01.96.6L20 12M4 12v6a1 1 0 001 1h14a1 1 0 001-1v-6" />
+)
+
+function iniciais(nome) {
+  const partes = (nome || '').trim().split(/\s+/).filter(Boolean)
+  if (partes.length === 0) return '?'
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase()
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+}
+
 export function Dashboard() {
   const { user } = useAuth()
   const [historico, setHistorico] = useState([])
@@ -102,7 +133,13 @@ export function Dashboard() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <h1 className="font-display text-2xl font-semibold text-indigo-900">Painel</h1>
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-indigo-900">Painel</h1>
+          <p className="mt-1 text-sm text-graphite-500">
+            {user?.companyName ? `${user.companyName} · ` : ''}
+            {HOJE_FORMATADO}
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           <Button shape="crm" to="/app/avalia" size="lg">+ Nova avaliação</Button>
         </div>
@@ -114,11 +151,15 @@ export function Dashboard() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <CartaoKpi
+              icone={ICONE_PESSOAS}
+              corIcone="indigo"
               titulo="Colaboradores PCD ativos"
               valor={pcdAtivos}
               subtitulo={resultadoCota ? `sobre uma cota de ${resultadoCota.cotaDevida}` : 'informe o quadro de funcionários'}
             />
             <CartaoKpi
+              icone={ICONE_ALVO}
+              corIcone={resultadoCota ? corSemaforo(resultadoCota.percentualCumprimento).cor : 'neutro'}
               titulo="Cota atingida"
               valor={resultadoCota ? `${Math.round(resultadoCota.percentualCumprimento)}%` : '—'}
               subtitulo={
@@ -131,11 +172,15 @@ export function Dashboard() {
               corSubtitulo={resultadoCota ? corSemaforo(resultadoCota.percentualCumprimento).cor : 'neutro'}
             />
             <CartaoKpi
+              icone={ICONE_DOCUMENTO}
+              corIcone="volt"
               titulo="Avaliações este mês"
               valor={tendenciaAvaliacoes.esteMes}
               variacao={tendenciaAvaliacoes.variacao}
             />
             <CartaoKpi
+              icone={ICONE_CAIXA_ENTRADA}
+              corIcone={solicitacoesAbertas > 0 ? 'amber' : 'signal'}
               titulo="Solicitações abertas"
               valor={solicitacoesAbertas}
               subtitulo="aguardando retorno do RH"
@@ -198,8 +243,11 @@ export function Dashboard() {
               ) : (
                 <ul className="mt-4 divide-y divide-mist-200">
                   {recentes.map((item) => (
-                    <li key={item.id} className="flex items-center justify-between gap-3 py-3">
-                      <div className="min-w-0">
+                    <li key={item.id} className="flex items-center gap-3 py-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700">
+                        {iniciais(item.candidato)}
+                      </span>
+                      <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-graphite-900">
                           {item.candidato}
                         </p>
@@ -229,8 +277,13 @@ export function Dashboard() {
               </div>
               <ul className="mt-4 space-y-3">
                 {kits.map((kit) => (
-                  <li key={kit.tema} className="flex items-center justify-between gap-3 rounded-md border border-mist-200 px-4 py-3">
-                    <div className="min-w-0">
+                  <li key={kit.tema} className="flex items-center gap-3 rounded-md border border-mist-200 px-4 py-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-volt-50 text-volt-700">
+                      <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 6h16M4 6v12a1 1 0 001 1h6M4 6l2-3h12l2 3M14 19l3 2v-6.5M17 14.5l3-2" />
+                      </svg>
+                    </span>
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-graphite-900">{kit.tema}</p>
                       <p className="text-xs text-graphite-400">{kit.slides} slides</p>
                     </div>
@@ -254,25 +307,54 @@ export function Dashboard() {
 }
 
 const COR_TEXTO_SUBTITULO = {
-  signal: 'text-signal-700',
-  amber: 'text-amber-700',
-  red: 'text-red-600',
-  neutro: 'text-graphite-400',
+  signal: 'text-signal-800',
+  amber: 'text-amber-800',
+  red: 'text-red-700',
+  indigo: 'text-indigo-700',
+  volt: 'text-volt-700',
+  neutro: 'text-graphite-500',
 }
 
-function CartaoKpi({ titulo, valor, subtitulo, corSubtitulo = 'neutro', variacao }) {
+const COR_CARTAO = {
+  signal: 'bg-signal-50',
+  amber: 'bg-amber-50',
+  red: 'bg-red-50',
+  indigo: 'bg-indigo-50',
+  volt: 'bg-volt-50',
+  neutro: 'bg-mist-200',
+}
+
+const COR_ICONE_SOLIDO = {
+  signal: 'bg-signal-500',
+  amber: 'bg-amber-500',
+  red: 'bg-red-500',
+  indigo: 'bg-indigo-500',
+  volt: 'bg-volt-500',
+  neutro: 'bg-graphite-300',
+}
+
+function CartaoKpi({ icone, corIcone = 'indigo', titulo, valor, subtitulo, corSubtitulo = 'neutro', variacao }) {
   return (
-    <div className="rounded-lg border-2 border-signal-200 bg-white p-5">
-      <p className="text-xs font-medium text-graphite-400">{titulo}</p>
-      <div className="mt-1.5 flex items-baseline gap-2">
-        <p className="font-display text-3xl font-semibold text-indigo-900">{valor}</p>
+    <div className={`rounded-xl p-5 ${COR_CARTAO[corIcone]}`}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-semibold text-graphite-700">{titulo}</p>
+        {icone && (
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white shadow-sm ${COR_ICONE_SOLIDO[corIcone]}`}>
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              {icone}
+            </svg>
+          </span>
+        )}
+      </div>
+      <div className="mt-3 flex items-baseline gap-2">
+        <p className="font-display text-3xl font-semibold text-graphite-900">{valor}</p>
         {variacao !== undefined && variacao !== null && (
           <span className={`text-xs font-semibold ${variacao >= 0 ? 'text-signal-700' : 'text-red-600'}`}>
             {variacao >= 0 ? '↑' : '↓'} {Math.abs(variacao)}%
           </span>
         )}
       </div>
-      {subtitulo && <p className={`mt-1 text-xs ${COR_TEXTO_SUBTITULO[corSubtitulo]}`}>{subtitulo}</p>}
+      {subtitulo && <p className={`mt-1 text-xs font-medium ${COR_TEXTO_SUBTITULO[corSubtitulo]}`}>{subtitulo}</p>}
     </div>
   )
 }
