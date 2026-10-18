@@ -288,7 +288,7 @@ export function DemoSection() {
   const telaAtiva = TELAS[ativo]
 
   return (
-    <section id="demonstracao" className="bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
+    <section id="demonstracao" className="overflow-hidden bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <span className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-300">
@@ -323,7 +323,7 @@ export function DemoSection() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-16">
+          <div className="min-w-0 flex flex-col gap-16">
             {TELAS.map((tela, i) => (
               <ImagemDemo
                 key={tela.numero}
