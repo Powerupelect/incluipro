@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/Button.jsx'
+import { ReportSampleModal } from './ReportSampleModal.jsx'
 
 // Capturas reais — da conta de demonstração e do site público.
 const TELAS = [
@@ -32,16 +33,17 @@ const TELAS = [
       'Pode ser encaminhado direto para as lideranças responsáveis pelo colaborador — assim, todos os envolvidos já sabem como apoiar a inclusão desde o início.',
     imagens: [
       {
+        src: '/previews/avalia-relatorio.png',
+        largura: 888,
+        altura: 1202,
+        alt: 'Modelo de Plano de Integração e Rotina Inclusiva gerado pelo IncluiPro Avalia, com dados fictícios.',
+        documento: true,
+      },
+      {
         src: '/demo/avaliacoes-app.png',
         largura: 1624,
         altura: 760,
         alt: 'Tela de avaliações do IncluiPro, dentro da plataforma.',
-      },
-      {
-        src: '/demo/relatorio-amostra.png',
-        largura: 888,
-        altura: 1202,
-        alt: 'Modelo de Plano de Integração e Rotina Inclusiva gerado pelo IncluiPro Avalia, com dados fictícios.',
       },
     ],
   },
@@ -128,15 +130,19 @@ function useEntradaUnica(ref) {
   }, [ref])
 }
 
-function SetaImagem({ direcao, onClick, label }) {
+function SetaImagem({ direcao, onClick, label, flutuante = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-lg text-white backdrop-blur hover:bg-indigo-900 ${
-        direcao === 'anterior' ? 'left-3' : 'right-3'
-      }`}
+      className={
+        flutuante
+          ? `absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-lg text-white backdrop-blur hover:bg-indigo-900 ${
+              direcao === 'anterior' ? 'left-3' : 'right-3'
+            }`
+          : 'flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/5 text-lg text-white transition-colors hover:border-signal-400 hover:bg-white/10'
+      }
     >
       {direcao === 'anterior' ? '‹' : '›'}
     </button>
@@ -148,6 +154,7 @@ function ImagemDemo({ tela, containerRef }) {
   useEntradaUnica(wrapperRef)
   const [indice, setIndice] = useState(0)
   const [ampliada, setAmpliada] = useState(false)
+  const [amostraAberta, setAmostraAberta] = useState(false)
   const imagem = tela.imagens[indice]
   const temVarias = tela.imagens.length > 1
 
@@ -174,6 +181,38 @@ function ImagemDemo({ tela, containerRef }) {
       </div>
 
       <div ref={wrapperRef} className="demo-item relative">
+        {imagem.documento ? (
+          <div className="relative px-3 pb-4 pt-3 sm:px-6">
+            <div className="absolute inset-x-8 top-0 bottom-6 rotate-[-2.5deg] rounded-md bg-white/10" aria-hidden="true" />
+            <div className="absolute inset-x-6 top-1 bottom-5 rotate-[1.5deg] rounded-md bg-white/20" aria-hidden="true" />
+            <button
+              type="button"
+              onClick={() => setAmostraAberta(true)}
+              className="group relative block w-full overflow-hidden rounded-md bg-white text-left shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/5"
+              aria-label="Abrir amostra completa do Plano de Integração e Rotina Inclusiva"
+            >
+              <div className="relative max-h-[520px] overflow-hidden px-6 pt-7 sm:px-10 sm:pt-10">
+                <img
+                  src={imagem.src}
+                  alt={imagem.alt}
+                  width={imagem.largura}
+                  height={imagem.altura}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full"
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/90 to-transparent" />
+              </div>
+              <div className="relative flex items-center justify-between gap-3 border-t border-mist-200 bg-mist-50 px-6 py-3.5 sm:px-10">
+                <span className="hidden text-xs font-medium text-graphite-500 sm:inline">Amostra com dados fictícios</span>
+                <span className="mx-auto inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-signal-600 px-5 py-2.5 text-sm font-semibold text-white sm:mx-0 transition-colors group-hover:bg-signal-500">
+                  Ver documento completo
+                  <span aria-hidden="true">→</span>
+                </span>
+              </div>
+            </button>
+          </div>
+        ) : (
         <button
           type="button"
           onClick={() => setAmpliada(true)}
@@ -199,20 +238,16 @@ function ImagemDemo({ tela, containerRef }) {
             </svg>
           </span>
         </button>
+        )}
 
         {temVarias && (
-          <>
+          <div className="mt-4 flex items-center justify-center gap-4">
             <SetaImagem
               direcao="anterior"
               label="Imagem anterior"
               onClick={() => setIndice((i) => (i - 1 + tela.imagens.length) % tela.imagens.length)}
             />
-            <SetaImagem
-              direcao="proxima"
-              label="Próxima imagem"
-              onClick={() => setIndice((i) => (i + 1) % tela.imagens.length)}
-            />
-            <div className="mt-3 flex justify-center gap-1.5">
+            <div className="flex gap-1.5">
               {tela.imagens.map((img, i) => (
                 <button
                   key={img.src}
@@ -223,9 +258,16 @@ function ImagemDemo({ tela, containerRef }) {
                 />
               ))}
             </div>
-          </>
+            <SetaImagem
+              direcao="proxima"
+              label="Próxima imagem"
+              onClick={() => setIndice((i) => (i + 1) % tela.imagens.length)}
+            />
+          </div>
         )}
       </div>
+
+      <ReportSampleModal open={amostraAberta} onClose={() => setAmostraAberta(false)} />
 
       {ampliada && (
         <div
@@ -244,11 +286,13 @@ function ImagemDemo({ tela, containerRef }) {
             {temVarias && (
               <>
                 <SetaImagem
+                  flutuante
                   direcao="anterior"
                   label="Imagem anterior"
                   onClick={() => setIndice((i) => (i - 1 + tela.imagens.length) % tela.imagens.length)}
                 />
                 <SetaImagem
+                  flutuante
                   direcao="proxima"
                   label="Próxima imagem"
                   onClick={() => setIndice((i) => (i + 1) % tela.imagens.length)}

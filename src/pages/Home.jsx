@@ -162,6 +162,16 @@ export function Home() {
         <div className="relative mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <Reveal className="max-w-3xl">
+              <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-amber-300 bg-gradient-to-r from-amber-50 via-white to-amber-50 py-1.5 pl-1.5 pr-5 shadow-card">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 text-white shadow-[0_2px_8px_-2px_rgba(217,119,6,0.6)]">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" />
+                  </svg>
+                </span>
+                <span className="text-sm font-semibold leading-tight text-amber-700">
+                  Documentos que comprovam a inclusão na fiscalização
+                </span>
+              </div>
               <h1 className="font-display text-4xl font-medium leading-[1.08] text-indigo-900 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
                 Estruture a inclusão de pessoas com deficiência em um só lugar.
               </h1>
@@ -175,8 +185,6 @@ export function Home() {
               </div>
               <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-1.5 rounded-2xl border border-mist-300 bg-white/80 px-6 py-4 text-sm font-medium text-graphite-700 shadow-card backdrop-blur">
                 <span>Alinhado à LBI e à Lei de Cotas</span>
-                <span aria-hidden="true" className="text-signal-500">·</span>
-                <span>Documentos válidos como comprovação em fiscalizações</span>
                 <span aria-hidden="true" className="text-signal-500">·</span>
                 <span>Metodologia especializada</span>
                 <span aria-hidden="true" className="text-signal-500">·</span>
