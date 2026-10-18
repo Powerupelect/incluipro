@@ -279,7 +279,7 @@
     padding: 2px;
     border-radius: inherit;
     background: conic-gradient(
-      from 0deg,
+      from var(--orbit-angle),
       transparent 0%,
       var(--color-signal-400) 10%,
       transparent 22%
@@ -313,9 +313,14 @@
   50% { opacity: 0.9; transform: scale(1.08); }
 }
 
+@property --orbit-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 @keyframes orbitSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to { --orbit-angle: 360deg; }
 }
 
 @media (prefers-reduced-motion: reduce) {

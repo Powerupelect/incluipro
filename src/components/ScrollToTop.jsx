@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom'
 // âncora (#planos, #faq...), rola até o elemento em vez de ir para o topo —
 // necessário para os links do menu que apontam para seções da Home.
 export function ScrollToTop() {
-  const { pathname, hash } = useLocation()
+  const { pathname, hash, key } = useLocation()
 
   useEffect(() => {
     if (hash) {
@@ -16,6 +16,9 @@ export function ScrollToTop() {
         const el = document.getElementById(id)
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          // Tira a âncora da barra de endereço — senão, ao recarregar, o navegador
+          // pula direto para a seção em vez de abrir a página no topo.
+          window.history.replaceState(window.history.state, '', pathname + window.location.search)
         } else {
           window.scrollTo(0, 0)
         }
@@ -23,7 +26,7 @@ export function ScrollToTop() {
       return () => clearTimeout(timer)
     }
     window.scrollTo(0, 0)
-  }, [pathname, hash])
+  }, [pathname, hash, key])
 
   return null
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/Button.jsx'
 import { ReportSampleModal } from './ReportSampleModal.jsx'
+import { DocumentoFolha } from './DocumentoFolha.jsx'
 
 // Capturas reais — da conta de demonstração e do site público.
 const TELAS = [
@@ -100,6 +101,7 @@ const TELAS = [
         src: '/demo/dossie-real.png',
         largura: 1191,
         altura: 1314,
+        a4: true,
         alt: 'Página do Dossiê Técnico do IncluiPro, documento consolidado com protocolo de verificação.',
       },
     ],
@@ -128,6 +130,16 @@ function useEntradaUnica(ref) {
     observer.observe(node)
     return () => observer.disconnect()
   }, [ref])
+}
+
+function LupaZoom() {
+  return (
+    <span className="pointer-events-none absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+      <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <path d="M8.5 3a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM17 17l-3.5-3.5" strokeLinecap="round" />
+      </svg>
+    </span>
+  )
 }
 
 function SetaImagem({ direcao, onClick, label, flutuante = false }) {
@@ -182,62 +194,57 @@ function ImagemDemo({ tela, containerRef }) {
 
       <div ref={wrapperRef} className="demo-item relative">
         {imagem.documento ? (
-          <div className="relative px-3 pb-4 pt-3 sm:px-6">
-            <div className="absolute inset-x-8 top-0 bottom-6 rotate-[-2.5deg] rounded-md bg-white/10" aria-hidden="true" />
-            <div className="absolute inset-x-6 top-1 bottom-5 rotate-[1.5deg] rounded-md bg-white/20" aria-hidden="true" />
+          <DocumentoFolha
+            src={imagem.src}
+            alt={imagem.alt}
+            largura={imagem.largura}
+            altura={imagem.altura}
+            onAbrir={() => setAmostraAberta(true)}
+          />
+        ) : imagem.a4 ? (
+          <div className="relative mx-auto max-w-[520px] px-3 pb-4 pt-3 sm:px-6">
+            <div className="absolute inset-x-8 top-0 bottom-6 rotate-[-2deg] rounded-sm bg-white/10" aria-hidden="true" />
+            <div className="absolute inset-x-6 top-1 bottom-5 rotate-[1.5deg] rounded-sm bg-white/20" aria-hidden="true" />
             <button
               type="button"
-              onClick={() => setAmostraAberta(true)}
-              className="group relative block w-full overflow-hidden rounded-md bg-white text-left shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/5"
-              aria-label="Abrir amostra completa do Plano de Integração e Rotina Inclusiva"
+              onClick={() => setAmpliada(true)}
+              className="group relative flex aspect-[210/297] w-full cursor-zoom-in flex-col overflow-hidden rounded-sm bg-white shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1"
+              aria-label={`Ampliar imagem: ${imagem.alt}`}
             >
-              <div className="relative max-h-[520px] overflow-hidden px-6 pt-7 sm:px-10 sm:pt-10">
-                <img
-                  src={imagem.src}
-                  alt={imagem.alt}
-                  width={imagem.largura}
-                  height={imagem.altura}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full"
-                />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/90 to-transparent" />
-              </div>
-              <div className="relative flex items-center justify-between gap-3 border-t border-mist-200 bg-mist-50 px-6 py-3.5 sm:px-10">
-                <span className="hidden text-xs font-medium text-graphite-500 sm:inline">Amostra com dados fictícios</span>
-                <span className="mx-auto inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-signal-600 px-5 py-2.5 text-sm font-semibold text-white sm:mx-0 transition-colors group-hover:bg-signal-500">
-                  Ver documento completo
-                  <span aria-hidden="true">→</span>
-                </span>
-              </div>
+              <img
+                src={imagem.src}
+                alt={imagem.alt}
+                width={imagem.largura}
+                height={imagem.altura}
+                loading="lazy"
+                decoding="async"
+                className="w-full pt-[4%]"
+              />
+              <LupaZoom />
             </button>
           </div>
         ) : (
-        <button
-          type="button"
-          onClick={() => setAmpliada(true)}
-          className={`group block w-full cursor-zoom-in ${imagem.enquadrar ? 'rounded-lg border border-white/10 bg-white p-10 sm:p-14' : ''}`}
-          aria-label={`Ampliar imagem: ${imagem.alt}`}
-        >
-          <img
-            src={imagem.src}
-            alt={imagem.alt}
-            width={imagem.largura}
-            height={imagem.altura}
-            loading="lazy"
-            decoding="async"
-            className={
-              imagem.enquadrar
-                ? 'mx-auto max-w-[380px] transition-opacity group-hover:opacity-90'
-                : 'w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90'
-            }
-          />
-          <span className="pointer-events-none absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-indigo-950/80 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <path d="M8.5 3a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM17 17l-3.5-3.5" strokeLinecap="round" />
-            </svg>
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setAmpliada(true)}
+            className={`group relative block w-full cursor-zoom-in ${imagem.enquadrar ? 'rounded-lg border border-white/10 bg-white p-5 sm:p-14' : ''}`}
+            aria-label={`Ampliar imagem: ${imagem.alt}`}
+          >
+            <img
+              src={imagem.src}
+              alt={imagem.alt}
+              width={imagem.largura}
+              height={imagem.altura}
+              loading="lazy"
+              decoding="async"
+              className={
+                imagem.enquadrar
+                  ? 'mx-auto w-full max-w-[380px] transition-opacity group-hover:opacity-90'
+                  : 'w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90'
+              }
+            />
+            <LupaZoom />
+          </button>
         )}
 
         {temVarias && (
@@ -332,7 +339,7 @@ export function DemoSection() {
   const telaAtiva = TELAS[ativo]
 
   return (
-    <section id="demonstracao" className="overflow-hidden bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
+    <section id="demonstracao" className="scroll-mt-16 overflow-hidden bg-indigo-900 px-5 pb-24 pt-10 sm:px-8 sm:pb-28 sm:pt-12">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <span className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-300">
@@ -381,12 +388,12 @@ export function DemoSection() {
           </div>
         </div>
 
-        <p className="mt-16 text-center text-lg text-indigo-100">
-          Quer ver com os números da sua empresa?{' '}
-          <Button href="/cadastro" size="lg" className="ml-3">
+        <div className="mt-20 flex flex-col items-center gap-5 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center sm:flex-row sm:justify-center sm:gap-6">
+          <p className="font-display text-xl text-indigo-100 sm:text-2xl">Quer ver com os números da sua empresa?</p>
+          <Button href="/cadastro" size="lg">
             Fale com a gente
           </Button>
-        </p>
+        </div>
       </div>
     </section>
   )

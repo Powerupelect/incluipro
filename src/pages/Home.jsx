@@ -7,6 +7,7 @@ import { FaqAccordion } from '../components/FaqAccordion.jsx'
 import { CalculadoraCota } from '../components/CalculadoraCota.jsx'
 import { MomentoDossie } from '../components/MomentoDossie.jsx'
 import { DemoSection } from '../components/DemoSection.jsx'
+import { DocumentoFolha } from '../components/DocumentoFolha.jsx'
 
 const LINK_KIT_PERSONALIZADO =
   'mailto:contato@incluipro.com?subject=Solicita%C3%A7%C3%A3o%20de%20Kit%20Personalizado'
@@ -162,20 +163,20 @@ export function Home() {
         <div className="relative mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <Reveal className="max-w-3xl">
-              <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-amber-300 bg-gradient-to-r from-amber-50 via-white to-amber-50 py-1.5 pl-1.5 pr-5 shadow-card">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 text-white shadow-[0_2px_8px_-2px_rgba(217,119,6,0.6)]">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
-                    <path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" />
-                  </svg>
-                </span>
-                <span className="text-sm font-semibold leading-tight text-amber-700">
-                  Documentos que comprovam a inclusão na fiscalização
-                </span>
-              </div>
               <h1 className="font-display text-4xl font-medium leading-[1.08] text-indigo-900 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
                 Estruture a inclusão de pessoas com deficiência em um só lugar.
               </h1>
-              <p className="mt-6 max-w-[62ch] text-lg leading-relaxed text-graphite-500">
+              <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-signal-200 bg-gradient-to-r from-signal-50 via-white to-signal-50 py-1.5 pl-1.5 pr-5 shadow-card">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 text-white shadow-[0_2px_10px_-2px_rgba(224,145,31,0.7)] ring-2 ring-white">
+                  <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] drop-shadow-sm" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" />
+                  </svg>
+                </span>
+                <span className="text-sm font-semibold leading-tight text-signal-800">
+                  Documentos que comprovam a inclusão na fiscalização
+                </span>
+              </div>
+              <p className="mt-7 max-w-[62ch] text-lg leading-relaxed text-graphite-500">
                 Relatórios técnicos, treinamentos para lideranças e ferramentas para apoiar o RH na
                 construção de processos de inclusão mais organizados e consistentes.
               </p>
@@ -183,13 +184,16 @@ export function Home() {
                 <Button to="/#demonstracao" size="lg">Conhecer as soluções</Button>
                 <Button to="/#planos" variant="ghost" size="lg">Ver planos</Button>
               </div>
-              <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-1.5 rounded-2xl border border-mist-300 bg-white/80 px-6 py-4 text-sm font-medium text-graphite-700 shadow-card backdrop-blur">
-                <span>Alinhado à LBI e à Lei de Cotas</span>
-                <span aria-hidden="true" className="text-signal-500">·</span>
-                <span>Metodologia especializada</span>
-                <span aria-hidden="true" className="text-signal-500">·</span>
-                <span>Atualizações constantes</span>
-              </div>
+              <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2.5 text-sm font-medium text-graphite-700">
+                {['Alinhado à LBI e à Lei de Cotas', 'Metodologia especializada', 'Atualizações constantes'].map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-signal-600" fill="currentColor" aria-hidden="true">
+                      <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </Reveal>
 
             <Reveal delay={100} className="relative mx-auto w-full max-w-sm lg:max-w-none">
@@ -263,7 +267,7 @@ export function Home() {
       <MomentoDossie />
 
       {/* IncluiPro Avalia — escuro */}
-      <section id="avalia" className="overflow-hidden bg-indigo-900 px-5 py-24 sm:px-8 sm:py-28">
+      <section id="avalia" className="overflow-hidden bg-indigo-900 px-5 pb-24 pt-4 sm:px-8 sm:pb-28 sm:pt-8">
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[3fr_2fr] lg:items-center">
           <Reveal className="min-w-0">
             <h2 className="font-display text-5xl font-medium text-white">IncluiPro Avalia</h2>
@@ -284,12 +288,6 @@ export function Home() {
               ))}
             </ul>
             <div className="mt-8 flex flex-wrap items-center gap-5">
-              <button
-                onClick={() => setAmostraAberta(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-signal-500 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:bg-signal-400"
-              >
-                Ver amostra completa do documento
-              </button>
               <Button to="/diagnostico" variant="outlineLight">
                 Fazer diagnóstico gratuito
               </Button>
@@ -297,13 +295,12 @@ export function Home() {
           </Reveal>
 
           <Reveal delay={120} direction="scale" className="min-w-0">
-            <img
+            <DocumentoFolha
               src="/previews/avalia-relatorio.png"
-              alt="Plano de Integração e Rotina Inclusiva real gerado pelo IncluiPro Avalia"
-              className="w-full rounded-lg border border-white/10"
-              width={640}
-              height={906}
-              loading="lazy"
+              alt="Plano de Integração e Rotina Inclusiva gerado pelo IncluiPro Avalia, com dados fictícios"
+              largura={888}
+              altura={1202}
+              onAbrir={() => setAmostraAberta(true)}
             />
           </Reveal>
         </div>
@@ -350,7 +347,7 @@ export function Home() {
 
           <Reveal delay={150} className="mt-16">
             <p className="text-lg font-medium text-graphite-700">
-              Todos os slides do IncluiPro Lidera — clique em qualquer miniatura para ampliar.
+              Uma amostra dos slides do IncluiPro Lidera — clique em qualquer miniatura para ampliar.
             </p>
             <div className="mt-6">
               <SlideGallery />
@@ -429,7 +426,7 @@ export function Home() {
                   </li>
                   <li>
                     <p className="text-sm text-graphite-500">1 multa por vaga*</p>
-                    <p className="mt-1 font-display text-2xl font-semibold text-indigo-900">R$ 3.499,80 a R$ 349.978,53</p>
+                    <p className="mt-1 font-display text-xl font-semibold text-indigo-900 sm:text-2xl">R$ 3.499,80 a R$ 349.978,53</p>
                   </li>
                   <li>
                     <p className="text-sm text-graphite-500">Treinamento criado do zero</p>
