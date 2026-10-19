@@ -13,6 +13,8 @@ import { calcularPendencias } from '../../lib/pendencias.js'
 import { calcularCota, corSemaforo } from '../../lib/cota.js'
 import { tendenciaMensal, contagemPorMes } from '../../lib/painelMetricas.js'
 import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
+import { getColaboradores } from '../../lib/colaboradores.js'
+import { RoscaCota, PerfilDeficiencia, StatusSolicitacoes, EvolucaoMensal } from '../../components/painel/GraficosPainel.jsx'
 
 const STATUS_INTERNO_ABERTO = (s) => !['concluido', 'recusado'].includes(s.status)
 const STATUS_CANAL_ABERTO = (s) => !['concluida', 'recusada', 'descartada'].includes(s.status)
@@ -56,6 +58,7 @@ export function Dashboard() {
   const [solicitacoesInternas, setSolicitacoesInternas] = useState([])
   const [solicitacoesCanal, setSolicitacoesCanal] = useState([])
   const [pendencias, setPendencias] = useState(null)
+  const [colaboradores, setColaboradores] = useState([])
   const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
@@ -69,14 +72,16 @@ export function Dashboard() {
       getDocumentos(user.empresaId),
       getSolicitacoes(user.empresaId),
       getSolicitacoesCanal(user.empresaId),
+      getColaboradores(user.empresaId).catch(() => []),
     ])
-      .then(([relatorios, empresaData, count, docs, sols, canal]) => {
+      .then(([relatorios, empresaData, count, docs, sols, canal, colabs]) => {
         if (!ativo) return
         setHistorico(relatorios)
         setEmpresa(empresaData)
         setPcdAtivos(count)
         setSolicitacoesInternas(sols)
         setSolicitacoesCanal(canal)
+        setColaboradores(colabs)
         setPendencias(calcularPendencias(docs, sols))
       })
       .catch(() => {})
@@ -128,8 +133,7 @@ export function Dashboard() {
       avaliacoes: b.quantidade,
       solicitacoes: porMesSolicitacoes[i].quantidade,
     }))
-    const mesesAtivos = buckets.filter((b) => b.avaliacoes > 0 || b.solicitacoes > 0).length
-    return { buckets, mostrar: mesesAtivos >= 2 }
+    return { buckets }
   }, [historico, solicitacoesInternas, solicitacoesCanal])
 
   return (
@@ -189,13 +193,15 @@ export function Dashboard() {
             />
           </div>
 
-          {evolucao.mostrar && (
-            <div className="mt-6 rounded-lg border border-mist-300 bg-white p-6">
-              <h2 className="text-base font-semibold text-graphite-900">Evolução mensal</h2>
-              <p className="mt-1 text-xs text-graphite-400">Avaliações e solicitações registradas por mês, últimos 6 meses.</p>
-              <GraficoEvolucao buckets={evolucao.buckets} />
-            </div>
-          )}
+          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+            <RoscaCota resultado={resultadoCota} pcdAtuais={pcdAtivos} />
+            <PerfilDeficiencia colaboradores={colaboradores} />
+            <StatusSolicitacoes internas={solicitacoesInternas} canal={solicitacoesCanal} />
+          </div>
+
+          <div className="mt-6">
+            <EvolucaoMensal buckets={evolucao.buckets} />
+          </div>
 
           <div className="mt-6">
             <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
@@ -357,60 +363,6 @@ function CartaoKpi({ icone, corIcone = 'indigo', titulo, valor, subtitulo, corSu
         )}
       </div>
       {subtitulo && <p className={`mt-1 text-xs font-medium ${COR_TEXTO_SUBTITULO[corSubtitulo]}`}>{subtitulo}</p>}
-    </div>
-  )
-}
-
-function GraficoEvolucao({ buckets }) {
-  const max = Math.max(1, ...buckets.flatMap((b) => [b.avaliacoes, b.solicitacoes]))
-  const topoRotulo = 16
-  const alturaMax = 118
-  const baseY = topoRotulo + alturaMax
-  const larguraGrupo = 60
-
-  return (
-    <div className="mt-4">
-      <div className="flex items-center gap-4 text-xs text-graphite-500">
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-sm bg-signal-500" /> Avaliações
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-sm bg-indigo-300" /> Solicitações
-        </span>
-      </div>
-      <svg
-        viewBox={`0 0 ${buckets.length * larguraGrupo} ${baseY + 26}`}
-        className="mt-3 w-full"
-        style={{ height: 170 }}
-        role="img"
-        aria-label={`Evolução mensal: ${buckets.map((b) => `${b.label}, ${b.avaliacoes} avaliações e ${b.solicitacoes} solicitações`).join('; ')}`}
-      >
-        <line x1="0" y1={baseY} x2={buckets.length * larguraGrupo} y2={baseY} className="stroke-mist-300" strokeWidth="1" />
-        {buckets.map((b, i) => {
-          const x = i * larguraGrupo
-          const alturaAval = (b.avaliacoes / max) * alturaMax
-          const alturaSol = (b.solicitacoes / max) * alturaMax
-          return (
-            <g key={`${b.label}-${i}`}>
-              {b.avaliacoes > 0 && (
-                <text x={x + 18} y={baseY - alturaAval - 5} textAnchor="middle" className="fill-signal-700 text-[9px] font-semibold tabular-nums">
-                  {b.avaliacoes}
-                </text>
-              )}
-              <rect x={x + 10} y={baseY - alturaAval} width="16" height={alturaAval} rx="2" className="fill-signal-500" />
-              {b.solicitacoes > 0 && (
-                <text x={x + 38} y={baseY - alturaSol - 5} textAnchor="middle" className="fill-indigo-500 text-[9px] font-semibold tabular-nums">
-                  {b.solicitacoes}
-                </text>
-              )}
-              <rect x={x + 30} y={baseY - alturaSol} width="16" height={alturaSol} rx="2" className="fill-indigo-300" />
-              <text x={x + 30} y={baseY + 18} textAnchor="middle" className="fill-graphite-400 text-[9px]">
-                {b.label}
-              </text>
-            </g>
-          )
-        })}
-      </svg>
     </div>
   )
 }
