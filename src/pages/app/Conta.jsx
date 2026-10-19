@@ -15,9 +15,7 @@ import {
   removerUnidade,
 } from '../../lib/empresa.js'
 import { exportarTudoJson, exportarColaboradoresCsv } from '../../lib/exportacaoTotal.js'
-import { montarDadosDossie } from '../../lib/dossie.js'
-import { gerarDossieTecnicoPDF } from '../../lib/pdfDossie.js'
-import { SUGESTAO_ESFORCOS_RECRUTAMENTO, SUGESTAO_PLANO_DE_ACAO, EXEMPLO_CAPACITACAO } from '../../lib/sugestoesDossie.js'
+import { DossieGerador } from '../../components/DossieGerador.jsx'
 import { excluirEmpresaDefinitivamente } from '../../lib/exclusaoConta.js'
 import { StatusPonto } from '../../components/ui/Table.jsx'
 
@@ -51,15 +49,6 @@ export function Conta() {
 
 
   const [exportando, setExportando] = useState(false)
-  const [gerandoDossie, setGerandoDossie] = useState(false)
-  const [erroDossie, setErroDossie] = useState('')
-  const [personalizarDossieAberto, setPersonalizarDossieAberto] = useState(false)
-  const [dossieManual, setDossieManual] = useState({
-    esforcosRecrutamento: '',
-    capacitacoes: '',
-    planoDeAcao: '',
-    documentosExternos: false,
-  })
 
   const [confirmacaoExclusao, setConfirmacaoExclusao] = useState('')
   const [excluindo, setExcluindo] = useState(false)
@@ -378,133 +367,7 @@ export function Conta() {
         )}
       </div>
 
-      <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
-        <h2 className="font-display text-lg font-semibold text-indigo-800">Documentos de saída</h2>
-        <p className="mt-1 text-sm text-graphite-500">
-          O dossiê técnico traz evidência verificável para a fiscalização. Seções sem nenhum dado
-          registrado ficam de fora — para completá-las, use "Personalizar antes de gerar" abaixo.
-        </p>
-
-        <Button
-          shape="crm"
-          as="button"
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="mt-4"
-          onClick={() => setPersonalizarDossieAberto((v) => !v)}
-        >
-          {personalizarDossieAberto ? 'Ocultar personalização' : 'Personalizar seções antes de gerar (opcional)'}
-        </Button>
-
-        {personalizarDossieAberto && (
-          <div className="mt-4 space-y-4 rounded-md border border-mist-300 bg-mist-100 p-4">
-            <label className="block text-sm">
-              <span className="flex items-center justify-between gap-2 font-semibold text-graphite-700">
-                Esforços de recrutamento
-                <button
-                  type="button"
-                  onClick={() => setDossieManual((d) => ({ ...d, esforcosRecrutamento: SUGESTAO_ESFORCOS_RECRUTAMENTO }))}
-                  className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
-                >
-                  Usar sugestão
-                </button>
-              </span>
-              <textarea
-                rows={2}
-                value={dossieManual.esforcosRecrutamento}
-                onChange={(e) => setDossieManual((d) => ({ ...d, esforcosRecrutamento: e.target.value }))}
-                placeholder="Como a empresa busca candidatos PCD para as vagas em aberto."
-                className="mt-1.5 w-full rounded-md border border-mist-400 bg-white px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-              />
-            </label>
-
-            <label className="block text-sm">
-              <span className="flex items-center justify-between gap-2 font-semibold text-graphite-700">
-                Treinamentos e capacitações realizados
-                <button
-                  type="button"
-                  onClick={() => setDossieManual((d) => ({ ...d, capacitacoes: EXEMPLO_CAPACITACAO }))}
-                  className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
-                >
-                  Usar exemplo
-                </button>
-              </span>
-              <textarea
-                rows={3}
-                value={dossieManual.capacitacoes}
-                onChange={(e) => setDossieManual((d) => ({ ...d, capacitacoes: e.target.value }))}
-                placeholder="Um por linha: data — tema — quantidade de participantes (opcional)."
-                className="mt-1.5 w-full rounded-md border border-mist-400 bg-white px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-              />
-            </label>
-
-            <label className="block text-sm">
-              <span className="flex items-center justify-between gap-2 font-semibold text-graphite-700">
-                Plano de ação vigente
-                <button
-                  type="button"
-                  onClick={() => setDossieManual((d) => ({ ...d, planoDeAcao: SUGESTAO_PLANO_DE_ACAO }))}
-                  className="shrink-0 text-xs font-semibold text-volt-700 hover:text-volt-800"
-                >
-                  Usar sugestão
-                </button>
-              </span>
-              <textarea
-                rows={2}
-                value={dossieManual.planoDeAcao}
-                onChange={(e) => setDossieManual((d) => ({ ...d, planoDeAcao: e.target.value }))}
-                placeholder="Metas e prazos da empresa para cumprir a cota de PCD."
-                className="mt-1.5 w-full rounded-md border border-mist-400 bg-white px-3 py-2 text-sm outline-none focus:border-signal-500 focus:ring-2 focus:ring-signal-100"
-              />
-            </label>
-
-            <label className="flex items-start gap-3 text-sm">
-              <input
-                type="checkbox"
-                checked={dossieManual.documentosExternos}
-                onChange={(e) => setDossieManual((d) => ({ ...d, documentosExternos: e.target.checked }))}
-                className="mt-0.5"
-              />
-              <span className="text-graphite-700">
-                Os laudos, CID e comprovantes de reabilitação estão guardados em outro sistema ou
-                pasta, fora da plataforma
-              </span>
-            </label>
-          </div>
-        )}
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Button shape="crm"
-            as="button"
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={gerandoDossie}
-            onClick={async () => {
-              setErroDossie('')
-              setGerandoDossie(true)
-              try {
-                const dados = await montarDadosDossie(user.empresaId)
-                await gerarDossieTecnicoPDF({
-                  ...dados,
-                  esforcosRecrutamento: dossieManual.esforcosRecrutamento.trim() || null,
-                  capacitacoes: dossieManual.capacitacoes.trim() || null,
-                  planoDeAcao: dossieManual.planoDeAcao.trim() || null,
-                  documentosExternos: dossieManual.documentosExternos,
-                })
-              } catch {
-                setErroDossie('Não foi possível gerar o dossiê agora. Tente novamente.')
-              } finally {
-                setGerandoDossie(false)
-              }
-            }}
-          >
-            {gerandoDossie ? 'Gerando…' : 'Gerar dossiê técnico'}
-          </Button>
-        </div>
-        {erroDossie && <p className="mt-3 text-sm text-red-600">{erroDossie}</p>}
-      </div>
+      <DossieGerador empresaId={user.empresaId} />
 
       <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
         <h2 className="font-display text-lg font-semibold text-indigo-800">Exportação total</h2>
