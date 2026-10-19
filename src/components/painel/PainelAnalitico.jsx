@@ -78,12 +78,12 @@ export function HeroCota({ dados, nomeEmpresa }) {
           : { texto: 'Abaixo da metade da cota', ponto: 'bg-red-400' }
 
   const numeros = [
-    { rotulo: 'Vagas em aberto', valor: cota.vagasEmAberto, nota: cota.vagasEmAberto > 0 ? 'para cumprir a cota' : 'cota preenchida' },
-    { rotulo: 'Base de cálculo', valor: cota.base, nota: `alíquota de ${Math.round(cota.percentual * 100)}% · cota de ${cota.cotaDevida}` },
+    { rotulo: 'Vagas em aberto', valor: cota.vagasEmAberto, nota: cota.vagasEmAberto > 0 ? 'para a cota' : 'cota preenchida' },
+    { rotulo: 'Base de cálculo', valor: cota.base, nota: `alíquota de ${Math.round(cota.percentual * 100)}%` },
     {
-      rotulo: 'Exposição a multa',
+      rotulo: 'Multa estimada',
       valor: moeda(cota.vagasEmAberto > 0 ? cota.exposicaoEstimada : 0),
-      nota: cota.vagasEmAberto > 0 ? 'estimativa mínima pelas vagas em aberto' : 'sem exposição no momento',
+      nota: cota.vagasEmAberto > 0 ? 'valor mínimo' : 'sem exposição',
       destaque: true,
     },
   ]
@@ -91,7 +91,7 @@ export function HeroCota({ dados, nomeEmpresa }) {
   return (
     <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-6 text-white shadow-[0_24px_60px_-28px_rgba(15,21,38,0.7)] sm:p-8">
       {BRILHO}
-      <div className="relative grid gap-8 lg:grid-cols-[1fr_1.45fr] lg:items-center lg:gap-12">
+      <div className="relative grid gap-8 lg:grid-cols-[1fr_1.35fr] lg:items-center lg:gap-12">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-signal-300">Cota legal de PCD</p>
           <p className="mt-3 font-display text-6xl font-semibold leading-none tracking-tight tabular-nums">

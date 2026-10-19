@@ -12,10 +12,10 @@ const TELAS = [
       'Total de empregados, exclusões legais e percentual aplicado — a base de cálculo aberta, do jeito que a fiscalização verifica. Errar o denominador é uma das maiores causas de autuação. A mesma lógica de consistência vale para os documentos que sustentam cada enquadramento.',
     imagens: [
       {
-        src: '/demo/painel-app.png',
-        largura: 1624,
-        altura: 756,
-        alt: 'Painel do IncluiPro mostrando o cálculo aberto da cota de PCD, com total de empregados, exclusões legais e percentual aplicado.',
+        src: '/demo/painel-app-2.png',
+        largura: 1625,
+        altura: 1000,
+        alt: 'Painel do IncluiPro com a situação da cota de PCD, vagas em aberto, multa estimada e indicadores de documentação, laudos, solicitações e planos de integração.',
       },
       {
         src: '/demo/documentos-app.png',
