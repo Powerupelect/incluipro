@@ -2,46 +2,33 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { getReports } from '../../lib/reports.js'
-import { getEmpresa, contarPcdAtivos } from '../../lib/empresa.js'
+import { getEmpresa, getUnidades } from '../../lib/empresa.js'
 import { kits } from '../../lib/kits.js'
 import { Button } from '../../components/ui/Button.jsx'
 import { PainelCota } from '../../components/PainelCota.jsx'
 import { getDocumentos } from '../../lib/documentos.js'
 import { getSolicitacoes } from '../../lib/solicitacoesAcessibilidade.js'
 import { getSolicitacoesCanal } from '../../lib/canalColaborador.js'
-import { calcularPendencias } from '../../lib/pendencias.js'
-import { calcularCota, corSemaforo } from '../../lib/cota.js'
-import { tendenciaMensal, contagemPorMes } from '../../lib/painelMetricas.js'
-import { StatusPonto, EstadoVazio } from '../../components/ui/Table.jsx'
+import { EstadoVazio } from '../../components/ui/Table.jsx'
 import { getColaboradores } from '../../lib/colaboradores.js'
-import { RoscaCota, PerfilDeficiencia, StatusSolicitacoes, EvolucaoMensal } from '../../components/painel/GraficosPainel.jsx'
-
-const STATUS_INTERNO_ABERTO = (s) => !['concluido', 'recusado'].includes(s.status)
-const STATUS_CANAL_ABERTO = (s) => !['concluida', 'recusada', 'descartada'].includes(s.status)
+import { montarPainel } from '../../lib/painelAnalitico.js'
+import {
+  Cartao,
+  HeroCota,
+  Indicador,
+  EvolucaoQuadro,
+  PerfilRosca,
+  OperacaoSolicitacoes,
+  Alertas,
+  Retencao,
+  PorUnidade,
+} from '../../components/painel/PainelAnalitico.jsx'
 
 const HOJE_FORMATADO = new Date().toLocaleDateString('pt-BR', {
   weekday: 'long',
   day: 'numeric',
   month: 'long',
 })
-
-const ICONE_PESSOAS = (
-  <>
-    <circle cx="9" cy="8" r="3" />
-    <path d="M3 20c.9-3 3-5 6-5s5.1 2 6 5M16 5.5a3 3 0 010 5.8M20.5 20c-.5-2.3-1.7-4-3.5-5" />
-  </>
-)
-const ICONE_ALVO = (
-  <>
-    <circle cx="12" cy="12" r="8" />
-    <circle cx="12" cy="12" r="4" />
-    <circle cx="12" cy="12" r="0.5" fill="currentColor" />
-  </>
-)
-const ICONE_DOCUMENTO = <path d="M6 4h9l3 3v13a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1zM8 12h8M8 16h5M8 8h4" />
-const ICONE_CAIXA_ENTRADA = (
-  <path d="M4 12h4l1.5 3h5L16 12h4M4 12l1.6-6.4A1 1 0 016.56 5h10.88a1 1 0 01.96.6L20 12M4 12v6a1 1 0 001 1h14a1 1 0 001-1v-6" />
-)
 
 function iniciais(nome) {
   const partes = (nome || '').trim().split(/\s+/).filter(Boolean)
@@ -52,317 +39,189 @@ function iniciais(nome) {
 
 export function Dashboard() {
   const { user } = useAuth()
-  const [historico, setHistorico] = useState([])
-  const [empresa, setEmpresa] = useState(null)
-  const [pcdAtivos, setPcdAtivos] = useState(0)
-  const [solicitacoesInternas, setSolicitacoesInternas] = useState([])
-  const [solicitacoesCanal, setSolicitacoesCanal] = useState([])
-  const [pendencias, setPendencias] = useState(null)
-  const [colaboradores, setColaboradores] = useState([])
-  const [carregando, setCarregando] = useState(true)
+  const [bruto, setBruto] = useState(null)
 
   useEffect(() => {
     if (!user?.empresaId) return
     let ativo = true
-    setCarregando(true)
+    const id = user.empresaId
     Promise.all([
-      getReports(user.empresaId),
-      getEmpresa(user.empresaId),
-      contarPcdAtivos(user.empresaId),
-      getDocumentos(user.empresaId),
-      getSolicitacoes(user.empresaId),
-      getSolicitacoesCanal(user.empresaId),
-      getColaboradores(user.empresaId).catch(() => []),
+      getReports(id),
+      getEmpresa(id),
+      getDocumentos(id),
+      getSolicitacoes(id),
+      getSolicitacoesCanal(id),
+      getColaboradores(id).catch(() => []),
+      getUnidades(id).catch(() => []),
     ])
-      .then(([relatorios, empresaData, count, docs, sols, canal, colabs]) => {
-        if (!ativo) return
-        setHistorico(relatorios)
-        setEmpresa(empresaData)
-        setPcdAtivos(count)
-        setSolicitacoesInternas(sols)
-        setSolicitacoesCanal(canal)
-        setColaboradores(colabs)
-        setPendencias(calcularPendencias(docs, sols))
+      .then(([avaliacoes, empresa, documentos, solicitacoesInternas, solicitacoesCanal, colaboradores, unidades]) => {
+        if (ativo) setBruto({ avaliacoes, empresa, documentos, solicitacoesInternas, solicitacoesCanal, colaboradores, unidades })
       })
-      .catch(() => {})
-      .finally(() => {
-        if (ativo) setCarregando(false)
+      .catch(() => {
+        if (ativo) setBruto({ avaliacoes: [], empresa: null, documentos: [], solicitacoesInternas: [], solicitacoesCanal: [], colaboradores: [], unidades: [] })
       })
     return () => {
       ativo = false
     }
   }, [user?.empresaId])
 
-  const recentes = historico.slice(0, 5)
-  const novosKits = kits.filter((k) => k.novo)
-
-  const resultadoCota = useMemo(() => {
-    if (!empresa?.total_funcionarios) return null
-    return calcularCota({
-      totalFuncionarios: empresa.total_funcionarios || 0,
-      aprendizes: empresa.aprendizes || 0,
-      aposentadosInvalidez: empresa.aposentados_invalidez || 0,
-      pcdAtuais: pcdAtivos,
-    })
-  }, [empresa, pcdAtivos])
-
-  const solicitacoesAbertas = useMemo(
-    () =>
-      solicitacoesInternas.filter(STATUS_INTERNO_ABERTO).length +
-      // Pedidos já vinculados a um colaborador passam a ser acompanhados só pela solicitação
-      // interna criada na promoção — contar os dois lados dobraria o mesmo pedido.
-      solicitacoesCanal.filter((s) => !s.solicitacao_acessibilidade_id).filter(STATUS_CANAL_ABERTO).length,
-    [solicitacoesInternas, solicitacoesCanal],
-  )
-
-  const tendenciaAvaliacoes = useMemo(
-    () => tendenciaMensal(historico.map((h) => h.createdAt)),
-    [historico],
-  )
-
-  const evolucao = useMemo(() => {
-    const datasAvaliacoes = historico.map((h) => h.createdAt)
-    const datasSolicitacoes = [
-      ...solicitacoesInternas.map((s) => s.criado_em),
-      ...solicitacoesCanal.map((s) => s.criada_em),
-    ]
-    const porMesAvaliacoes = contagemPorMes(datasAvaliacoes)
-    const porMesSolicitacoes = contagemPorMes(datasSolicitacoes)
-    const buckets = porMesAvaliacoes.map((b, i) => ({
-      label: b.label,
-      avaliacoes: b.quantidade,
-      solicitacoes: porMesSolicitacoes[i].quantidade,
-    }))
-    return { buckets }
-  }, [historico, solicitacoesInternas, solicitacoesCanal])
-
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-semibold text-indigo-900">Painel</h1>
-          <p className="mt-1 text-sm text-graphite-500">
+          <p className="mt-1 text-sm capitalize text-graphite-500">
             {user?.companyName ? `${user.companyName} · ` : ''}
             {HOJE_FORMATADO}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button shape="crm" to="/app/avalia" size="lg">+ Nova avaliação</Button>
-        </div>
+        <Button shape="crm" to="/app/avalia" size="lg">+ Nova avaliação</Button>
       </div>
 
-      {carregando ? (
-        <p className="text-sm text-graphite-500">Carregando…</p>
-      ) : (
-        <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <CartaoKpi
-              icone={ICONE_PESSOAS}
-              corIcone="indigo"
-              titulo="Colaboradores PCD ativos"
-              valor={pcdAtivos}
-              subtitulo={resultadoCota ? `sobre uma cota de ${resultadoCota.cotaDevida}` : 'informe o quadro de funcionários'}
-            />
-            <CartaoKpi
-              icone={ICONE_ALVO}
-              corIcone={resultadoCota ? corSemaforo(resultadoCota.percentualCumprimento).cor : 'neutro'}
-              titulo="Cota atingida"
-              valor={resultadoCota ? `${Math.round(resultadoCota.percentualCumprimento)}%` : '—'}
-              subtitulo={
-                resultadoCota
-                  ? resultadoCota.vagasEmAberto > 0
-                    ? `faltam ${resultadoCota.vagasEmAberto} vaga${resultadoCota.vagasEmAberto !== 1 ? 's' : ''}`
-                    : 'cota cumprida'
-                  : 'sem dados ainda'
-              }
-              corSubtitulo={resultadoCota ? corSemaforo(resultadoCota.percentualCumprimento).cor : 'neutro'}
-            />
-            <CartaoKpi
-              icone={ICONE_DOCUMENTO}
-              corIcone="volt"
-              titulo="Avaliações este mês"
-              valor={tendenciaAvaliacoes.esteMes}
-              variacao={tendenciaAvaliacoes.variacao}
-            />
-            <CartaoKpi
-              icone={ICONE_CAIXA_ENTRADA}
-              corIcone={solicitacoesAbertas > 0 ? 'amber' : 'signal'}
-              titulo="Solicitações abertas"
-              valor={solicitacoesAbertas}
-              subtitulo="aguardando retorno do RH"
-            />
-          </div>
-
-          <div className="mt-6 grid gap-6 lg:grid-cols-3">
-            <RoscaCota resultado={resultadoCota} pcdAtuais={pcdAtivos} />
-            <PerfilDeficiencia colaboradores={colaboradores} />
-            <StatusSolicitacoes internas={solicitacoesInternas} canal={solicitacoesCanal} />
-          </div>
-
-          <div className="mt-6">
-            <EvolucaoMensal buckets={evolucao.buckets} />
-          </div>
-
-          <div className="mt-6">
-            <PainelCota empresa={empresa} pcdAtivos={pcdAtivos} />
-          </div>
-
-          <div className="mt-6 rounded-lg border border-mist-300 bg-white p-6">
-            <h2 className="text-base font-semibold text-graphite-900">Pendências</h2>
-            <p className="mt-1 text-xs text-graphite-400">
-              Documentação e adaptações que precisam de atenção — laudos incompletos, prazos vencidos.
-            </p>
-            {pendencias && pendencias.length > 0 ? (
-              <ul className="mt-3 space-y-2.5">
-                {pendencias.map((p, i) => (
-                  <li key={i}>
-                    {p.link ? (
-                      <Link to={p.link} className="hover:underline">
-                        <StatusPonto cor={p.cor}>{p.texto}</StatusPonto>
-                      </Link>
-                    ) : (
-                      <StatusPonto cor={p.cor}>{p.texto}</StatusPonto>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-2 text-sm text-graphite-500">Nenhuma pendência identificada no momento.</p>
-            )}
-          </div>
-
-          <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-            <div className="rounded-lg border border-mist-300 bg-white p-6">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-base font-semibold text-graphite-900">Avaliações recentes</h2>
-                <Link to="/app/avalia" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
-                  Ver todas →
-                </Link>
-              </div>
-
-              {recentes.length === 0 ? (
-                <div className="mt-4">
-                  <EstadoVazio
-                    titulo="Nenhuma avaliação gerada ainda"
-                    descricao="Comece uma nova avaliação para ver o resumo aqui."
-                    acao={<Button shape="crm" to="/app/avalia" size="sm">Começar agora</Button>}
-                  />
-                </div>
-              ) : (
-                <ul className="mt-4 divide-y divide-mist-200">
-                  {recentes.map((item) => (
-                    <li key={item.id} className="flex items-center gap-3 py-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700">
-                        {iniciais(item.candidato)}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-graphite-900">
-                          {item.candidato}
-                        </p>
-                        <p className="truncate text-xs text-graphite-400">
-                          {item.cargo || 'Cargo não informado'} ·{' '}
-                          {new Date(item.updatedAt || item.createdAt).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      <Link
-                        to="/app/avalia"
-                        className="shrink-0 text-xs font-semibold text-indigo-700 hover:text-signal-600"
-                      >
-                        Abrir
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div className="rounded-lg border border-mist-300 bg-white p-6">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-base font-semibold text-graphite-900">Treinamentos</h2>
-                <Link to="/app/lidera" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">
-                  Ver todos →
-                </Link>
-              </div>
-              <ul className="mt-4 space-y-3">
-                {kits.map((kit) => (
-                  <li key={kit.tema} className="flex items-center gap-3 rounded-md border border-mist-200 px-4 py-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-volt-50 text-volt-700">
-                      <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M4 6h16M4 6v12a1 1 0 001 1h6M4 6l2-3h12l2 3M14 19l3 2v-6.5M17 14.5l3-2" />
-                      </svg>
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-graphite-900">{kit.tema}</p>
-                      <p className="text-xs text-graphite-400">{kit.slides} slides</p>
-                    </div>
-                    {kit.novo && (
-                      <span className="shrink-0 rounded bg-signal-600 px-2.5 py-1 text-[10px] font-bold text-white">
-                        Novo
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              {novosKits.length > 0 && (
-                <p className="mt-3 text-xs text-graphite-400">{novosKits.length} kit(s) novo(s) na biblioteca.</p>
-              )}
-            </div>
-          </div>
-        </>
-      )}
+      {bruto ? <PainelConteudo bruto={bruto} nomeEmpresa={user?.companyName} /> : <EsqueletoPainel />}
     </div>
   )
 }
 
-const COR_TEXTO_SUBTITULO = {
-  signal: 'text-signal-800',
-  amber: 'text-amber-800',
-  red: 'text-red-700',
-  indigo: 'text-indigo-700',
-  volt: 'text-volt-700',
-  neutro: 'text-graphite-500',
-}
-
-const COR_CARTAO = {
-  signal: 'bg-signal-50',
-  amber: 'bg-amber-50',
-  red: 'bg-red-50',
-  indigo: 'bg-indigo-50',
-  volt: 'bg-volt-50',
-  neutro: 'bg-mist-200',
-}
-
-const COR_ICONE_SOLIDO = {
-  signal: 'bg-signal-500',
-  amber: 'bg-amber-500',
-  red: 'bg-red-500',
-  indigo: 'bg-indigo-500',
-  volt: 'bg-volt-500',
-  neutro: 'bg-graphite-300',
-}
-
-function CartaoKpi({ icone, corIcone = 'indigo', titulo, valor, subtitulo, corSubtitulo = 'neutro', variacao }) {
+function EsqueletoPainel() {
   return (
-    <div className={`rounded-xl p-5 ${COR_CARTAO[corIcone]}`}>
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold text-graphite-700">{titulo}</p>
-        {icone && (
-          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white shadow-sm ${COR_ICONE_SOLIDO[corIcone]}`}>
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              {icone}
-            </svg>
-          </span>
-        )}
+    <div className="animate-pulse space-y-6" aria-label="Carregando painel">
+      <div className="h-56 rounded-3xl bg-indigo-900/10" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="h-36 rounded-2xl bg-white" />
+        ))}
       </div>
-      <div className="mt-3 flex items-baseline gap-2">
-        <p className="font-display text-3xl font-semibold text-graphite-900">{valor}</p>
-        {variacao !== undefined && variacao !== null && (
-          <span className={`text-xs font-semibold ${variacao >= 0 ? 'text-signal-700' : 'text-red-600'}`}>
-            {variacao >= 0 ? '↑' : '↓'} {Math.abs(variacao)}%
-          </span>
-        )}
+      <div className="h-80 rounded-2xl bg-white" />
+    </div>
+  )
+}
+
+/** Layout do painel a partir dos dados brutos — separado para poder ser exibido com dados de exemplo. */
+export function PainelConteudo({ bruto, nomeEmpresa }) {
+  const d = useMemo(() => montarPainel(bruto), [bruto])
+  const recentes = bruto.avaliacoes.slice(0, 5)
+  const novosKits = kits.filter((k) => k.novo)
+  const kitsDestaque = [...novosKits, ...kits.filter((k) => !k.novo)].slice(0, 5)
+  const cotaDevida = d.cota?.cotaDevida || 0
+
+  return (
+    <div className="space-y-6">
+      <HeroCota dados={d} nomeEmpresa={nomeEmpresa} />
+
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <Indicador
+          icone="documento"
+          titulo="Documentação em dia"
+          valor={d.documentacao.pct !== null ? d.documentacao.pct : '—'}
+          sufixo={d.documentacao.pct !== null ? '%' : ''}
+          progresso={d.documentacao.pct}
+          tom={d.documentacao.pct === null || d.documentacao.pct >= 80 ? 'signal' : d.documentacao.pct >= 50 ? 'amber' : 'red'}
+          detalhe={`${d.documentacao.comLaudoValido} de ${d.documentacao.total} com laudo válido`}
+          to="/app/documentos"
+        />
+        <Indicador
+          icone="relogio"
+          titulo="Laudos a vencer"
+          valor={d.laudosVencendo}
+          tom={d.laudosVencendo > 0 ? 'amber' : 'signal'}
+          detalhe="nos próximos 90 dias"
+          to="/app/documentos"
+        />
+        <Indicador
+          icone="caixa"
+          titulo="Solicitações abertas"
+          valor={d.solicitacoes.abertas}
+          tom={d.solicitacoes.prazosVencidos > 0 ? 'red' : d.solicitacoes.abertas > 0 ? 'amber' : 'signal'}
+          detalhe={
+            d.solicitacoes.tempoMedioDias !== null
+              ? `atendimento médio em ${d.solicitacoes.tempoMedioDias} dia${d.solicitacoes.tempoMedioDias !== 1 ? 's' : ''}`
+              : 'aguardando retorno do RH'
+          }
+          to="/app/solicitacoes"
+        />
+        <Indicador
+          icone="plano"
+          titulo="Planos de integração"
+          valor={d.planos.pct !== null ? d.planos.pct : '—'}
+          sufixo={d.planos.pct !== null ? '%' : ''}
+          progresso={d.planos.pct}
+          tom="indigo"
+          detalhe={`${d.planos.com} de ${d.planos.total} colaboradores com plano`}
+          to="/app/avalia"
+        />
       </div>
-      {subtitulo && <p className={`mt-1 text-xs font-medium ${COR_TEXTO_SUBTITULO[corSubtitulo]}`}>{subtitulo}</p>}
+
+      <div className="grid gap-6 lg:grid-cols-[1.75fr_1fr]">
+        <EvolucaoQuadro serie={d.serie} cota={cotaDevida} semDataAdmissao={d.semDataAdmissao} />
+        <PerfilRosca perfil={d.perfil} total={d.ativos} />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.75fr_1fr]">
+        <OperacaoSolicitacoes solicitacoes={d.solicitacoes} />
+        <Alertas alertas={d.alertas} />
+      </div>
+
+      <div className={`grid gap-6 ${d.porUnidade.length ? 'lg:grid-cols-3' : 'lg:grid-cols-[1fr_2fr]'}`}>
+        <Retencao retencao={d.retencao} ativos={d.ativos} />
+        {d.porUnidade.length > 0 && <PorUnidade porUnidade={d.porUnidade} />}
+        <PainelCota empresa={bruto.empresa} pcdAtivos={d.ativos} apenasCalculo />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <Cartao titulo="Avaliações recentes" acao={<Link to="/app/avalia" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">Ver todas →</Link>}>
+          {recentes.length === 0 ? (
+            <div className="mt-4">
+              <EstadoVazio
+                titulo="Nenhuma avaliação gerada ainda"
+                descricao="Comece uma nova avaliação para ver o resumo aqui."
+                acao={<Button shape="crm" to="/app/avalia" size="sm">Começar agora</Button>}
+              />
+            </div>
+          ) : (
+            <ul className="mt-3 divide-y divide-mist-200">
+              {recentes.map((item) => (
+                <li key={item.id} className="flex items-center gap-3 py-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700">
+                    {iniciais(item.candidato)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-graphite-900">{item.candidato}</p>
+                    <p className="truncate text-xs text-graphite-400">
+                      {item.cargo || 'Cargo não informado'} · {new Date(item.updatedAt || item.createdAt).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                  <Link to="/app/avalia" className="shrink-0 text-xs font-semibold text-indigo-700 hover:text-signal-600">
+                    Abrir
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Cartao>
+
+        <Cartao titulo="Treinamentos" acao={<Link to="/app/lidera" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">Ver todos →</Link>}>
+          <ul className="mt-4 space-y-2.5">
+            {kitsDestaque.map((kit) => (
+              <li key={kit.tema} className="flex items-center gap-3 rounded-xl border border-mist-200 px-4 py-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-volt-50 text-volt-700">
+                  <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 6h16M4 6v12a1 1 0 001 1h6M4 6l2-3h12l2 3M14 19l3 2v-6.5M17 14.5l3-2" />
+                  </svg>
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-graphite-900">{kit.tema}</p>
+                  <p className="text-xs text-graphite-400">{kit.slides} slides</p>
+                </div>
+                {kit.novo && <span className="shrink-0 rounded-full bg-signal-600 px-2.5 py-0.5 text-[10px] font-bold text-white">Novo</span>}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-xs text-graphite-400">
+            {kits.length} kits na biblioteca{novosKits.length > 0 ? ` · ${novosKits.length} novos` : ''}
+          </p>
+        </Cartao>
+      </div>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { StatusPonto } from './ui/Table.jsx'
 
 const MES_ANO = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
-export function PainelCota({ empresa, pcdAtivos }) {
+export function PainelCota({ empresa, pcdAtivos, apenasCalculo = false }) {
   if (!empresa) return null
 
   const totalFuncionarios = empresa.total_funcionarios || 0
@@ -31,6 +31,21 @@ export function PainelCota({ empresa, pcdAtivos }) {
   const resultado = calcularCota({ totalFuncionarios, aprendizes, aposentadosInvalidez, pcdAtuais: pcdAtivos })
   const semaforo = corSemaforo(resultado.percentualCumprimento)
 
+  if (apenasCalculo) {
+    return (
+      <section className="rounded-2xl border border-mist-300/80 bg-white p-6 shadow-[0_1px_2px_rgba(15,21,38,0.04),0_16px_40px_-24px_rgba(15,21,38,0.22)]">
+        <h2 className="font-display text-[15px] font-semibold text-indigo-900">Como a cota foi calculada</h2>
+        <p className="mt-0.5 text-xs text-graphite-500">Base legal aplicada ao quadro informado</p>
+        <Calculo
+          totalFuncionarios={totalFuncionarios}
+          aprendizes={aprendizes}
+          aposentadosInvalidez={aposentadosInvalidez}
+          resultado={resultado}
+        />
+      </section>
+    )
+  }
+
   return (
     <div className="rounded-lg border border-mist-300 bg-white p-6 sm:p-8">
       <p className="text-sm text-graphite-500">
@@ -54,33 +69,41 @@ export function PainelCota({ empresa, pcdAtivos }) {
 
       <div className="mt-8 border-t border-mist-300 pt-6">
         <p className="text-sm font-semibold text-graphite-900">Como esse número foi calculado</p>
-        <dl className="mt-3 space-y-1.5 text-sm">
-          <div className="flex items-center justify-between">
-            <dt className="text-graphite-500">Total de empregados CLT (matriz e filiais)</dt>
-            <dd className="tabular-nums text-graphite-900">{totalFuncionarios}</dd>
-          </div>
-          {aprendizes > 0 && (
-            <div className="flex items-center justify-between">
-              <dt className="text-graphite-500">− aprendizes (não entram na base — Lei 10.097/2000)</dt>
-              <dd className="tabular-nums text-graphite-900">{aprendizes}</dd>
-            </div>
-          )}
-          {aposentadosInvalidez > 0 && (
-            <div className="flex items-center justify-between">
-              <dt className="text-graphite-500">− aposentados por invalidez</dt>
-              <dd className="tabular-nums text-graphite-900">{aposentadosInvalidez}</dd>
-            </div>
-          )}
-          <div className="flex items-center justify-between border-t border-mist-200 pt-1.5 font-semibold">
-            <dt className="text-graphite-900">Base de cálculo da cota</dt>
-            <dd className="tabular-nums text-graphite-900">{resultado.base}</dd>
-          </div>
-        </dl>
-        <p className="mt-4 text-sm text-graphite-700">
-          Alíquota legal aplicável: <strong>{Math.round(resultado.percentual * 100)}%</strong>, faixa de{' '}
-          {faixaCota(resultado.base)} → cota devida de <strong>{resultado.cotaDevida}</strong>.
-        </p>
+        <Calculo totalFuncionarios={totalFuncionarios} aprendizes={aprendizes} aposentadosInvalidez={aposentadosInvalidez} resultado={resultado} />
       </div>
     </div>
+  )
+}
+
+function Calculo({ totalFuncionarios, aprendizes, aposentadosInvalidez, resultado }) {
+  return (
+    <>
+      <dl className="mt-3 space-y-1.5 text-sm">
+        <div className="flex items-start justify-between gap-4">
+          <dt className="text-graphite-500">Total de empregados CLT (matriz e filiais)</dt>
+          <dd className="tabular-nums text-graphite-900">{totalFuncionarios}</dd>
+        </div>
+        {aprendizes > 0 && (
+          <div className="flex items-start justify-between gap-4">
+            <dt className="text-graphite-500">− aprendizes (não entram na base — Lei 10.097/2000)</dt>
+            <dd className="tabular-nums text-graphite-900">{aprendizes}</dd>
+          </div>
+        )}
+        {aposentadosInvalidez > 0 && (
+          <div className="flex items-start justify-between gap-4">
+            <dt className="text-graphite-500">− aposentados por invalidez</dt>
+            <dd className="tabular-nums text-graphite-900">{aposentadosInvalidez}</dd>
+          </div>
+        )}
+        <div className="flex items-center justify-between border-t border-mist-200 pt-1.5 font-semibold">
+          <dt className="text-graphite-900">Base de cálculo da cota</dt>
+          <dd className="tabular-nums text-graphite-900">{resultado.base}</dd>
+        </div>
+      </dl>
+      <p className="mt-4 text-sm text-graphite-700">
+        Alíquota legal aplicável: <strong>{Math.round(resultado.percentual * 100)}%</strong>, faixa de{' '}
+        {faixaCota(resultado.base)} → cota devida de <strong>{resultado.cotaDevida}</strong>.
+      </p>
+    </>
   )
 }
