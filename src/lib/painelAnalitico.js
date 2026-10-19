@@ -173,6 +173,17 @@ export function montarPainel({
     alertas.push({ nivel: 'atencao', titulo: `${laudosVencendo.length} laudo${laudosVencendo.length > 1 ? 's' : ''} vence${laudosVencendo.length > 1 ? 'm' : ''} em até 90 dias`, detalhe: laudosVencendo.slice(0, 2).map((d) => `${nomeDe[d.colaborador_id] || 'Colaborador'} · ${new Date(d.data_validade + 'T12:00').toLocaleDateString('pt-BR')}`).join(' — '), link: '/app/documentos' })
   if (semPlano.length)
     alertas.push({ nivel: 'atencao', titulo: `${semPlano.length} colaborador${semPlano.length > 1 ? 'es' : ''} sem plano de integração`, detalhe: semPlano.slice(0, 2).map((c) => c.nome).join(', '), link: '/app/avalia' })
+  const ha90 = iso(new Date(hoje.getTime() - 90 * DIA))
+  const dispensasRecentes = naCota.filter(
+    (c) => c.data_desligamento >= ha90 && ['sem_justa_causa', 'termino_contrato'].includes(c.tipo_desligamento),
+  )
+  if (dispensasRecentes.length)
+    alertas.push({
+      nivel: 'atencao',
+      titulo: `${dispensasRecentes.length} ${dispensasRecentes.length > 1 ? 'dispensas exigem' : 'dispensa exige'} contratação de substituto`,
+      detalhe: `Lei 8.213/91, art. 93, §1º — ${dispensasRecentes.slice(0, 2).map((c) => c.nome).join(', ')}`,
+      link: '/app/colaboradores',
+    })
   if (laudosSemBarreira.length)
     alertas.push({ nivel: 'info', titulo: `${laudosSemBarreira.length} laudo${laudosSemBarreira.length > 1 ? 's' : ''} sem descrição de barreira funcional`, detalhe: 'Exigido para caracterizar a deficiência', link: '/app/documentos' })
   if (abertas && etapas[0].valor)

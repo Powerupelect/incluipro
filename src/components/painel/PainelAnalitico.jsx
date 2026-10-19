@@ -54,7 +54,7 @@ export function HeroCota({ dados, nomeEmpresa }) {
 
   if (!cota) {
     return (
-      <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-8 text-white">
+      <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-[#2a3d73] via-[#33498a] to-[#4560a3] p-8 text-white">
         {BRILHO}
         <div className="relative">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-signal-300">Cota legal de PCD</p>
@@ -89,7 +89,7 @@ export function HeroCota({ dados, nomeEmpresa }) {
   ]
 
   return (
-    <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-6 text-white shadow-[0_24px_60px_-28px_rgba(15,21,38,0.7)] sm:p-8">
+    <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-[#2a3d73] via-[#33498a] to-[#4560a3] p-6 text-white shadow-[0_18px_44px_-24px_rgba(30,42,74,0.55)] sm:p-8">
       {BRILHO}
       <div className="relative grid gap-8 lg:grid-cols-[1fr_1.35fr] lg:items-center lg:gap-12">
         <div>

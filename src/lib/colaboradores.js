@@ -71,6 +71,46 @@ export async function atualizarColaborador(id, {
   return data
 }
 
+export const TIPOS_DESLIGAMENTO = [
+  { id: 'pedido_demissao', label: 'Pedido de demissão' },
+  { id: 'sem_justa_causa', label: 'Dispensa sem justa causa', exigeSubstituto: true },
+  { id: 'justa_causa', label: 'Dispensa por justa causa' },
+  { id: 'termino_contrato', label: 'Término de contrato', exigeSubstituto: true },
+  { id: 'acordo', label: 'Acordo entre as partes' },
+  { id: 'aposentadoria', label: 'Aposentadoria' },
+  { id: 'falecimento', label: 'Falecimento' },
+  { id: 'outro', label: 'Outro' },
+]
+
+export function rotuloDesligamento(id) {
+  return TIPOS_DESLIGAMENTO.find((t) => t.id === id)?.label || null
+}
+
+/** Registra a saída sem apagar o histórico — a pessoa deixa de contar na cota
+ * (data_desligamento preenchida), mas avaliações, documentos e solicitações ficam. */
+export async function registrarDesligamento(id, { data, tipo, motivo }) {
+  const { data: atualizado, error } = await supabase
+    .from('colaboradores')
+    .update({ data_desligamento: data, tipo_desligamento: tipo, motivo_desligamento: motivo?.trim() || null })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return atualizado
+}
+
+/** Desfaz uma saída registrada por engano — a pessoa volta a contar na cota. */
+export async function reverterDesligamento(id) {
+  const { data, error } = await supabase
+    .from('colaboradores')
+    .update({ data_desligamento: null, tipo_desligamento: null, motivo_desligamento: null })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 /** Exclusão real do banco (não é soft-delete) — é direito do titular pela LGPD.
  * Avaliações, documentos e solicitações ligados a este colaborador são removidos em
  * cascata pelas FKs do banco (on delete cascade); os arquivos correspondentes nos
