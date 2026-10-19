@@ -181,6 +181,64 @@ function ImagemDemo({ tela, containerRef }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [ampliada, temVarias, tela.imagens.length])
 
+  function renderItem(img) {
+    return (
+img.documento ? (
+          <DocumentoFolha
+            src={img.src}
+            alt={img.alt}
+            largura={img.largura}
+            altura={img.altura}
+            onAbrir={() => setAmostraAberta(true)}
+          />
+        ) : img.a4 ? (
+          <div className="relative mx-auto max-w-[520px] px-3 pb-4 pt-3 sm:px-6">
+            <div className="absolute inset-x-8 top-0 bottom-6 rotate-[-2deg] rounded-sm bg-white/10" aria-hidden="true" />
+            <div className="absolute inset-x-6 top-1 bottom-5 rotate-[1.5deg] rounded-sm bg-white/20" aria-hidden="true" />
+            <button
+              type="button"
+              onClick={() => setAmpliada(true)}
+              className="group relative flex aspect-[210/297] w-full cursor-zoom-in flex-col overflow-hidden rounded-sm bg-white shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1"
+              aria-label={`Ampliar imagem: ${img.alt}`}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                width={img.largura}
+                height={img.altura}
+                loading="lazy"
+                decoding="async"
+                className="w-full pt-[4%]"
+              />
+              <LupaZoom />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setAmpliada(true)}
+            className={`group relative block w-full cursor-zoom-in ${img.enquadrar ? 'rounded-lg border border-white/10 bg-white p-5 sm:p-8' : ''}`}
+            aria-label={`Ampliar imagem: ${img.alt}`}
+          >
+            <img
+              src={img.src}
+              alt={img.alt}
+              width={img.largura}
+              height={img.altura}
+              loading="lazy"
+              decoding="async"
+              className={
+                img.enquadrar
+                  ? 'mx-auto w-full max-w-[380px] transition-opacity group-hover:opacity-90 lg:max-w-[280px]'
+                  : 'w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90'
+              }
+            />
+            <LupaZoom />
+          </button>
+        )
+    )
+  }
+
   return (
     <div ref={containerRef}>
       <div className="mb-4 lg:hidden">
@@ -193,59 +251,20 @@ function ImagemDemo({ tela, containerRef }) {
       </div>
 
       <div ref={wrapperRef} className="demo-item relative">
-        {imagem.documento ? (
-          <DocumentoFolha
-            src={imagem.src}
-            alt={imagem.alt}
-            largura={imagem.largura}
-            altura={imagem.altura}
-            onAbrir={() => setAmostraAberta(true)}
-          />
-        ) : imagem.a4 ? (
-          <div className="relative mx-auto max-w-[520px] px-3 pb-4 pt-3 sm:px-6">
-            <div className="absolute inset-x-8 top-0 bottom-6 rotate-[-2deg] rounded-sm bg-white/10" aria-hidden="true" />
-            <div className="absolute inset-x-6 top-1 bottom-5 rotate-[1.5deg] rounded-sm bg-white/20" aria-hidden="true" />
-            <button
-              type="button"
-              onClick={() => setAmpliada(true)}
-              className="group relative flex aspect-[210/297] w-full cursor-zoom-in flex-col overflow-hidden rounded-sm bg-white shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1"
-              aria-label={`Ampliar imagem: ${imagem.alt}`}
+        {/* Todas as imagens ocupam a mesma célula da grade: o quadro fica com a altura da
+            maior e não "pula" ao trocar de imagem pelas setas. */}
+        <div className="grid">
+          {tela.imagens.map((img, i) => (
+            <div
+              key={img.src}
+              style={{ gridArea: '1 / 1' }}
+              aria-hidden={i !== indice}
+              className={`self-center transition-opacity duration-300 ${i === indice ? 'opacity-100' : 'pointer-events-none invisible opacity-0'}`}
             >
-              <img
-                src={imagem.src}
-                alt={imagem.alt}
-                width={imagem.largura}
-                height={imagem.altura}
-                loading="lazy"
-                decoding="async"
-                className="w-full pt-[4%]"
-              />
-              <LupaZoom />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setAmpliada(true)}
-            className={`group relative block w-full cursor-zoom-in ${imagem.enquadrar ? 'rounded-lg border border-white/10 bg-white p-5 sm:p-14' : ''}`}
-            aria-label={`Ampliar imagem: ${imagem.alt}`}
-          >
-            <img
-              src={imagem.src}
-              alt={imagem.alt}
-              width={imagem.largura}
-              height={imagem.altura}
-              loading="lazy"
-              decoding="async"
-              className={
-                imagem.enquadrar
-                  ? 'mx-auto w-full max-w-[380px] transition-opacity group-hover:opacity-90'
-                  : 'w-full rounded-lg border border-white/10 transition-opacity group-hover:opacity-90'
-              }
-            />
-            <LupaZoom />
-          </button>
-        )}
+              {renderItem(img)}
+            </div>
+          ))}
+        </div>
 
         {temVarias && (
           <div className="mt-4 flex items-center justify-center gap-4">
@@ -339,7 +358,7 @@ export function DemoSection() {
   const telaAtiva = TELAS[ativo]
 
   return (
-    <section id="demonstracao" className="scroll-mt-16 overflow-hidden bg-indigo-900 px-5 pb-24 pt-10 sm:px-8 sm:pb-28 sm:pt-12">
+    <section id="demonstracao" className="scroll-mt-16 overflow-x-clip bg-indigo-900 px-5 pb-24 pt-10 sm:px-8 sm:pb-28 sm:pt-12">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <span className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-300">
@@ -388,10 +407,17 @@ export function DemoSection() {
           </div>
         </div>
 
-        <div className="mt-20 flex flex-col items-center gap-5 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center sm:flex-row sm:justify-center sm:gap-6">
-          <p className="font-display text-xl text-indigo-100 sm:text-2xl">Quer ver com os números da sua empresa?</p>
-          <Button href="/cadastro" size="lg">
-            Fale com a gente
+        <div className="mt-20 flex flex-col items-center gap-6 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] px-6 py-10 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left">
+          <div>
+            <p className="font-display text-2xl font-medium text-white sm:text-3xl">
+              Descubra a situação da sua empresa
+            </p>
+            <p className="mt-2 text-base text-indigo-200">
+              Faça o diagnóstico gratuito de inclusão e cota de PCD — leva poucos minutos.
+            </p>
+          </div>
+          <Button to="/diagnostico" size="lg" className="shrink-0">
+            Realizar diagnóstico
           </Button>
         </div>
       </div>

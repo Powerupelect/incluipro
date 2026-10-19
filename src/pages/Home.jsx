@@ -267,7 +267,7 @@ export function Home() {
       <MomentoDossie />
 
       {/* IncluiPro Avalia — escuro */}
-      <section id="avalia" className="overflow-hidden bg-indigo-900 px-5 pb-24 pt-4 sm:px-8 sm:pb-28 sm:pt-8">
+      <section id="avalia" className="overflow-x-clip bg-indigo-900 px-5 pb-24 pt-4 sm:px-8 sm:pb-28 sm:pt-8">
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[3fr_2fr] lg:items-center">
           <Reveal className="min-w-0">
             <h2 className="font-display text-5xl font-medium text-white">IncluiPro Avalia</h2>
