@@ -4,9 +4,6 @@ import { getDocumentos, TIPOS_DOCUMENTO } from './documentos.js'
 import { getSolicitacoes, TIPOS_SOLICITACAO } from './solicitacoesAcessibilidade.js'
 import { getSolicitacoesCanal } from './canalColaborador.js'
 import { getColaboradores, rotuloDesligamento } from './colaboradores.js'
-import { getCargos } from './cargos.js'
-import { classificarCompatibilidade } from './matrizCompatibilidade.js'
-import { TIPOS_DEFICIENCIA } from './accessibilityResources.js'
 import { montarPainel } from './painelAnalitico.js'
 
 export { gerarNumeroProtocolo, gerarHashIntegridade } from './integridade.js'
@@ -20,14 +17,13 @@ export async function montarDadosDossie(empresaId, { inicio, fim } = {}) {
   const ini = inicio || `${hoje.slice(0, 4)}-01-01`
   const fimP = fim || hoje
 
-  const [empresa, avaliacoes, colaboradores, documentos, solicitacoes, canal, cargos, unidades] = await Promise.all([
+  const [empresa, avaliacoes, colaboradores, documentos, solicitacoes, canal, unidades] = await Promise.all([
     getEmpresa(empresaId),
     getReports(empresaId),
     getColaboradores(empresaId),
     getDocumentos(empresaId),
     getSolicitacoes(empresaId),
     getSolicitacoesCanal(empresaId).catch(() => []),
-    getCargos(empresaId).catch(() => []),
     getUnidades(empresaId).catch(() => []),
   ])
 
@@ -90,11 +86,6 @@ export async function montarDadosDossie(empresaId, { inicio, fim } = {}) {
   }
   planos.sort((a, b) => a.nome.localeCompare(b.nome))
 
-  const mapeamentoCargos = cargos.map((cargo) => ({
-    cargo: cargo.nome,
-    compativeis: TIPOS_DEFICIENCIA.filter((tipo) => classificarCompatibilidade(cargo, tipo.id).status === 'compativel').map((t) => t.label),
-  }))
-
   return {
     empresa,
     periodo: { inicio: ini, fim: fimP },
@@ -106,6 +97,5 @@ export async function montarDadosDossie(empresaId, { inicio, fim } = {}) {
     avaliacoesNoPeriodo: avaliacoes.filter((a) => noPeriodo(a.createdAt, ini, fimP)).length,
     movimentacao,
     planos,
-    mapeamentoCargos,
   }
 }

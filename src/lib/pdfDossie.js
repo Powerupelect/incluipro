@@ -46,7 +46,6 @@ export const SECOES_DOSSIE = [
   { id: 'documentacao', label: 'Documentação por pessoa', completo: true },
   { id: 'adaptacoes', label: 'Adaptações e investimento em acessibilidade', completo: true },
   { id: 'movimentacao', label: 'Admissões e desligamentos no período', completo: true },
-  { id: 'cargos', label: 'Mapeamento de cargos compatíveis', completo: true },
   { id: 'planos', label: 'Anexo — Planos de Integração completos', completo: true },
   { id: 'evidencias', label: 'Índice de evidências', completo: true },
   { id: 'declaracao', label: 'Declaração e responsável', fixa: true },
@@ -223,8 +222,6 @@ function capa(ctx, protocolo) {
 
   desenharLogo(ctx, M, 60, 1.3)
 
-  ctx.fonte(9, 'bold', [99, 211, 186])
-  doc.text(opcoes.versao === 'executiva' ? 'VERSÃO EXECUTIVA' : 'VERSÃO COMPLETA', M, 236)
   ctx.fonte(32, 'bold', C.branco)
   doc.text('Dossiê de Gestão', M, 300)
   doc.text('da Inclusão', M, 338)
@@ -386,7 +383,7 @@ function calculoCota(ctx) {
   const { dados } = ctx
   const e = dados.empresa || {}
   const cota = dados.painel.cota
-  secao(ctx, 'cota', 'Cálculo da cota', { novaPagina: true })
+  secao(ctx, 'cota', 'Cálculo da cota')
   if (!cota) return vazio(ctx, 'Quadro de funcionários não informado na plataforma.')
   tabela(
     ctx,
@@ -487,25 +484,11 @@ function movimentacao(ctx) {
   )
 }
 
-function cargos(ctx) {
-  const { dados } = ctx
-  if (!dados.mapeamentoCargos.length) return
-  secao(ctx, 'cargos', 'Mapeamento de cargos compatíveis')
-  tabela(
-    ctx,
-    [
-      { titulo: 'Cargo', peso: 2 },
-      { titulo: 'Compatível sem ajuste com', peso: 4 },
-    ],
-    dados.mapeamentoCargos.map((m) => [m.cargo, m.compativeis.join(', ') || 'Requer avaliação de ajustes']),
-  )
-}
-
 /** Converte o markdown do Plano de Integração em texto formatado no PDF. */
 function anexoPlanos(ctx) {
   const { doc, dados } = ctx
   if (!dados.planos.length) return
-  secao(ctx, 'planos', 'Anexo — Planos de Integração completos', { novaPagina: true })
+  secao(ctx, 'planos', 'Anexo — Planos de Integração completos')
   paragrafo(ctx, `Versão mais recente do Plano de Integração e Rotina Inclusiva de cada colaborador ativo (${dados.planos.length} documento${dados.planos.length > 1 ? 's' : ''}).`)
   dados.planos.forEach((plano, i) => {
     ctx.y += i > 0 ? 20 : 6
@@ -563,7 +546,7 @@ function indiceEvidencias(ctx) {
   }
   dados.adaptacoes.filter((a) => a.temComprovante).forEach((a) => linhas.push([`Comprovante: ${a.tipo} — ${a.colaborador}`, 'Solicitações', data(a.data), 'Arquivo na plataforma']))
   if (!linhas.length) return
-  secao(ctx, 'evidencias', 'Índice de evidências', { novaPagina: true })
+  secao(ctx, 'evidencias', 'Índice de evidências')
   paragrafo(ctx, 'Registros que sustentam as informações deste dossiê. Os arquivos originais ficam guardados na plataforma IncluiPro e podem ser apresentados mediante solicitação.')
   tabela(
     ctx,
@@ -696,7 +679,6 @@ export async function construirDossiePDF(dados, opcoes = {}) {
   if (incluir('documentacao')) documentacao(ctx)
   if (incluir('adaptacoes')) adaptacoes(ctx)
   if (incluir('movimentacao')) movimentacao(ctx)
-  if (incluir('cargos')) cargos(ctx)
   if (incluir('planos')) anexoPlanos(ctx)
   if (incluir('evidencias')) indiceEvidencias(ctx)
   declaracao(ctx, protocolo, hash)
