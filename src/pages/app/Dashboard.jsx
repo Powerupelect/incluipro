@@ -86,13 +86,13 @@ export function Dashboard() {
 function EsqueletoPainel() {
   return (
     <div className="animate-pulse space-y-6" aria-label="Carregando painel">
-      <div className="h-56 rounded-3xl bg-indigo-900/10" />
+      <div className="h-56 rounded-lg bg-indigo-900/10" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-36 rounded-2xl bg-white" />
+          <div key={i} className="h-36 rounded-lg bg-white" />
         ))}
       </div>
-      <div className="h-80 rounded-2xl bg-white" />
+      <div className="h-80 rounded-lg bg-white" />
     </div>
   )
 }
@@ -203,7 +203,7 @@ export function PainelConteudo({ bruto, nomeEmpresa }) {
         <Cartao titulo="Treinamentos" acao={<Link to="/app/lidera" className="text-xs font-semibold text-indigo-700 hover:text-signal-600">Ver todos →</Link>}>
           <ul className="mt-4 space-y-2.5">
             {kitsDestaque.map((kit) => (
-              <li key={kit.tema} className="flex items-center gap-3 rounded-xl border border-mist-200 px-4 py-3">
+              <li key={kit.tema} className="flex items-center gap-3 rounded-md border border-mist-200 px-4 py-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-volt-50 text-volt-700">
                   <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M4 6h16M4 6v12a1 1 0 001 1h6M4 6l2-3h12l2 3M14 19l3 2v-6.5M17 14.5l3-2" />

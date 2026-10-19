@@ -33,7 +33,7 @@ export function PainelCota({ empresa, pcdAtivos, apenasCalculo = false }) {
 
   if (apenasCalculo) {
     return (
-      <section className="rounded-2xl border border-mist-300/80 bg-white p-6 shadow-[0_1px_2px_rgba(15,21,38,0.04),0_16px_40px_-24px_rgba(15,21,38,0.22)]">
+      <section className="rounded-lg border border-mist-300/70 bg-white p-6 shadow-[0_1px_2px_rgba(15,21,38,0.05),0_8px_24px_-6px_rgba(15,21,38,0.10)]">
         <h2 className="font-display text-[15px] font-semibold text-indigo-900">Como a cota foi calculada</h2>
         <p className="mt-0.5 text-xs text-graphite-500">Base legal aplicada ao quadro informado</p>
         <Calculo

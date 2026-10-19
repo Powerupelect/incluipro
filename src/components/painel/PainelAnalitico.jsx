@@ -9,11 +9,11 @@ const INDIGO_400 = '#4f65a3'
 
 const moeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 
-const SOMBRA_CARTAO = 'shadow-[0_1px_2px_rgba(15,21,38,0.04),0_16px_40px_-24px_rgba(15,21,38,0.22)]'
+const SOMBRA_CARTAO = 'shadow-[0_1px_2px_rgba(15,21,38,0.05),0_8px_24px_-6px_rgba(15,21,38,0.10)]'
 
 export function Cartao({ titulo, subtitulo, acao, children, className = '' }) {
   return (
-    <section className={`flex min-w-0 flex-col rounded-2xl border border-mist-300/80 bg-white p-6 ${SOMBRA_CARTAO} ${className}`}>
+    <section className={`flex min-w-0 flex-col rounded-lg border border-mist-300/70 bg-white p-6 ${SOMBRA_CARTAO} ${className}`}>
       {(titulo || acao) && (
         <header className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
           <div className="min-w-[12rem] flex-1">
@@ -41,43 +41,6 @@ function LinkAcao({ to, children }) {
 
 /* ---------- 1. Faixa de destaque: situação da cota ---------- */
 
-function Sparkline({ serie, cota }) {
-  const max = Math.max(cota || 0, ...serie.map((s) => s.ativos), 1) * 1.15
-  const W = 300
-  const H = 80
-  const pts = serie.map((s, i) => [(i / (serie.length - 1)) * W, H - (s.ativos / max) * H])
-  const linha = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')
-  const area = `${linha} L${W},${H} L0,${H} Z`
-  const yCota = cota ? H - (cota / max) * H : null
-  const ultimo = pts[pts.length - 1]
-  return (
-    <div className="relative h-20 w-full">
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
-        <defs>
-          <linearGradient id="sparkArea" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#30bc9e" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#30bc9e" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {yCota !== null && (
-          <line x1="0" x2={W} y1={yCota} y2={yCota} stroke="#ffffff" strokeOpacity="0.35" strokeWidth="1" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-        )}
-        <path d={area} fill="url(#sparkArea)" />
-        <path d={linha} fill="none" stroke="#30bc9e" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <span
-        className="absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-signal-300 ring-2 ring-indigo-900"
-        style={{ left: `${(ultimo[0] / W) * 100}%`, top: `${(ultimo[1] / H) * 100}%` }}
-      />
-      {yCota !== null && (
-        <span className="absolute left-0 -translate-y-full pb-0.5 text-[10px] font-medium text-white/50" style={{ top: `${(yCota / H) * 100}%` }}>
-          cota exigida
-        </span>
-      )}
-    </div>
-  )
-}
-
 const BRILHO = (
   <>
     <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-signal-500/25 blur-3xl" aria-hidden="true" />
@@ -87,11 +50,11 @@ const BRILHO = (
 )
 
 export function HeroCota({ dados, nomeEmpresa }) {
-  const { cota, ativos, serie } = dados
+  const { cota, ativos } = dados
 
   if (!cota) {
     return (
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-8 text-white">
+      <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-8 text-white">
         {BRILHO}
         <div className="relative">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-signal-300">Cota legal de PCD</p>
@@ -114,10 +77,21 @@ export function HeroCota({ dados, nomeEmpresa }) {
           ? { texto: 'Cota parcialmente cumprida', ponto: 'bg-amber-300' }
           : { texto: 'Abaixo da metade da cota', ponto: 'bg-red-400' }
 
+  const numeros = [
+    { rotulo: 'Vagas em aberto', valor: cota.vagasEmAberto, nota: cota.vagasEmAberto > 0 ? 'para cumprir a cota' : 'cota preenchida' },
+    { rotulo: 'Base de cálculo', valor: cota.base, nota: `alíquota de ${Math.round(cota.percentual * 100)}% · cota de ${cota.cotaDevida}` },
+    {
+      rotulo: 'Exposição a multa',
+      valor: moeda(cota.vagasEmAberto > 0 ? cota.exposicaoEstimada : 0),
+      nota: cota.vagasEmAberto > 0 ? 'estimativa mínima pelas vagas em aberto' : 'sem exposição no momento',
+      destaque: true,
+    },
+  ]
+
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-6 text-white shadow-[0_24px_60px_-28px_rgba(15,21,38,0.7)] sm:p-8">
+    <section className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#26346a] p-6 text-white shadow-[0_24px_60px_-28px_rgba(15,21,38,0.7)] sm:p-8">
       {BRILHO}
-      <div className="relative grid gap-8 lg:grid-cols-[1.15fr_1fr_1.1fr] lg:items-center">
+      <div className="relative grid gap-8 lg:grid-cols-[1fr_1.45fr] lg:items-center lg:gap-12">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-signal-300">Cota legal de PCD</p>
           <p className="mt-3 font-display text-6xl font-semibold leading-none tracking-tight tabular-nums">
@@ -137,36 +111,17 @@ export function HeroCota({ dados, nomeEmpresa }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10">
-          <div className="bg-indigo-900/70 p-4">
-            <p className="text-xs text-indigo-200">Vagas em aberto</p>
-            <p className="mt-1 font-display text-3xl font-semibold tabular-nums">{cota.vagasEmAberto}</p>
-          </div>
-          <div className="bg-indigo-900/70 p-4">
-            <p className="text-xs text-indigo-200">Base de cálculo</p>
-            <p className="mt-1 font-display text-3xl font-semibold tabular-nums">{cota.base}</p>
-          </div>
-          <div className="col-span-2 bg-indigo-900/70 p-4">
-            <p className="text-xs text-indigo-200">
-              Exposição estimada a multa{cota.vagasEmAberto > 0 ? ' · a partir de' : ''}
-            </p>
-            <p className="mt-1 whitespace-nowrap font-display text-[26px] font-semibold leading-tight tabular-nums text-amber-300">
-              {moeda(cota.vagasEmAberto > 0 ? cota.exposicaoEstimada : 0)}
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-baseline justify-between">
-            <p className="text-xs text-indigo-200">Quadro PCD · últimos 12 meses</p>
-            <p className="text-xs capitalize tabular-nums text-white/60">
-              {serie[0].label} → {serie[serie.length - 1].label}
-            </p>
-          </div>
-          <div className="mt-4">
-            <Sparkline serie={serie} cota={cota.cotaDevida} />
-          </div>
-        </div>
+        <dl className="grid gap-6 border-t border-white/10 pt-6 sm:grid-cols-3 sm:gap-0 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+          {numeros.map((n, i) => (
+            <div key={n.rotulo} className={`min-w-0 ${i > 0 ? 'sm:border-l sm:border-white/10 sm:pl-6' : ''} ${i < numeros.length - 1 ? 'sm:pr-6' : ''} lg:px-6`}>
+              <dt className="text-xs text-indigo-200">{n.rotulo}</dt>
+              <dd className={`mt-2 whitespace-nowrap font-display font-semibold leading-none tabular-nums ${n.destaque ? 'text-[26px] text-amber-300' : 'text-4xl'}`}>
+                {n.valor}
+              </dd>
+              <dd className="mt-2 text-xs text-white/55">{n.nota}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   )
@@ -198,7 +153,7 @@ export function Indicador({ icone, titulo, valor, sufixo, detalhe, progresso, to
     <>
       <div className="flex items-center justify-between gap-3">
         <p className="text-[13px] font-medium leading-snug text-graphite-500">{titulo}</p>
-        <span className={`hidden h-9 w-9 shrink-0 sm:flex items-center justify-center rounded-xl ${TOM[tom].icone}`}>
+        <span className={`hidden h-9 w-9 shrink-0 sm:flex items-center justify-center rounded-md ${TOM[tom].icone}`}>
           <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             {ICONES[icone]}
           </svg>
@@ -216,7 +171,7 @@ export function Indicador({ icone, titulo, valor, sufixo, detalhe, progresso, to
       <p className="mt-3 text-xs text-graphite-500">{detalhe}</p>
     </>
   )
-  const classe = `group block min-w-0 rounded-2xl border border-mist-300/80 bg-white p-4 sm:p-5 transition-all duration-200 ${SOMBRA_CARTAO}`
+  const classe = `group block min-w-0 rounded-lg border border-mist-300/70 bg-white p-4 sm:p-5 transition-all duration-200 ${SOMBRA_CARTAO}`
   return to ? (
     <Link to={to} className={`${classe} hover:-translate-y-0.5 hover:border-signal-200`}>
       {conteudo}
@@ -360,9 +315,9 @@ export function EvolucaoQuadro({ serie, cota, semDataAdmissao }) {
 
 export function PerfilRosca({ perfil, total }) {
   const [foco, setFoco] = useState(null)
-  const r = 58
+  const r = 52
   const circ = 2 * Math.PI * r
-  const GAP = perfil.length > 1 ? 3 : 0
+  const GAP = perfil.length > 1 ? 2.5 : 0
   let acumulado = 0
   let corIndice = 0
   const fatias = perfil.map((p) => {
@@ -380,9 +335,9 @@ export function PerfilRosca({ perfil, total }) {
         <p className="mt-8 text-sm text-graphite-500">Cadastre colaboradores para ver a distribuição.</p>
       ) : (
         <div className="mt-5 flex flex-1 flex-col items-center gap-6 sm:flex-row lg:flex-col 2xl:flex-row">
-          <div className="relative h-40 w-40 shrink-0">
-            <svg viewBox="0 0 150 150" className="h-full w-full -rotate-90">
-              <circle cx="75" cy="75" r={r} fill="none" stroke="#f3f5f8" strokeWidth="16" />
+          <div className="relative h-48 w-48 shrink-0">
+            <svg viewBox="0 0 150 150" className="h-full w-full -rotate-90 drop-shadow-[0_8px_14px_rgba(15,21,38,0.16)]">
+              <circle cx="75" cy="75" r={r} fill="none" stroke="#f3f5f8" strokeWidth="32" />
               {fatias.map((f, i) => (
                 <circle
                   key={f.id}
@@ -391,7 +346,7 @@ export function PerfilRosca({ perfil, total }) {
                   r={r}
                   fill="none"
                   stroke={f.cor}
-                  strokeWidth={foco === i ? 19 : 16}
+                  strokeWidth={foco === i ? 38 : 32}
                   strokeDasharray={`${Math.max(f.tamanho - GAP, 0.5)} ${circ}`}
                   strokeDashoffset={-f.inicio}
                   className="cursor-pointer transition-[stroke-width,opacity] duration-200"
@@ -402,10 +357,10 @@ export function PerfilRosca({ perfil, total }) {
               ))}
             </svg>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-              <p className="font-display text-3xl font-semibold leading-none text-indigo-900 tabular-nums">
+              <p className="font-display text-[28px] font-semibold leading-none text-indigo-900 tabular-nums">
                 {destaque ? `${Math.round((destaque.valor / total) * 100)}%` : total}
               </p>
-              <p className="mt-1 max-w-[6.5rem] truncate text-[11px] text-graphite-500">{destaque ? destaque.label : 'pessoas'}</p>
+              <p className="mt-1 max-w-[5rem] truncate text-[11px] text-graphite-500">{destaque ? destaque.label : 'pessoas'}</p>
             </div>
           </div>
           <ul className="w-full flex-1 space-y-1">
@@ -460,15 +415,15 @@ export function OperacaoSolicitacoes({ solicitacoes }) {
           )}
         </ol>
         <dl className="mt-auto grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl bg-mist-100 px-4 py-3">
+          <div className="rounded-md bg-mist-100 px-4 py-3">
             <dt className="text-xs text-graphite-500">Tempo médio de atendimento</dt>
             <dd className="mt-1 font-display text-xl font-semibold tabular-nums text-indigo-900">{tempoMedioDias !== null ? `${tempoMedioDias} dias` : '—'}</dd>
           </div>
-          <div className="rounded-xl bg-mist-100 px-4 py-3">
+          <div className="rounded-md bg-mist-100 px-4 py-3">
             <dt className="text-xs text-graphite-500">Investido em recursos</dt>
             <dd className="mt-1 font-display text-xl font-semibold tabular-nums text-indigo-900">{moeda(investimento)}</dd>
           </div>
-          <div className={`rounded-xl px-4 py-3 ${prazosVencidos ? 'bg-red-50' : 'bg-mist-100'}`}>
+          <div className={`rounded-md px-4 py-3 ${prazosVencidos ? 'bg-red-50' : 'bg-mist-100'}`}>
             <dt className="text-xs text-graphite-500">Prazos vencidos</dt>
             <dd className={`mt-1 font-display text-xl font-semibold tabular-nums ${prazosVencidos ? 'text-red-600' : 'text-indigo-900'}`}>{prazosVencidos}</dd>
           </div>
@@ -490,7 +445,7 @@ export function Alertas({ alertas }) {
   return (
     <Cartao titulo="O que precisa de atenção" subtitulo="Prioridades calculadas a partir dos seus registros">
       {alertas.length === 0 ? (
-        <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-xl bg-signal-50/60 px-4 py-8 text-center">
+        <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-md bg-signal-50/60 px-4 py-8 text-center">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-signal-100 text-signal-700">
             <svg viewBox="0 0 20 20" className="h-5 w-5" fill="currentColor" aria-hidden="true">
               <path d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" />
@@ -529,7 +484,7 @@ export function Retencao({ retencao, ativos }) {
         <p className="font-display text-5xl font-semibold leading-none tracking-tight text-indigo-900 tabular-nums">{pct !== null ? `${pct}%` : '—'}</p>
         <p className="pb-1 text-xs text-graphite-500">de permanência</p>
       </div>
-      <div className="mt-auto grid grid-cols-3 divide-x divide-mist-200 rounded-xl border border-mist-200 pt-0">
+      <div className="mt-auto grid grid-cols-3 divide-x divide-mist-200 rounded-md border border-mist-200 pt-0">
         {[
           ['Ativos', ativos],
           ['Admitidos', admitidos12m],
