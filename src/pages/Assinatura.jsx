@@ -21,6 +21,7 @@ const ITENS_INCLUSOS = [
 export function Assinatura() {
   const location = useLocation()
   const semAcesso = location.state?.semAcesso
+  const testeExpirado = location.state?.testeExpirado
   const [email, setEmail] = useState('')
   const [resultado, setResultado] = useState(null)
   const [carregando, setCarregando] = useState(false)
@@ -52,7 +53,13 @@ export function Assinatura() {
           Produto único, sem travamento de recurso por plano. Preço fixo, sem variação por porte
           da empresa.
         </p>
-        {semAcesso && (
+        {semAcesso && testeExpirado && (
+          <p className="mx-auto mt-6 max-w-xl rounded-xl bg-volt-50 px-5 py-3 text-sm font-medium text-volt-800">
+            Seu teste grátis de 14 dias terminou. Seus dados continuam guardados — assine para
+            voltar a acessar tudo de onde parou.
+          </p>
+        )}
+        {semAcesso && !testeExpirado && (
           <p className="mx-auto mt-6 max-w-xl rounded-xl bg-amber-50 px-5 py-3 text-sm font-medium text-amber-700">
             Não encontramos um pagamento confirmado para o e-mail da sua conta. Assine abaixo ou
             verifique se já pagou com outro e-mail.

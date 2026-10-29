@@ -57,7 +57,7 @@ export function Cadastro() {
     <section className="mx-auto flex min-h-[70svh] max-w-md flex-col justify-center px-5 py-16 sm:px-8">
       <h1 className="font-display text-3xl font-semibold text-indigo-800">Criar conta</h1>
       <p className="mt-2 text-graphite-500">
-        Cadastre sua empresa para acessar o diagnóstico completo e assinar a plataforma.
+        Cadastre sua empresa e use a plataforma completa por 14 dias grátis, sem cartão de crédito.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5 rounded-2xl border border-mist-300 bg-white p-8 shadow-card">

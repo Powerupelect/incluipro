@@ -5,4 +5,5 @@
 export const PLANO_LABEL = {
   mensal: 'Assinatura Mensal',
   vitalicio: 'Plano Empresarial',
+  teste: 'Teste grátis',
 }

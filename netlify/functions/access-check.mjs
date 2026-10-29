@@ -2,7 +2,7 @@
 // está liberado. Não retorna nenhum dado sensível — apenas se está liberado
 // e qual plano.
 
-import { getAccessRecord } from './_lib/store.mjs'
+import { getAccessRecord, acessoValido, diasRestantes } from './_lib/store.mjs'
 import { isAdminEmail } from './_lib/adminAuth.mjs'
 
 export const config = { path: '/api/access-check' }
@@ -29,8 +29,12 @@ export default async (req) => {
   }
 
   const record = await getAccessRecord(email)
-  if (!record || record.status !== 'ativo') {
-    return Response.json({ liberado: false })
+  if (!acessoValido(record)) {
+    return Response.json({
+      liberado: false,
+      testeExpirado: record?.plano === 'teste',
+      podeTestar: !record?.testeUsado,
+    })
   }
-  return Response.json({ liberado: true, plano: record.plano })
+  return Response.json({ liberado: true, plano: record.plano, diasRestantes: diasRestantes(record) })
 }

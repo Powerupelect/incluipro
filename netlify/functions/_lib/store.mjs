@@ -5,6 +5,7 @@
 import { getStore } from '@netlify/blobs'
 
 const STORE_NAME = 'incluipro-access'
+export const DIAS_TESTE = 14
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase()
@@ -36,19 +37,25 @@ export async function upsertAccessRecord({
   status,
   origem,
   hotmartTransactionId,
+  expiraEm,
 }) {
   const store = accessStore()
   const key = normalizeEmail(email)
   if (!key) throw new Error('E-mail inválido')
   const existing = await store.get(key, { type: 'json' })
   const now = new Date().toISOString()
+  const planoFinal = plano ?? existing?.plano ?? 'mensal'
   const record = {
     email: key,
     nome: nome ?? existing?.nome ?? '',
-    plano: plano ?? existing?.plano ?? 'mensal',
+    plano: planoFinal,
     status: status ?? existing?.status ?? 'ativo',
     origem: origem ?? existing?.origem ?? 'manual',
     hotmartTransactionId: hotmartTransactionId ?? existing?.hotmartTransactionId ?? null,
+    // Só o teste grátis expira; ao virar plano pago, a data de expiração é descartada.
+    expiraEm: planoFinal === 'teste' ? (expiraEm ?? existing?.expiraEm ?? null) : null,
+    // Marca permanente: um e-mail só tem direito a um teste, mesmo depois de assinar.
+    testeUsado: existing?.testeUsado || planoFinal === 'teste',
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   }
@@ -60,4 +67,16 @@ export async function removeAccessRecord(email) {
   const key = normalizeEmail(email)
   if (!key) return
   await accessStore().delete(key)
+}
+
+/** Teste expirado conta como sem acesso, mesmo com status "ativo". */
+export function acessoValido(record, agora = new Date()) {
+  if (!record || record.status !== 'ativo') return false
+  if (record.plano === 'teste') return Boolean(record.expiraEm) && new Date(record.expiraEm) > agora
+  return true
+}
+
+export function diasRestantes(record, agora = new Date()) {
+  if (record?.plano !== 'teste' || !record.expiraEm) return null
+  return Math.max(0, Math.ceil((new Date(record.expiraEm) - agora) / (24 * 60 * 60 * 1000)))
 }

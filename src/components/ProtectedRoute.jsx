@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth.jsx'
-import { checkAccess } from '../lib/api.js'
+import { checkAccess, iniciarTeste } from '../lib/api.js'
 
 const CACHE_KEY = 'incluipro_entitlement_cache'
 
@@ -14,6 +14,7 @@ function readCache(email) {
   }
 }
 
+// Guarda { status, diasRestantes } por e-mail durante a sessão do navegador.
 function writeCache(email, status) {
   try {
     const cache = JSON.parse(sessionStorage.getItem(CACHE_KEY)) || {}
@@ -31,27 +32,32 @@ export function ProtectedRoute({ children }) {
   const { user, loading: sessaoCarregando } = useAuth()
   const location = useLocation()
   const email = user?.email?.trim().toLowerCase()
-  const [status, setStatus] = useState(() => (email ? readCache(email) : null))
+  const [acesso, setAcesso] = useState(() => (email ? readCache(email) : null))
+  const status = acesso?.status ?? null
   const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
     if (!email) return
     const cached = readCache(email)
-    if (cached) {
-      setStatus(cached)
+    if (cached?.status) {
+      setAcesso(cached)
       return
     }
     let cancelado = false
-    setStatus('verificando')
+    setAcesso({ status: 'verificando' })
     checkAccess(email)
+      // Quem nunca testou nem assinou ganha o teste grátis automaticamente no primeiro acesso.
+      .then((res) => (!res.liberado && res.podeTestar ? iniciarTeste(email, user?.companyName) : res))
       .then((res) => {
         if (cancelado) return
-        const resultado = res.liberado ? 'liberado' : 'bloqueado'
+        const resultado = res.liberado
+          ? { status: 'liberado', diasRestantes: res.diasRestantes ?? null }
+          : { status: 'bloqueado', testeExpirado: Boolean(res.testeExpirado) }
         writeCache(email, resultado)
-        setStatus(resultado)
+        setAcesso(resultado)
       })
       .catch(() => {
-        if (!cancelado) setStatus('erro')
+        if (!cancelado) setAcesso({ status: 'erro' })
       })
     return () => {
       cancelado = true
@@ -102,7 +108,22 @@ export function ProtectedRoute({ children }) {
   }
 
   if (status === 'bloqueado') {
-    return <Navigate to="/assinatura" replace state={{ from: location, semAcesso: true }} />
+    return <Navigate to="/assinatura" replace state={{ from: location, semAcesso: true, testeExpirado: acesso.testeExpirado }} />
+  }
+
+  if (acesso.diasRestantes != null) {
+    const dias = acesso.diasRestantes
+    return (
+      <>
+        <div className="bg-volt-700 px-5 py-2 text-center text-sm text-white">
+          Teste grátis: {dias <= 1 ? 'último dia' : `faltam ${dias} dias`}.{' '}
+          <Link to="/assinatura" className="font-semibold underline underline-offset-2">
+            Assinar com condição de Fundador
+          </Link>
+        </div>
+        {children}
+      </>
+    )
   }
 
   return children

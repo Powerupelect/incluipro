@@ -2,12 +2,12 @@
 // para liberar um cliente que pagou fora do fluxo automático quanto para
 // reativar um acesso bloqueado.
 
-import { upsertAccessRecord } from './_lib/store.mjs'
+import { upsertAccessRecord, DIAS_TESTE } from './_lib/store.mjs'
 import { verifyAdminToken, extractBearerToken } from './_lib/adminAuth.mjs'
 
 export const config = { path: '/api/admin-upsert' }
 
-const PLANOS_VALIDOS = new Set(['mensal', 'vitalicio'])
+const PLANOS_VALIDOS = new Set(['mensal', 'vitalicio', 'teste'])
 const STATUS_VALIDOS = new Set(['ativo', 'bloqueado'])
 
 export default async (req) => {
@@ -36,12 +36,14 @@ export default async (req) => {
     return Response.json({ ok: false, motivo: 'Status inválido' }, { status: 400 })
   }
 
+  // Bloquear/reativar manda só e-mail + status: preserva o plano (e a validade do teste).
   const record = await upsertAccessRecord({
     email,
     nome,
-    plano: plano || 'mensal',
+    plano,
     status: status || 'ativo',
     origem: 'manual',
+    expiraEm: plano === 'teste' ? new Date(Date.now() + DIAS_TESTE * 24 * 60 * 60 * 1000).toISOString() : undefined,
   })
   return Response.json({ ok: true, record })
 }

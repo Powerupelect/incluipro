@@ -137,6 +137,7 @@ export function AdminPainel() {
             className="mt-1 rounded-xl border border-mist-400 px-3 py-2.5 text-sm outline-none focus:border-signal-500"
           >
             <option value="vitalicio">Empresarial</option>
+            <option value="teste">Teste grátis (14 dias)</option>
             <option value="mensal">Mensal (legado)</option>
           </select>
         </div>
@@ -188,7 +189,14 @@ export function AdminPainel() {
               <tr key={r.email}>
                 <td className="px-4 py-3 font-medium text-graphite-900">{r.email}</td>
                 <td className="px-4 py-3 text-graphite-500">{r.nome || '—'}</td>
-                <td className="px-4 py-3">{PLANO_LABEL[r.plano] || r.plano}</td>
+                <td className="px-4 py-3">
+                  {PLANO_LABEL[r.plano] || r.plano}
+                  {r.plano === 'teste' && r.expiraEm && (
+                    <span className={`block text-xs ${new Date(r.expiraEm) < new Date() ? 'text-red-600' : 'text-graphite-400'}`}>
+                      {new Date(r.expiraEm) < new Date() ? 'Expirou' : 'Expira'} em {new Date(r.expiraEm).toLocaleDateString('pt-BR')}
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -201,7 +209,7 @@ export function AdminPainel() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-graphite-500">
-                  {r.origem === 'hotmart' ? 'Hotmart' : 'Manual'}
+                  {r.origem === 'hotmart' ? 'Hotmart' : r.origem === 'teste' ? 'Teste grátis' : 'Manual'}
                 </td>
                 <td className="px-4 py-3 text-graphite-400">
                   {new Date(r.updatedAt).toLocaleString('pt-BR')}
