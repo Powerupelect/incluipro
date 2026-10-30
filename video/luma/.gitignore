@@ -3,4 +3,4 @@ snaps/
 .hyperframes/
 .agents/
 .claude/
-renders/*.log
+renders/
