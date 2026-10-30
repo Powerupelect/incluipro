@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/lib/gsap.min.js"></script>
+    <script src="assets/lipsync.js"></script>
+    <style>
+
+      :root {
+        --ground: #1a0e08;
+        --title-ink: #fff4dc;
+        --title-glow: #ffb547;
+        --font-display: "Nunito";
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--ground);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18" data-width="1080" data-height="1920">
+      <div id="luma" data-composition-id="luma" data-composition-src="compositions/luma.html"
+        data-start="0" data-duration="18" data-track-index="0" data-track-kind="graphics"
+        data-width="1080" data-height="1920"></div>
+      <div id="titulo" data-composition-id="titulo" data-composition-src="compositions/titulo.html"
+        data-start="15.85" data-duration="2.15" data-track-index="1" data-track-kind="graphics"
+        data-width="1080" data-height="1920"></div>
+
+      <audio id="trilha" class="clip" src="assets/audio/trilha.wav" data-start="0" data-duration="18" data-volume="0.8" data-track-index="2"></audio>
+      <audio id="voz1" class="clip" src="assets/audio/voz1.wav" data-start="0.9" data-duration="3.79" data-volume="1" data-track-index="3"></audio>
+      <audio id="voz2" class="clip" src="assets/audio/voz2.wav" data-start="6.4" data-duration="2.36" data-volume="1" data-track-index="3"></audio>
+      <audio id="voz3" class="clip" src="assets/audio/voz3.wav" data-start="12.9" data-duration="2.79" data-volume="1" data-track-index="3"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
