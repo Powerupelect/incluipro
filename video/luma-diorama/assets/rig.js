@@ -42,7 +42,7 @@
     s.earL = 0.015 * Math.sin(t * 1.2) + 0.09 * pulse(t, 5.55, 0.32) * Math.sin((t - 5.55) * 20);
     s.earR = 0.015 * Math.sin(t * 1.4 + 1) - 0.07 * pulse(t, 2.45, 0.5) + 0.05 * pulse(t, 6.4, 0.3) * Math.sin((t - 6.4) * 22);
     // tail: slow sway with a happier swish when she smiles
-    s.tail = 0.05 * Math.sin(t * 2.1 - 0.6) + 0.06 * pulse(t, 5.0, 1.0) * Math.sin((t - 5.0) * 7);
+    s.tail = 0.05 * Math.sin(t * 2.1 - 0.6) + 0.035 * pulse(t, 5.0, 1.0) * Math.sin((t - 5.0) * 7);
     s.wind = 1;
     // eyes and mouth
     const blinks = [1.35, 4.15, 4.45, 7.0];
