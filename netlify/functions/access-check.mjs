@@ -33,7 +33,6 @@ export default async (req) => {
     return Response.json({
       liberado: false,
       testeExpirado: record?.plano === 'teste',
-      podeTestar: !record?.testeUsado,
     })
   }
   return Response.json({ liberado: true, plano: record.plano, diasRestantes: diasRestantes(record) })

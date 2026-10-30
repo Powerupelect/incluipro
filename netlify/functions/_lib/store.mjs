@@ -54,8 +54,6 @@ export async function upsertAccessRecord({
     hotmartTransactionId: hotmartTransactionId ?? existing?.hotmartTransactionId ?? null,
     // Só o teste grátis expira; ao virar plano pago, a data de expiração é descartada.
     expiraEm: planoFinal === 'teste' ? (expiraEm ?? existing?.expiraEm ?? null) : null,
-    // Marca permanente: um e-mail só tem direito a um teste, mesmo depois de assinar.
-    testeUsado: existing?.testeUsado || planoFinal === 'teste',
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   }

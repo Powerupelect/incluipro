@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth.jsx'
-import { checkAccess, iniciarTeste } from '../lib/api.js'
+import { checkAccess } from '../lib/api.js'
 
 const CACHE_KEY = 'incluipro_entitlement_cache'
 
@@ -46,8 +46,6 @@ export function ProtectedRoute({ children }) {
     let cancelado = false
     setAcesso({ status: 'verificando' })
     checkAccess(email)
-      // Quem nunca testou nem assinou ganha o teste grátis automaticamente no primeiro acesso.
-      .then((res) => (!res.liberado && res.podeTestar ? iniciarTeste(email, user?.companyName) : res))
       .then((res) => {
         if (cancelado) return
         const resultado = res.liberado

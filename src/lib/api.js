@@ -21,10 +21,6 @@ export function checkAccess(email) {
   return postJSON('/api/access-check', { email })
 }
 
-export function iniciarTeste(email, nome) {
-  return postJSON('/api/trial-start', { email, nome })
-}
-
 export function enviarDiagnostico(payload) {
   return postJSON('/api/enviar-diagnostico', payload)
 }
