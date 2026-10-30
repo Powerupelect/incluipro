@@ -1,0 +1,86 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #2a160b;
+    }
+    #dio-gl,
+    #dio-parts {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+    }
+    #dio-parts {
+      mix-blend-mode: screen;
+    }
+    #dio-bloom {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      mix-blend-mode: screen;
+    }
+    #dio-rays {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      mix-blend-mode: screen;
+      background:
+        linear-gradient(118deg, rgba(255, 214, 150, 0) 52%, rgba(255, 222, 165, 0.16) 58%, rgba(255, 214, 150, 0) 64%),
+        linear-gradient(122deg, rgba(255, 214, 150, 0) 63%, rgba(255, 226, 170, 0.12) 68%, rgba(255, 214, 150, 0) 73%),
+        linear-gradient(115deg, rgba(255, 214, 150, 0) 72%, rgba(255, 230, 180, 0.1) 77%, rgba(255, 214, 150, 0) 82%);
+      -webkit-mask-image: linear-gradient(200deg, #000 10%, transparent 70%);
+      mask-image: linear-gradient(200deg, #000 10%, transparent 70%);
+    }
+    .lantern {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      background: radial-gradient(closest-side, rgba(255, 210, 130, 0.75), rgba(255, 170, 70, 0.28) 45%, rgba(255, 140, 40, 0));
+    }
+    #lantern-a {
+      left: 69px;
+      top: -57px;
+      width: 240px;
+      height: 240px;
+    }
+    #lantern-b {
+      left: 949px;
+      top: 72px;
+      width: 180px;
+      height: 200px;
+    }
+    #dio-grade {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(130% 80% at 55% 45%, rgba(0, 0, 0, 0) 60%, rgba(30, 12, 2, 0.35) 100%);
+    }
+  </style>
+  <div id="root" data-composition-id="diorama" data-width="1080" data-height="1920">
+    <canvas id="dio-gl" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <img id="dio-bloom" src="assets/bloom.jpg" alt="" data-layout-allow-occlusion />
+    <div id="dio-rays" data-layout-allow-occlusion></div>
+    <div class="lantern" id="lantern-a" data-layout-allow-overflow></div>
+    <div class="lantern" id="lantern-b" data-layout-allow-overflow></div>
+    <canvas id="dio-parts" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <div id="dio-grade" data-layout-allow-occlusion></div>
+  </div>
+  <script src="assets/rig.js"></script>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      // the rig draws each frame from scene time
+      const clock = { t: 0 };
+      tl.fromTo(clock, { t: 0 }, { t: 8, duration: 8, ease: "none", onUpdate: () => window.LumaDiorama.render(clock.t) }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["diorama"] = tl;
+    })();
+  </script>
+</template>
