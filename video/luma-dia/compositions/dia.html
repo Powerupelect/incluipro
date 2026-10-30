@@ -1,0 +1,64 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #24140a;
+    }
+    .cena {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+    }
+    #dia-parts {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      mix-blend-mode: screen;
+    }
+    #dia-leak {
+      position: absolute;
+      inset: 0;
+      mix-blend-mode: screen;
+      background:
+        radial-gradient(60% 40% at 80% 25%, rgba(255, 190, 110, 0.9), rgba(255, 140, 60, 0) 70%),
+        radial-gradient(50% 35% at 20% 70%, rgba(255, 120, 80, 0.55), rgba(255, 100, 60, 0) 70%);
+    }
+    #dia-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(80% 60% at 60% 40%, #fff1d6, #ffc98a 60%, #f79a5a);
+    }
+    #dia-grade {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(130% 80% at 50% 45%, rgba(0, 0, 0, 0) 60%, rgba(30, 12, 2, 0.4) 100%);
+    }
+  </style>
+  <div id="root" data-composition-id="dia" data-width="1080" data-height="1920">
+    <canvas class="cena" id="cv-quarto" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <canvas class="cena" id="cv-mesa" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <canvas class="cena" id="cv-queixo" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <canvas class="cena" id="cv-porsol" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <canvas id="dia-parts" width="1080" height="1920" data-layout-allow-occlusion></canvas>
+    <div id="dia-leak" data-layout-allow-occlusion></div>
+    <div id="dia-flash" data-layout-allow-occlusion></div>
+    <div id="dia-grade" data-layout-allow-occlusion></div>
+  </div>
+  <script src="assets/rig.js"></script>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const clock = { t: 0 };
+      tl.fromTo(clock, { t: 0 }, { t: 10, duration: 10, ease: "none", onUpdate: () => window.LumaDia.render(clock.t) }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["dia"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/lib/gsap.min.js"></script>
+    <style>
+      :root {
+        --title-ink: #fff4dc;
+        --title-glow: #ffb547;
+        --font-display: "Nunito";
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #24140a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1080" data-height="1920">
+      <div id="dia" data-composition-id="dia" data-composition-src="compositions/dia.html"
+        data-start="0" data-duration="10" data-track-index="0" data-track-kind="graphics"
+        data-width="1080" data-height="1920"></div>
+      <div id="titulo" data-composition-id="titulo" data-composition-src="compositions/titulo.html"
+        data-start="7.95" data-duration="2.05" data-track-index="1" data-track-kind="graphics"
+        data-width="1080" data-height="1920"></div>
+      <audio id="trilha" class="clip" src="assets/audio/trilha.wav" data-start="0" data-duration="10" data-volume="1" data-track-index="2"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

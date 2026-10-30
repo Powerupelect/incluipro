@@ -1,0 +1,48 @@
+<template>
+  <style>
+      #root {
+        position: absolute;
+        inset: 0;
+      }
+      #title {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 820px;
+        text-align: center;
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-size: 112px;
+        line-height: 1.2;
+        color: var(--title-ink);
+        letter-spacing: -1px;
+        white-space: nowrap;
+        text-shadow:
+          0 4px 0 #b4561b,
+          0 8px 0 #7a3410,
+          0 0 28px rgba(255, 181, 71, 0.9),
+          0 0 70px rgba(255, 140, 40, 0.6);
+      }
+      #title .ch {
+        display: inline-block;
+      }
+      </style>
+  <div id="root" data-composition-id="titulo" data-width="1080" data-height="1920"
+    data-composition-variables='[{"id":"titulo","type":"string","label":"Nome da página","default":"Mundo da Luma"}]'>
+    <h1 id="title" data-var-text="titulo">Mundo da Luma</h1>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const title = document.getElementById("title");
+      title.innerHTML = title.textContent.split("").map((c, i) => `<span class="ch">${c === " " ? "&nbsp;" : c}</span>`).join("");
+      const chars = title.querySelectorAll(".ch");
+      tl.fromTo(chars, { opacity: 0, y: 70, scale: 0.4, rotation: -12 },
+        { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.55, ease: "back.out(2.4)", stagger: 0.045 }, 0.05);
+      tl.fromTo(chars, { y: 0 },
+        { y: -8, duration: 0.35, ease: "sine.inOut", stagger: 0.04, yoyo: true, repeat: 1, immediateRender: false }, 1.0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["titulo"] = tl;
+    })();
+  </script>
+</template>
